@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  favorites: [String], // e.g. ["pikachu", "charizard"]
+  favorites: { type: [String], default: [] }, // e.g. ["pikachu", "charizard"]
   caught: [String]     // e.g. ["bulbasaur"]
 }, {
   timestamps: true

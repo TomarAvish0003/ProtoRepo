@@ -15,3 +15,18 @@ export const authLimiter = rateLimit({
   max: 10,
   message: 'Too many login/signup attempts. Please try again later.',
 });
+
+// src/middleware/rateLimiter.js
+export const favoritesLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30, // 30 requests/minute per IP for favorites
+  message: 'Too many favorites requests. Please slow down.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export const pokemonAPILimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 15, // 15 requests/minute to PokeAPI proxy
+  message: 'Too many Pokémon requests. Please try again later.',
+});
