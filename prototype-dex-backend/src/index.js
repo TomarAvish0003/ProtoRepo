@@ -14,6 +14,10 @@ import cloudinaryRoutes from './routes/cloudinaryRoutes.js';
 
 import { connectDB } from './config/db.js';
 
+import { preloadAllPokemon } from './utils/preloadPokemon.js';
+import { pokemonCache } from './cache/pokemonCache.js';
+
+
 dotenv.config();
 const app = express();
 
