@@ -17,6 +17,7 @@ import {
   fetchVersion,
   fetchVersionGroup,
   fetchGeneration,
+  fetchEncounters,
 } from '../utils/fetchFromPokeAPI.js';
 
 import { pokemonCache, typeCache } from '../utils/cache.js';
@@ -140,7 +141,20 @@ export const getPokemonByGeneration = async (req, res) => {
 };
 
 // ... (other endpoints unchanged, as above) ...
-
+// GET /api/pokemon/:nameOrId/encounters
+export const getPokemonEncounters = async (req, res) => {
+  try {
+    const { nameOrId } = req.params;
+    const data = await fetchEncounters(nameOrId);
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return res.status(404).json({ message: "No encounter data found for this Pokémon." });
+    }
+    res.json(data);
+  } catch (err) {
+    console.error("getPokemonEncounters error:", err);
+    res.status(500).json({ message: "Failed to fetch Pokémon encounter data" });
+  }
+};
 
 // GET /api/pokemon/types
 export const getPokemonTypes = async (req, res) => {

@@ -21,6 +21,7 @@ import {
   getPokedex,
   getVersion,
   getVersionGroup,
+  getPokemonEncounters
 } from "../controllers/pokemonController.js";
 import { fetchPokemon } from "../utils/fetchFromPokeAPI.js";
 import { getMovesBatch } from "../controllers/moveController.js";
@@ -50,7 +51,7 @@ router.get("/evolution-trigger/:nameOrId", getEvolutionTrigger); // /api/pokemon
 router.get("/pokedex/:nameOrId", getPokedex); // /api/pokemon/pokedex/:nameOrId
 router.get("/version/:nameOrId", getVersion); // /api/pokemon/version/:nameOrId
 router.get("/version-group/:nameOrId", getVersionGroup); // /api/pokemon/version-group/:nameOrId
-
+router.get("/:nameOrId/encounters", getPokemonEncounters); // /api/pokemon/:nameOrId/encounters
 
 
 // Batch fetch endpoint (optional: move to controller for consistency)

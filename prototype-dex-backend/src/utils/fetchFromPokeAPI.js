@@ -151,3 +151,15 @@ export const fetchVersion = (nameOrId) =>
 
 export const fetchVersionGroup = (nameOrId) =>
   fetchFromPokeAPI(`version-group/${nameOrId.toLowerCase()}`);
+
+// In fetchFromPokeAPI.js
+
+export const fetchEncounters = async (nameOrId) => {
+  const key = String(nameOrId).toLowerCase();
+  // Optionally cache this in genericCache
+  const cacheKey = `pokemon-encounters-${key}`;
+  if (genericCache.has(cacheKey)) return genericCache.get(cacheKey);
+  const data = await fetchFromPokeAPI(`pokemon/${key}/encounters`);
+  genericCache.set(cacheKey, data);
+  return data;
+};
