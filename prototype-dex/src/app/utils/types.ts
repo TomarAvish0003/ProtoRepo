@@ -45,9 +45,8 @@ export interface UserProfile {
   id: string;
   username: string;
   email: string;
-  avatar?: string; // FIX: Added optional avatar property
+  avatar?: string;
 }
-
 
 // --- Simplified/Processed Types ---
 // These are the clean, flat types your application components will use.
@@ -182,6 +181,8 @@ export type PokemonSpecies = {
   egg_groups?: { name: string; url: string }[];
   hatch_counter?: number;
 };
+
+// --- API-Specific Response Types ---
 
 export interface FlatVarietyWithTypes {
   id: number;

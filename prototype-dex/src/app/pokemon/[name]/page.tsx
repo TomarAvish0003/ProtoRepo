@@ -14,7 +14,6 @@ import {
   Move,
   PokemonForm,
   TypeEffectiveness,
-  Ability,
   PokemonEncounter,
   PokedexNumber,
   FlavorTextEntry,
@@ -84,7 +83,7 @@ export default async function PokemonPage({ params }: { params: { name: string }
     const formsArr = await Promise.all(
       allVarietyData.map(async (formPokemon) => {
         const abilities = await Promise.all(
-          formPokemon.abilities.map(async (a: any) => { // Use 'any' for raw ability structure
+          formPokemon.abilities.map(async (a) => {
             const abilityRes = await getPokemonAbility(a.ability.name);
             const effectEntry = (abilityRes.data as any)?.effect_entries?.find((e: any) => e.language.name === "en");
             return {
@@ -140,13 +139,13 @@ export default async function PokemonPage({ params }: { params: { name: string }
   
   // FIX: Process raw API data structures correctly
   const flavorTexts: FlavorTextEntry[] = species.flavor_text_entries
-    ?.filter((ft: any) => ft.language.name === "en")
-    .map((ft: any) => ({ version: ft.version.name, text: ft.flavor_text.replace(/\f/g, " ") })) ?? [];
+    ?.filter((ft) => ft.language.name === "en")
+    .map((ft) => ({ version: ft.version.name, text: ft.flavor_text.replace(/\f/g, " ") })) ?? [];
 
   const pokedexNumbers: PokedexNumber[] = species.pokedex_numbers
-    ?.map((pn: any) => ({ name: pn.pokedex.name, number: pn.entry_number })) ?? [];
+    ?.map((pn) => ({ name: pn.pokedex.name, number: pn.entry_number })) ?? [];
 
-  const eggGroups: string[] = species.egg_groups?.map((g: any) => g.name) ?? [];
+  const eggGroups: string[] = species.egg_groups?.map((g) => g.name) ?? [];
   
   const moves = pokemon.moves.flatMap(pm => pm.version_group_details.map(vgd => ({ name: pm.move.name, method: vgd.move_learn_method.name as Move['method'], level_learned_at: vgd.level_learned_at, version_group: vgd.version_group.name })));
   const availableMoveVersions = Array.from(new Set(moves.map(m => m.version_group)));
