@@ -1,6 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import {
+  fetchFromPokeAPI,
   fetchPokemon,
-  fetchPokemonList,
   fetchType,
   fetchPokemonSpecies,
   fetchEvolutionChain,
@@ -20,146 +22,127 @@ import {
   fetchEncounters,
 } from '../utils/fetchFromPokeAPI.js';
 
-import { pokemonCache, typeCache } from '../utils/cache.js';
+// --- Master Data Loader ---
+let allPokemonListCache = null;
 
-// Optional: track in-flight fetches
-const inFlight = new Map();
-
-async function getPokemonData(name) {
-  if (pokemonCache.has(name)) {
-    return pokemonCache.get(name);
+function loadAllPokemonFromFile() {
+  if (allPokemonListCache) {
+    return allPokemonListCache;
   }
-
-  if (inFlight.has(name)) {
-    return inFlight.get(name);
+  try {
+    const filePath = path.resolve(process.cwd(), 'src/pokedex-cache.json');
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    allPokemonListCache = JSON.parse(fileContents);
+    console.log(`✅ Backend: Loaded ${allPokemonListCache.length} Pokémon from local cache.`);
+    return allPokemonListCache;
+  } catch (error) {
+    console.error("❌ Backend: Could not read 'pokedex-cache.json'. Please run the seed script first with 'node src/scripts/seed.js'");
+    return [];
   }
-
-  const promise = (async () => {
-    try {
-      const data = await fetchPokemon(name);
-      const id = Number(data.id);
-
-      if (!data.is_default || id > 1010) return null;
-
-      const types = Array.isArray(data.types)
-        ? data.types.map((t) => t.type.name)
-        : [];
-
-      const sprite =
-        data.sprites?.other?.['official-artwork']?.front_default ||
-        data.sprites?.front_default ||
-        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-
-      // Only return minimal fields!
-      const enriched = { id, name: data.name, types, sprite };
-      pokemonCache.set(name, enriched);
-      return enriched;
-    } catch (err) {
-      console.error(`Failed to fetch data for ${name}:`, err.message);
-      return null;
-    } finally {
-      inFlight.delete(name);
-    }
-  })();
-
-  inFlight.set(name, promise);
-  return promise;
 }
 
-// Helper
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// Load the cache as soon as the server starts
+const allPokemon = loadAllPokemonFromFile();
 
-// --- API ROUTES ---
+// --- API ROUTE HANDLERS ---
 
-// GET /api/pokemon
 export const getPokemonList = async (req, res) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit) || 48, 100);
+    const limit = parseInt(req.query.limit) || 48;
     const offset = parseInt(req.query.offset) || 0;
-
-    const data = await fetchPokemonList(limit, offset);
-    const BATCH_SIZE = 10;
-    const enriched = [];
-
-    for (let i = 0; i < data.results.length; i += BATCH_SIZE) {
-      const batch = data.results.slice(i, i + BATCH_SIZE);
-      const batchResults = await Promise.all(batch.map((p) => getPokemonData(p.name)));
-      enriched.push(...batchResults.filter(Boolean));
-
-      if (i + BATCH_SIZE < data.results.length) {
-        await delay(1000);
-      }
+    const search = req.query.search?.toLowerCase();
+    const types = req.query.types?.split(',');
+    
+    let filteredPokemon = allPokemon;
+    if (search) {
+      filteredPokemon = filteredPokemon.filter(p => p.name.includes(search) || String(p.id) === search);
+    }
+    if (types && types.length > 0) {
+      filteredPokemon = filteredPokemon.filter(p => types.every(type => p.types.includes(type)));
     }
 
-    // Only return minimal fields in the response!
+    const paginatedResults = filteredPokemon.slice(offset, offset + limit);
+
     res.json({
-      results: enriched,
-      count: Math.min(data.count, 1010),
-      limit,
-      offset,
+      results: paginatedResults,
+      count: filteredPokemon.length,
     });
   } catch (err) {
-    console.error('getPokemonList error:', err);
-    res.status(500).json({ message: 'Failed to fetch Pokémon list', error: err.message });
+    res.status(500).json({ message: 'Failed to get Pokémon list', error: err.message });
   }
 };
 
-// GET /api/pokemon/generation/:genId
 export const getPokemonByGeneration = async (req, res) => {
-  try {
-    const { genId } = req.params;
-    const data = await fetchGeneration(genId);
-
-    let pokemon = data.pokemon_species.map((p) => ({
-      name: p.name,
-      id: Number(p.url.split("/").filter(Boolean).pop()),
-    }));
-
-    pokemon = pokemon.filter(p => p.id <= 1010);
-    pokemon.sort((a, b) => a.id - b.id);
-
-    const BATCH_SIZE = 10;
-    const enriched = [];
-
-    for (let i = 0; i < pokemon.length; i += BATCH_SIZE) {
-      const batch = pokemon.slice(i, i + BATCH_SIZE);
-      const batchResults = await Promise.all(batch.map((p) => getPokemonData(p.name)));
-      enriched.push(...batchResults.filter(Boolean));
-
-      if (i + BATCH_SIZE < pokemon.length) {
-        await delay(1000);
-      }
+    try {
+      const { genId } = req.params;
+      const generationData = await fetchGeneration(genId);
+      
+      const genPokemonNames = new Set(generationData.pokemon_species.map(p => p.name));
+      const enriched = allPokemon.filter(p => genPokemonNames.has(p.name));
+      
+      res.json(enriched);
+    } catch (err) {
+      console.error('getPokemonByGeneration error:', err);
+      res.status(500).json({ message: 'Failed to fetch Pokémon for generation', error: err.message });
     }
+};
 
-    res.json(enriched);
+export const getPokemonBatch = async (req, res) => {
+  const { names } = req.body;
+  if (!Array.isArray(names)) {
+    return res.status(400).json({ error: "The 'names' field must be an array." });
+  }
+
+  try {
+    const promises = names.map(name => fetchPokemon(name));
+    const results = await Promise.allSettled(promises);
+
+    const pokemons = results.map((result, index) => {
+      if (result.status === 'fulfilled' && result.value) {
+        return result.value;
+      }
+      return { name: names[index], error: 'Not found' };
+    });
+
+    res.json({ pokemons });
   } catch (err) {
-    console.error('getPokemonByGeneration error:', err);
-    res.status(500).json({ message: 'Failed to fetch Pokémon for generation', error: err.message });
+    console.error('getPokemonBatch error:', err);
+    res.status(500).json({ message: 'Failed to fetch Pokémon batch', error: err.message });
   }
 };
 
-// ... (other endpoints unchanged, as above) ...
-// GET /api/pokemon/:nameOrId/encounters
-export const getPokemonEncounters = async (req, res) => {
+const simpleFetchHandler = (fetchFunction, resourceName) => async (req, res) => {
   try {
-    const { nameOrId } = req.params;
-    const data = await fetchEncounters(nameOrId);
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      return res.status(404).json({ message: "No encounter data found for this Pokémon." });
-    }
+    const { nameOrId, id } = req.params;
+    const data = await fetchFunction(nameOrId || id);
     res.json(data);
   } catch (err) {
-    console.error("getPokemonEncounters error:", err);
-    res.status(500).json({ message: "Failed to fetch Pokémon encounter data" });
+    console.error(`Error fetching ${resourceName}:`, err);
+    res.status(404).json({ message: `${resourceName} not found` });
   }
 };
 
-// GET /api/pokemon/types
+export const getPokemonDetails = simpleFetchHandler(fetchPokemon, 'Pokémon');
+export const getPokemonSpecies = simpleFetchHandler(fetchPokemonSpecies, 'Pokémon species');
+export const getPokemonEncounters = simpleFetchHandler(fetchEncounters, 'Pokémon encounters');
+export const getEvolutionChain = simpleFetchHandler(fetchEvolutionChain, 'Evolution chain');
+export const getType = simpleFetchHandler(fetchType, 'Type');
+export const getAbility = simpleFetchHandler(fetchAbility, 'Ability');
+export const getMove = simpleFetchHandler(fetchMove, 'Move');
+export const getItem = simpleFetchHandler(fetchItem, 'Item');
+export const getEggGroup = simpleFetchHandler(fetchEggGroup, 'Egg group');
+export const getLocation = simpleFetchHandler(fetchLocation, 'Location');
+export const getLocationArea = simpleFetchHandler(fetchLocationArea, 'Location area');
+export const getPalParkArea = simpleFetchHandler(fetchPalParkArea, 'Pal Park area');
+export const getRegion = simpleFetchHandler(fetchRegion, 'Region');
+export const getEvolutionTrigger = simpleFetchHandler(fetchEvolutionTrigger, 'Evolution trigger');
+export const getPokedex = simpleFetchHandler(fetchPokedex, 'Pokedex');
+export const getVersion = simpleFetchHandler(fetchVersion, 'Version');
+export const getVersionGroup = simpleFetchHandler(fetchVersionGroup, 'Version group');
+
 export const getPokemonTypes = async (req, res) => {
   try {
-    const data = await fetchType('');
+    const data = await fetchFromPokeAPI('type');
     const types = data.results
       .map((t) => t.name)
       .filter((t) => t !== "shadow" && t !== "unknown");
@@ -167,184 +150,5 @@ export const getPokemonTypes = async (req, res) => {
   } catch (err) {
     console.error('getPokemonTypes error:', err);
     res.status(500).json({ message: "Failed to fetch Pokémon types" });
-  }
-};
-
-// GET /api/pokemon/:nameOrId
-export const getPokemonDetails = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchPokemon(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getPokemonDetails error:', err);
-    res.status(404).json({ message: 'Pokémon not found' });
-  }
-};
-
-// GET /api/pokemon/species/:nameOrId
-export const getPokemonSpecies = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchPokemonSpecies(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getPokemonSpecies error:', err);
-    res.status(404).json({ message: 'Pokémon species not found' });
-  }
-};
-
-// --- Remaining routes unchanged ---
-export const getEvolutionChain = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const data = await fetchEvolutionChain(id);
-    res.json(data);
-  } catch (err) {
-    console.error('getEvolutionChain error:', err);
-    res.status(404).json({ message: 'Evolution chain not found' });
-  }
-};
-
-export const getType = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchType(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getType error:', err);
-    res.status(404).json({ message: 'Type not found' });
-  }
-};
-
-export const getAbility = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchAbility(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getAbility error:', err);
-    res.status(404).json({ message: 'Ability not found' });
-  }
-};
-
-export const getMove = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchMove(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getMove error:', err);
-    res.status(404).json({ message: 'Move not found' });
-  }
-};
-
-export const getItem = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchItem(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getItem error:', err);
-    res.status(404).json({ message: 'Item not found' });
-  }
-};
-
-export const getEggGroup = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchEggGroup(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getEggGroup error:', err);
-    res.status(404).json({ message: 'Egg group not found' });
-  }
-};
-
-export const getLocation = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchLocation(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getLocation error:', err);
-    res.status(404).json({ message: 'Location not found' });
-  }
-};
-
-export const getLocationArea = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchLocationArea(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getLocationArea error:', err);
-    res.status(404).json({ message: 'Location area not found' });
-  }
-};
-
-export const getPalParkArea = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchPalParkArea(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getPalParkArea error:', err);
-    res.status(404).json({ message: 'Pal Park area not found' });
-  }
-};
-
-export const getRegion = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchRegion(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getRegion error:', err);
-    res.status(404).json({ message: 'Region not found' });
-  }
-};
-
-export const getEvolutionTrigger = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchEvolutionTrigger(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getEvolutionTrigger error:', err);
-    res.status(404).json({ message: 'Evolution trigger not found' });
-  }
-};
-
-export const getPokedex = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchPokedex(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getPokedex error:', err);
-    res.status(404).json({ message: 'Pokedex not found' });
-  }
-};
-
-export const getVersion = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchVersion(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getVersion error:', err);
-    res.status(404).json({ message: 'Version not found' });
-  }
-};
-
-export const getVersionGroup = async (req, res) => {
-  try {
-    const { nameOrId } = req.params;
-    const data = await fetchVersionGroup(nameOrId);
-    res.json(data);
-  } catch (err) {
-    console.error('getVersionGroup error:', err);
-    res.status(404).json({ message: 'Version group not found' });
   }
 };

@@ -1,23 +1,19 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
 import { generalLimiter, authLimiter, favoritesLimiter, pokemonAPILimiter } from './middleware/rateLimiter.js';
 
+// Route Imports
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import pokeRoutes from './routes/pokeRoutes.js';
-// Remove favoriteRoutes import to avoid conflicts
-// import favoriteRoutes from './routes/favouriteRoutes.js';
 import cloudinaryRoutes from './routes/cloudinaryRoutes.js';
 
+// Local Imports
 import { connectDB } from './config/db.js';
 
-import { preloadAllPokemon } from './utils/preloadPokemon.js';
-import { pokemonCache } from './cache/pokemonCache.js';
-
-
+// Initialize
 dotenv.config();
 const app = express();
 
@@ -35,51 +31,31 @@ app.use(cookieParser());
 app.use(generalLimiter);
 app.use('/api/auth', authLimiter);
 app.use('/api/favorite', favoritesLimiter);
-app.use('/api/caught', favoritesLimiter); // Add rate limiting for caught endpoints
+app.use('/api/caught', favoritesLimiter);
 app.use('/api/pokemon', pokemonAPILimiter);
 
 // Route Mounting
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes); // Mount userRoutes at /api instead of /api/user
+app.use('/api/user', userRoutes);
 app.use('/api/pokemon', pokeRoutes);
-// Remove favoriteRoutes mounting since userRoutes handles favorites
-// app.use('/api/favorite', favoriteRoutes);
 app.use('/api/cloudinary', cloudinaryRoutes);
 
-// Root route for testing
+// Root route for API health check
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'ProtoDex API is running!',
-    endpoints: {
-      auth: '/api/auth',
-      favorite: '/api/favorite',
-      caught: '/api/caught',
-      profile: '/api/profile',
-      pokemon: '/api/pokemon',
-      cloudinary: '/api/cloudinary'
-    }
-  });
+  res.json({ message: 'ProtoDex API is running!' });
 });
 
-// 404 Handler
+// 404 Not Found Handler
 app.use((req, res, next) => {
   res.status(404).json({
     status: 'error',
     message: `Route ${req.originalUrl} not found`,
-    availableRoutes: [
-      '/api/auth/*',
-      '/api/favorite',
-      '/api/caught', 
-      '/api/profile',
-      '/api/pokemon/*',
-      '/api/cloudinary/*'
-    ]
   });
 });
 
-// Error Handler
+// Global Error Handler
 app.use((error, req, res, next) => {
-  console.error('Error:', error);
+  console.error('Global Error Handler:', error);
   res.status(500).json({
     status: 'error',
     message: 'Internal server error',
@@ -91,14 +67,8 @@ const PORT = process.env.PORT || 5000;
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📋 Available routes:`);
-    console.log(`   POST /api/favorite - Add/toggle favorite`);
-    console.log(`   GET  /api/favorite - Get favorites`);
-    console.log(`   DELETE /api/favorite/:pokemon - Remove favorite`);
-    console.log(`   POST /api/caught - Add/toggle caught`);
-    console.log(`   GET  /api/caught - Get caught Pokemon`);
-    console.log(`   GET  /api/profile - Get user profile`);
   });
 }).catch(err => {
-  console.error('❌ Failed to connect to DB', err);
+  console.error('❌ Failed to connect to the database. Server did not start.', err);
+  process.exit(1);
 });
