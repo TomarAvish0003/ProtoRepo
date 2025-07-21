@@ -4,7 +4,8 @@ import {
   PokedexListResponse, 
   EncounterLocationArea,
   FlatVarietyWithTypes,
-  UserProfile
+  UserProfile,
+  Move // Import the Move type
 } from "@/app/utils/types";
 
 // --- Generic API Response Type ---
@@ -13,7 +14,7 @@ export interface ApiResponse<T> {
   error: string | null;
 }
 
-// --- Specific Raw API Response Types (to avoid using 'any') ---
+// --- Specific Raw API Response Types ---
 interface RawSpeciesData {
   evolution_chain?: {
     url: string;
@@ -52,10 +53,23 @@ async function fetcher<T>(
   while (attempt <= retries) {
     try {
       const res = await fetch(`${API_URL}${endpoint}`, options);
+
+      if (res.status === 429) {
+        const retryAfter = res.headers.get("Retry-After");
+        // FIX: Use the MAX_RETRY_DELAY constant
+        const delay = retryAfter
+          ? parseInt(retryAfter, 10) * 1000
+          : Math.min(1000 * 2 ** attempt, MAX_RETRY_DELAY);
+        await new Promise((r) => setTimeout(r, delay));
+        attempt++;
+        continue;
+      }
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err?.error || `Error ${res.status}`);
+        return { data: null, error: err?.error || `Error ${res.status}` };
       }
+
       const data = await res.json();
       return { data, error: null };
     } catch (e) {
@@ -221,8 +235,10 @@ export async function getPokemonAbility(nameOrId: string) {
 export async function getPokemonMove(nameOrId: string) {
   return fetcher(`/api/pokemon/move/${nameOrId}`);
 }
+
+// FIX: Use the specific Move type instead of 'any' for better type safety
 export async function getMovesBatch(names: string[]) {
-  return fetcher<{ moves: any[] }>("/api/pokemon/moves/batch", {
+  return fetcher<{ moves: Move[] }>("/api/pokemon/moves/batch", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ names }),

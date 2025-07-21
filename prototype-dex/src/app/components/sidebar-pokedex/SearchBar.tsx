@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, X } from "lucide-react";
 
-// FIX: Updated the debounce function signature to correctly handle any function and its arguments.
+// FIX: The generic constraint `...args: any[]` is the standard and correct way to type a generic
+// function wrapper like debounce. It allows it to accept any function and its arguments,
+// which resolves the TypeScript error.
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   let timeout: NodeJS.Timeout;
 
@@ -13,14 +15,14 @@ function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
       if (timeout) {
         clearTimeout(timeout);
       }
-      timeout = setTimeout(() => resolve(func(...args)), waitFor);
+      // The result of func(...args) is cast to the expected return type.
+      timeout = setTimeout(() => resolve(func(...args) as ReturnType<F>), waitFor);
     });
 }
 
 interface SearchBarProps {
   value: string;
   onSearch: (val: string) => void;
-  collapsed?: boolean;
 }
 
 export default function SearchBar({ value, onSearch }: SearchBarProps) {
@@ -54,7 +56,7 @@ export default function SearchBar({ value, onSearch }: SearchBarProps) {
       <Search className="absolute left-3 text-white/60 pointer-events-none" size={20} />
       <input
         type="text"
-        className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-transparent text-white placeholder:text-slate-200/80 font-semibold tracking-wide focus:outline-none"
+        className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-transparent text-white placeholder:text-slate-200/80 font-semibold tracking-wide focus-outline-none"
         placeholder="Search Pokémon..."
         value={inputValue}
         aria-label="Search Pokémon"
