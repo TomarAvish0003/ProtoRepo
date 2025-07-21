@@ -22,17 +22,18 @@ import {
   RawAbility,
   RawPokemonType,
   RawStat,
-  RawPokemonMove,
 } from "@/app/utils/types";
 import PokemonDetailClient from "./page.client";
 
 // --- Type Definitions for this Page ---
-// FIX: Define a formal interface for the page props to satisfy Next.js's type constraints.
+
+// FIX: Define the props to match what Next.js expects during build.
+// The `params` object is a Promise that resolves to the route parameters.
 interface PageProps {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }
 
-// FIX: Define a type for the raw ability response to avoid using 'any'.
+// FIX: Define a specific type for the raw ability response to avoid using 'any'.
 interface RawAbilityResponse {
     effect_entries?: {
         effect: string;
@@ -40,7 +41,6 @@ interface RawAbilityResponse {
         short_effect: string;
     }[];
 }
-
 
 // --- Helper Functions ---
 function computeTypeEffectiveness(typeDataArr: any[]): TypeEffectiveness {
@@ -77,7 +77,8 @@ function humanize(str: string) {
 
 // --- Main Page Component ---
 export default async function PokemonPage({ params }: PageProps) {
-  const { name } = params;
+  // FIX: Await the params promise to get the actual route parameters.
+  const { name } = await params;
 
   const [pokemonRes, speciesRes, encountersRes, evoChainRes] = await Promise.all([
     getPokemon(name),
@@ -141,7 +142,7 @@ export default async function PokemonPage({ params }: PageProps) {
     }
   }
   
-  const typeNames = pokemon.types.map((t) => t.type.name);
+  const typeNames = pokemon.types.map((t: RawPokemonType) => t.type.name);
   const typeDataArr = (await Promise.all(typeNames.map((n) => getPokemonType(n)))).map(d => d.data);
   const typeEffectiveness = computeTypeEffectiveness(typeDataArr);
 
