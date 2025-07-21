@@ -4,7 +4,7 @@ import {
   PokedexListResponse, 
   EncounterLocationArea,
   FlatVarietyWithTypes,
-  UserProfile // Import the new UserProfile type
+  UserProfile
 } from "@/app/utils/types";
 
 // --- Generic API Response Type ---
@@ -12,6 +12,22 @@ export interface ApiResponse<T> {
   data: T | null;
   error: string | null;
 }
+
+// --- Specific Raw API Response Types (to avoid using 'any') ---
+// These types represent the direct, nested response from your backend API
+
+interface RawSpeciesData {
+  evolution_chain?: {
+    url: string;
+  };
+  // Add other properties from the species response if needed
+}
+
+interface RawEvolutionChainData {
+  chain: EvolutionChainNode;
+  // Add other properties from the evolution chain response if needed
+}
+
 
 // --- API Constants ---
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -60,6 +76,8 @@ async function fetcher<T>(
           error: e instanceof Error ? e.message : "Unknown error",
         };
       }
+      // Add a small delay before retrying on network errors
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
     }
   }
   return {
@@ -89,7 +107,6 @@ export async function registerUser(username: string, email: string, password: st
 }
 
 export async function getProfile(token: string) {
-  // Use the UserProfile type for type safety
   return fetcher<UserProfile>("/api/user/profile", {
     headers: authHeaders(token),
   });
@@ -99,7 +116,6 @@ export async function updateProfile(
   token: string,
   updates: { email?: string; password?: string; username?: string; avatar?: string }
 ) {
-  // Use the UserProfile type for type safety
   return fetcher<UserProfile>("/api/user/profile", {
     method: "PATCH",
     headers: authHeaders(token),
@@ -107,7 +123,7 @@ export async function updateProfile(
   });
 }
 
-// --- FAVORITES ---
+// --- FAVORITES & CAUGHT ---
 export async function getFavorites(token: string) {
   return fetcher<string[]>("/api/user/favorite", {
     headers: authHeaders(token),
@@ -126,8 +142,6 @@ export async function removeFavorite(token: string, pokemon: string) {
     headers: authHeaders(token),
   });
 }
-
-// --- CAUGHT ---
 export async function getCaught(token: string) {
   return fetcher<string[]>("/api/user/caught", {
     headers: authHeaders(token),
@@ -146,6 +160,7 @@ export async function removeCaught(token: string, pokemon: string) {
     headers: authHeaders(token),
   });
 }
+
 
 // --- POKÉMON ---
 export async function getPokemon(nameOrId: string) {
@@ -211,16 +226,23 @@ export async function getEvolutionChainForPokemon(nameOrId: string) {
     if (speciesResponse.error || !speciesResponse.data) {
       return { data: null, error: speciesResponse.error || "Species not found" };
     }
-    const evolutionChainUrl = (speciesResponse.data as any).evolution_chain?.url;
+    
+    const evolutionChainUrl = (speciesResponse.data as RawSpeciesData).evolution_chain?.url;
     if (!evolutionChainUrl) {
       return { data: null, error: "Evolution chain URL not found" };
     }
+
     const chainId = getIdFromUrl(evolutionChainUrl);
     const evolutionChainResponse = await getPokemonEvolutionChainById(chainId);
     if (evolutionChainResponse.error || !evolutionChainResponse.data) {
         return { data: null, error: evolutionChainResponse.error || "Evolution chain not found" };
     }
-    const rawChain = (evolutionChainResponse.data as any).chain;
+
+    const rawChain = (evolutionChainResponse.data as RawEvolutionChainData).chain;
+    if (!rawChain) {
+        return { data: null, error: "Invalid evolution chain structure in API response" };
+    }
+    
     return { data: flattenChain(rawChain), error: null };
   } catch (e) {
     return {

@@ -19,7 +19,6 @@ interface PokemonDetailClientProps {
 export default function PokemonDetailClient({
   pokemon,
   evoChain,
-  evoError,
   flavorTexts,
   abilities,
   moves,

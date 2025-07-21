@@ -58,7 +58,7 @@ export default function PokedexPage() {
             setHasMore(false);
         }
 
-      } catch (err) {
+      } catch  {
         setError("Failed to fetch Pokémon data.");
         setFlatVarieties([]);
         setHasMore(false);

@@ -38,7 +38,6 @@ export default function HomePage(): React.JSX.Element {
 
   // --- FIX: Add state for the search bar ---
   const [searchTerm, setSearchTerm] = useState("");
-  const router = useRouter();
 
   // Scroll/focus on hash change
   useEffect(() => {
