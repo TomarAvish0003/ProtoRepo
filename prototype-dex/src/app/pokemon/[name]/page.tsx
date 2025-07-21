@@ -19,9 +19,28 @@ import {
   PokedexNumber,
   FlavorTextEntry,
   PokemonSpecies,
-  RawAbility, // Import RawAbility
+  RawAbility,
+  RawPokemonType,
+  RawStat,
+  RawPokemonMove,
 } from "@/app/utils/types";
 import PokemonDetailClient from "./page.client";
+
+// --- Type Definitions for this Page ---
+// FIX: Define a formal interface for the page props to satisfy Next.js's type constraints.
+interface PageProps {
+  params: { name: string };
+}
+
+// FIX: Define a type for the raw ability response to avoid using 'any'.
+interface RawAbilityResponse {
+    effect_entries?: {
+        effect: string;
+        language: { name: string };
+        short_effect: string;
+    }[];
+}
+
 
 // --- Helper Functions ---
 function computeTypeEffectiveness(typeDataArr: any[]): TypeEffectiveness {
@@ -57,8 +76,7 @@ function humanize(str: string) {
 }
 
 // --- Main Page Component ---
-export default async function PokemonPage({ params }: { params: { name: string } }) {
-  // FIX: The `params` object is not a promise and should not be awaited.
+export default async function PokemonPage({ params }: PageProps) {
   const { name } = params;
 
   const [pokemonRes, speciesRes, encountersRes, evoChainRes] = await Promise.all([
@@ -85,10 +103,10 @@ export default async function PokemonPage({ params }: { params: { name: string }
     
     const formsArr = await Promise.all(
       allVarietyData.map(async (formPokemon) => {
-        const abilities = await Promise.all(
+        const abilities: Ability[] = await Promise.all(
           formPokemon.abilities.map(async (a: RawAbility) => {
             const abilityRes = await getPokemonAbility(a.ability.name);
-            const effectEntry = (abilityRes.data as any)?.effect_entries?.find((e: any) => e.language.name === "en");
+            const effectEntry = (abilityRes.data as RawAbilityResponse)?.effect_entries?.find((e) => e.language.name === "en");
             return {
               name: a.ability.name,
               is_hidden: a.is_hidden,
@@ -101,9 +119,9 @@ export default async function PokemonPage({ params }: { params: { name: string }
           name: formPokemon.name,
           form_name: formPokemon.is_default ? undefined : formPokemon.name,
           sprite: formPokemon.sprites.front_default,
-          types: formPokemon.types.map(t => t.type.name),
+          types: formPokemon.types.map((t: RawPokemonType) => t.type.name),
           abilities,
-          stats: formPokemon.stats.map(s => ({ name: s.stat.name, value: s.base_stat })),
+          stats: formPokemon.stats.map((s: RawStat) => ({ name: s.stat.name, value: s.base_stat })),
           form_type: getFormTypeLabel(formPokemon.name),
         };
       })
@@ -141,15 +159,15 @@ export default async function PokemonPage({ params }: { params: { name: string }
   ) ?? [];
   
   const flavorTexts: FlavorTextEntry[] = species.flavor_text_entries
-    ?.filter((ft: any) => ft.language.name === "en")
-    .map((ft: any) => ({ version: ft.version.name, text: ft.flavor_text.replace(/\f/g, " ") })) ?? [];
+    ?.filter((ft) => ft.language.name === "en")
+    .map((ft) => ({ version: ft.version.name, text: ft.flavor_text.replace(/\f/g, " ") })) ?? [];
 
   const pokedexNumbers: PokedexNumber[] = species.pokedex_numbers
-    ?.map((pn: any) => ({ name: pn.pokedex.name, number: pn.entry_number })) ?? [];
+    ?.map((pn) => ({ name: pn.pokedex.name, number: pn.entry_number })) ?? [];
 
-  const eggGroups: string[] = species.egg_groups?.map((g: any) => g.name) ?? [];
+  const eggGroups: string[] = species.egg_groups?.map((g) => g.name) ?? [];
   
-  const moves = pokemon.moves.flatMap(pm => pm.version_group_details.map(vgd => ({ name: pm.move.name, method: vgd.move_learn_method.name as Move['method'], level_learned_at: vgd.level_learned_at, version_group: vgd.version_group.name })));
+  const moves: Move[] = pokemon.moves.flatMap(pm => pm.version_group_details.map(vgd => ({ name: pm.move.name, method: vgd.move_learn_method.name as Move['method'], level_learned_at: vgd.level_learned_at, version_group: vgd.version_group.name })));
   const availableMoveVersions = Array.from(new Set(moves.map(m => m.version_group)));
   const availableEncounterVersions = Array.from(new Set(encounters.map(e => e.version)));
 
