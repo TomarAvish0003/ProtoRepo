@@ -3,20 +3,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, X } from "lucide-react";
 
-// FIX: The generic constraint `...args: any[]` is the standard and correct way to type a generic
-// function wrapper like debounce. It allows it to accept any function and its arguments,
-// which resolves the TypeScript error.
-function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
+// FIX: This updated generic signature is fully type-safe and avoids the 'any' keyword,
+// satisfying strict ESLint rules for Vercel deployment.
+function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
+  func: T,
+  waitFor: number
+) {
   let timeout: NodeJS.Timeout;
 
-  // This will now correctly infer the types of the arguments from the passed function (F).
-  return (...args: Parameters<F>): Promise<ReturnType<F>> =>
+  return (...args: Parameters<T>): Promise<ReturnType<T>> =>
     new Promise(resolve => {
       if (timeout) {
         clearTimeout(timeout);
       }
-      // The result of func(...args) is cast to the expected return type.
-      timeout = setTimeout(() => resolve(func(...args) as ReturnType<F>), waitFor);
+      timeout = setTimeout(() => resolve(func(...args)), waitFor);
     });
 }
 
