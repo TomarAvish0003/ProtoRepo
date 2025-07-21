@@ -14,10 +14,12 @@ import {
   Move,
   PokemonForm,
   TypeEffectiveness,
+  Ability,
   PokemonEncounter,
   PokedexNumber,
   FlavorTextEntry,
   PokemonSpecies,
+  RawAbility, // Import RawAbility
 } from "@/app/utils/types";
 import PokemonDetailClient from "./page.client";
 
@@ -47,7 +49,7 @@ function getFormTypeLabel(name: string): string {
   if (name.includes("galar")) return "Galarian";
   if (name.includes("hisui")) return "Hisuian";
   if (name.includes("paldea")) return "Paldean";
-  return "Standard"; // Return a default value
+  return "Standard";
 }
 
 function humanize(str: string) {
@@ -56,7 +58,8 @@ function humanize(str: string) {
 
 // --- Main Page Component ---
 export default async function PokemonPage({ params }: { params: { name: string } }) {
-  const { name } = await params;
+  // FIX: The `params` object is not a promise and should not be awaited.
+  const { name } = params;
 
   const [pokemonRes, speciesRes, encountersRes, evoChainRes] = await Promise.all([
     getPokemon(name),
@@ -83,7 +86,7 @@ export default async function PokemonPage({ params }: { params: { name: string }
     const formsArr = await Promise.all(
       allVarietyData.map(async (formPokemon) => {
         const abilities = await Promise.all(
-          formPokemon.abilities.map(async (a) => {
+          formPokemon.abilities.map(async (a: RawAbility) => {
             const abilityRes = await getPokemonAbility(a.ability.name);
             const effectEntry = (abilityRes.data as any)?.effect_entries?.find((e: any) => e.language.name === "en");
             return {
@@ -105,7 +108,7 @@ export default async function PokemonPage({ params }: { params: { name: string }
         };
       })
     );
-    forms = formsArr.filter((f): f is PokemonForm => f !== null);
+    forms = formsArr as PokemonForm[];
 
     const megaAndGmaxForms = forms.filter(f => f.form_type?.includes("Mega") || f.form_type?.includes("Gmax"));
     const regionalForms = forms.filter(f => f.form_type?.includes("Alolan") || f.form_type?.includes("Galarian") || f.form_type?.includes("Hisuian") || f.form_type?.includes("Paldean"));
@@ -137,15 +140,14 @@ export default async function PokemonPage({ params }: { params: { name: string }
     )
   ) ?? [];
   
-  // FIX: Process raw API data structures correctly
   const flavorTexts: FlavorTextEntry[] = species.flavor_text_entries
-    ?.filter((ft) => ft.language.name === "en")
-    .map((ft) => ({ version: ft.version.name, text: ft.flavor_text.replace(/\f/g, " ") })) ?? [];
+    ?.filter((ft: any) => ft.language.name === "en")
+    .map((ft: any) => ({ version: ft.version.name, text: ft.flavor_text.replace(/\f/g, " ") })) ?? [];
 
   const pokedexNumbers: PokedexNumber[] = species.pokedex_numbers
-    ?.map((pn) => ({ name: pn.pokedex.name, number: pn.entry_number })) ?? [];
+    ?.map((pn: any) => ({ name: pn.pokedex.name, number: pn.entry_number })) ?? [];
 
-  const eggGroups: string[] = species.egg_groups?.map((g) => g.name) ?? [];
+  const eggGroups: string[] = species.egg_groups?.map((g: any) => g.name) ?? [];
   
   const moves = pokemon.moves.flatMap(pm => pm.version_group_details.map(vgd => ({ name: pm.move.name, method: vgd.move_learn_method.name as Move['method'], level_learned_at: vgd.level_learned_at, version_group: vgd.version_group.name })));
   const availableMoveVersions = Array.from(new Set(moves.map(m => m.version_group)));
