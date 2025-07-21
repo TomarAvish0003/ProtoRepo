@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
 import HeroSection from "@/app/components/home/HeroSection";
 import { getPokemon } from "@/app/utils/api";
 import type { Pokemon } from "@/app/utils/types";
@@ -35,11 +34,8 @@ export default function HomePage(): React.JSX.Element {
   const abortControllerRef = useRef<AbortController | null>(null);
   const searchBarRef = useRef<HTMLInputElement>(null);
   const toastShownRef = useRef(false);
-
-  // --- FIX: Add state for the search bar ---
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Scroll/focus on hash change
   useEffect(() => {
     if (window.location.hash === "#search" && searchBarRef.current) {
       searchBarRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -47,7 +43,6 @@ export default function HomePage(): React.JSX.Element {
     }
   }, []);
 
-  // Show welcome toast when user logs in
   useEffect(() => {
     if (user && !toastShownRef.current) {
       toast.success(`Welcome back, ${user.email}!`, {
@@ -65,7 +60,6 @@ export default function HomePage(): React.JSX.Element {
     }
   }, [user]);
 
-  // Enhanced fetch with better 429 handling
   const fetchWithRetry = useCallback(
     async (name: string, retries = 5): Promise<Pokemon | null> => {
       for (let attempt = 0; attempt < retries; attempt++) {
@@ -166,7 +160,6 @@ export default function HomePage(): React.JSX.Element {
           </div>
         )}
 
-        {/* --- FIX: Connect the SearchBar to the page's state --- */}
         <SearchBar 
           ref={searchBarRef} 
           value={searchTerm}

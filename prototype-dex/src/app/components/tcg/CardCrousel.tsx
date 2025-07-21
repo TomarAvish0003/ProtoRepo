@@ -73,7 +73,6 @@ export default function PokemonDetailPage({
   encounters,
   availableVersions,
   availableEncounterVersions,
-  forms,
 }: CardCarouselProps) {
   const [activeTab, setActiveTab] = useState("about");
   const [isFav, setIsFav] = useState(false);

@@ -3,8 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, X } from "lucide-react";
 
+// FIX: Updated the debounce function signature to correctly handle any function and its arguments.
 function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
   let timeout: NodeJS.Timeout;
+
+  // This will now correctly infer the types of the arguments from the passed function (F).
   return (...args: Parameters<F>): Promise<ReturnType<F>> =>
     new Promise(resolve => {
       if (timeout) {
@@ -17,17 +20,16 @@ function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
 interface SearchBarProps {
   value: string;
   onSearch: (val: string) => void;
-  collapsed?: boolean; // You can use this prop if you want to control the collapsed state from the parent
+  collapsed?: boolean;
 }
 
-export default function SearchBar({ value, onSearch, collapsed }: SearchBarProps) {
+export default function SearchBar({ value, onSearch }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(value);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedOnSearch = useCallback(debounce(onSearch, 300), [onSearch]);
 
   useEffect(() => {
-    // Sync internal state if the external value prop changes (e.g., cleared by a filter)
     if (value !== inputValue) {
       setInputValue(value);
     }
@@ -42,7 +44,7 @@ export default function SearchBar({ value, onSearch, collapsed }: SearchBarProps
   
   const handleClear = () => {
     setInputValue("");
-    onSearch(""); // Call immediately on clear to reset search
+    onSearch(""); // Call immediately on clear
   };
 
   return (

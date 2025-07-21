@@ -4,26 +4,23 @@ import TypeChip from "./TypeChip";
 import { getMovesBatch } from "@/app/utils/api";
 import { Move } from "@/app/utils/types";
 
-// Type colors for move method and game filters
+// FIX: Define a specific type for the detailed move data from the backend
+interface DetailedMove {
+  name: string;
+  type: string;
+  damage_class: string;
+  category?: string; // category is an alternative name for damage_class
+  power: number | null;
+  accuracy: number | null;
+  pp: number | null;
+}
+
 const TYPE_COLORS: Record<string, string> = {
-  normal: "#9FA29F",
-  fire: "#E72324",
-  water: "#2481EF",
-  electric: "#FAC100",
-  grass: "#3DA224",
-  ice: "#3DD9FF",
-  fighting: "#FF8100",
-  poison: "#923FCC",
-  ground: "#92501B",
-  flying: "#82BAEF",
-  psychic: "#EF3F7A",
-  bug: "#92A212",
-  rock: "#B0A981",
-  ghost: "#703F70",
-  dragon: "#036DC5",
-  dark: "#4F3F3D",
-  steel: "#5FA2BA",
-  fairy: "#EF70EF",
+  normal: "#9FA29F", fire: "#E72324", water: "#2481EF", electric: "#FAC100",
+  grass: "#3DA224", ice: "#3DD9FF", fighting: "#FF8100", poison: "#923FCC",
+  ground: "#92501B", flying: "#82BAEF", psychic: "#EF3F7A", bug: "#92A212",
+  rock: "#B0A981", ghost: "#703F70", dragon: "#036DC5", dark: "#4F3F3D",
+  steel: "#5FA2BA", fairy: "#EF70EF",
 };
 
 const MOVE_METHODS = [
@@ -40,30 +37,25 @@ function normalizeMoveName(name: string): string {
     .join(' ');
 }
 
-function groupAndDedupeMoves(moves: Move[], versionGroup: string, detailedMoves: Record<string, any>) {
+// FIX: Use the new DetailedMove type
+function groupAndDedupeMoves(moves: Move[], versionGroup: string, detailedMoves: Record<string, DetailedMove>) {
   const groups: Record<string, Move[]> = {};
   for (const move of moves) {
     if (move.version_group !== versionGroup) continue;
     if (!groups[move.method]) groups[move.method] = [];
 
     const detailed = detailedMoves[normalizeMoveName(move.name)] || {};
-    const merged = { 
+    const merged: Move = { 
       ...move, 
       ...detailed,
       type: detailed.type || move.type || "normal",
       damage_class: detailed.damage_class || detailed.category || "status",
-      power: detailed.power || move.power || null,
-      accuracy: detailed.accuracy || move.accuracy || null,
-      pp: detailed.pp || move.pp || null,
+      power: detailed.power ?? move.power,
+      accuracy: detailed.accuracy ?? move.accuracy,
+      pp: detailed.pp ?? move.pp,
     };
 
-    if (!groups[move.method].some(
-      m =>
-        m.name === merged.name &&
-        m.level_learned_at === merged.level_learned_at &&
-        m.method === merged.method &&
-        m.version_group === merged.version_group
-    )) {
+    if (!groups[move.method].some(m => m.name === merged.name && m.level_learned_at === merged.level_learned_at)) {
       groups[move.method].push(merged);
     }
   }
@@ -79,7 +71,7 @@ function groupAndDedupeMoves(moves: Move[], versionGroup: string, detailedMoves:
 export default function MovesCardContent({
   moves,
   availableVersions = [],
-  primaryType = "normal", // pass the Pokémon's type here for accents
+  primaryType = "normal",
 }: {
   moves: Move[];
   availableVersions?: string[];
@@ -87,11 +79,11 @@ export default function MovesCardContent({
 }) {
   const [selectedVersion, setSelectedVersion] = useState(availableVersions[0] || "");
   const [activeTab, setActiveTab] = useState("level-up");
-  const [detailedMoves, setDetailedMoves] = useState<Record<string, any>>({});
+  // FIX: Use the new DetailedMove type for the state
+  const [detailedMoves, setDetailedMoves] = useState<Record<string, DetailedMove>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const accentColor = TYPE_COLORS[primaryType?.toLowerCase()] || "#fac100";
-  console.log("CLIENT: Props received by MovesCardContent:", { moves, availableVersions });
 
   useEffect(() => {
     const moveNames = Array.from(new Set(moves.map(m => normalizeMoveName(m.name))));
@@ -107,7 +99,8 @@ export default function MovesCardContent({
           setDetailedMoves({});
         } else if (res.data?.moves) {
           const map = Object.fromEntries(
-            res.data.moves.map((m: any) => [normalizeMoveName(m.name), m])
+            // FIX: Cast the incoming data to the new DetailedMove type
+            (res.data.moves as DetailedMove[]).map((m) => [normalizeMoveName(m.name), m])
           );
           setDetailedMoves(map);
         } else {
@@ -129,70 +122,57 @@ export default function MovesCardContent({
   );
 
   return (
-    <div className="flex flex-col w-full h-full gap-4">
-      {/* Heading */}
+    <div className="flex flex-col w-full items-center gap-6">
       <h2
-        className="font-retro text-2xl mb-1"
-        style={{
-          fontFamily: "var(--font-retro)",
-          color: accentColor,
-          letterSpacing: "0.08em",
-          textAlign: "center",
-        }}
+        className="font-retro text-3xl text-center tracking-wider"
+        style={{ color: accentColor }}
       >
         Moves
       </h2>
 
       {/* Game Version Filters */}
       {availableVersions.length > 1 && (
-        <div className="flex gap-2 flex-wrap justify-center mb-2">
+        <div className="flex gap-2 flex-wrap justify-center max-w-4xl">
           {availableVersions.map((version) => (
             <motion.button
               key={version}
-              className={`px-4 py-1 rounded-full font-retro text-xs border-2 transition flex items-center 
-                ${selectedVersion === version
-                  ? "shadow"
-                  : "bg-card text-muted-foreground"}
-              `}
-              style={{
-                fontFamily: "var(--font-retro)",
-                color: selectedVersion === version ? "#fff" : accentColor,
-                borderColor: accentColor,
-                background: selectedVersion === version ? accentColor : undefined,
-                boxShadow: selectedVersion === version ? `0 2px 12px 0 ${accentColor}44` : undefined,
-                letterSpacing: "0.03em",
-              }}
               onClick={() => setSelectedVersion(version)}
               type="button"
               whileTap={{ scale: 0.97 }}
+              className={`font-retro border-2 rounded-full px-3 py-1 text-xs transition-all duration-200 ${
+                selectedVersion === version
+                  ? "text-white shadow-lg scale-105"
+                  : "bg-transparent text-muted-foreground hover:border-primary/70 hover:text-primary"
+              }`}
+              style={{
+                borderColor: accentColor,
+                backgroundColor: selectedVersion === version ? accentColor : undefined,
+                boxShadow: selectedVersion === version ? `0 4px 16px ${accentColor}55` : 'none',
+              }}
             >
-              {version}
+              {version.replace("-", " ")}
             </motion.button>
           ))}
         </div>
       )}
 
-      {/* Move Method Tabs/Chips */}
-      <div className="flex gap-2 mb-2 justify-center flex-wrap">
+      {/* Move Method Tabs */}
+      <div className="flex gap-3 justify-center flex-wrap">
         {MOVE_METHODS.map(({ key, label }) => (
           <motion.button
             key={key}
-            className={`px-4 py-1 rounded-full font-retro text-base border-2 transition flex items-center 
-              ${activeTab === key
-                ? "shadow"
-                : "bg-card text-muted-foreground"}
-            `}
-            style={{
-              fontFamily: "var(--font-retro)",
-              color: activeTab === key ? "#fff" : accentColor,
-              borderColor: accentColor,
-              background: activeTab === key ? accentColor : undefined,
-              boxShadow: activeTab === key ? `0 2px 12px 0 ${accentColor}33` : undefined,
-              letterSpacing: "0.03em",
-            }}
             onClick={() => setActiveTab(key)}
             type="button"
             whileTap={{ scale: 0.97 }}
+            className={`font-retro border-2 rounded-lg px-6 py-2 text-sm transition-all duration-200 ${
+              activeTab === key
+                ? "text-white shadow-lg scale-105"
+                : "bg-card border-border text-muted-foreground hover:bg-primary/10 hover:border-primary"
+            }`}
+             style={{
+                borderColor: activeTab === key ? accentColor : undefined,
+                backgroundColor: activeTab === key ? accentColor : undefined,
+             }}
           >
             {label}
           </motion.button>
@@ -214,27 +194,16 @@ export default function MovesCardContent({
         transition={{ duration: 0.36 }}
         style={{
           background: "var(--color-card, rgba(255,255,255,0.14))",
-          border: `2.5px solid ${accentColor}`,
+          border: `1.5px solid ${accentColor}88`,
           minHeight: 320,
-          boxShadow: `0 2px 16px 0 ${accentColor}18`,
+          boxShadow: `0 4px 24px 0 ${accentColor}22`,
           paddingBottom: 16,
         }}
       >
         {loading ? (
-          <div className="w-full text-center py-8 text-muted-foreground">Loading move details...</div>
+          <div className="w-full text-center py-8 text-muted-foreground font-retro">Loading...</div>
         ) : (
-          <table
-            className="min-w-full text-base rounded-lg"
-            style={{
-              background: "transparent",
-              color: "var(--color-card-foreground, #fff)",
-              fontFamily: "var(--font-sans)",
-              width: "100%",
-              tableLayout: "fixed",
-              borderCollapse: "separate",
-              borderSpacing: 0,
-            }}
-          >
+          <table className="min-w-full text-base rounded-lg table-fixed border-separate border-spacing-0">
             <colgroup>
               {activeTab === "level-up" && <col style={{ width: "8%" }} />}
               <col style={{ width: "22%" }} />
@@ -245,41 +214,30 @@ export default function MovesCardContent({
               <col style={{ width: "14%" }} />
             </colgroup>
             <thead>
-              <tr style={{ color: accentColor, background: "rgba(0,0,0,0.08)" }}>
+              <tr style={{ background: "rgba(0,0,0,0.15)" }}>
                 {activeTab === "level-up" && (
-                  <th className="px-2 py-2 font-retro text-primary text-center">Level</th>
+                  <th className="font-retro px-2 py-3 text-center" style={{ color: accentColor }}>Level</th>
                 )}
-                <th className="px-2 py-2 font-retro text-primary text-left">Name</th>
-                <th className="px-2 py-2 font-retro text-primary text-center">Type</th>
-                <th className="px-2 py-2 font-retro text-primary text-center">Cat.</th>
-                <th className="px-2 py-2 font-retro text-primary text-center">Power</th>
-                <th className="px-2 py-2 font-retro text-primary text-center">Acc.</th>
-                <th className="px-2 py-2 font-retro text-primary text-center">PP</th>
+                <th className="font-retro px-2 py-3 text-left" style={{ color: accentColor }}>Name</th>
+                <th className="font-retro px-2 py-3 text-center" style={{ color: accentColor }}>Type</th>
+                <th className="font-retro px-2 py-3 text-center" style={{ color: accentColor }}>Cat.</th>
+                <th className="font-retro px-2 py-3 text-center" style={{ color: accentColor }}>Power</th>
+                <th className="font-retro px-2 py-3 text-center" style={{ color: accentColor }}>Acc.</th>
+                <th className="font-retro px-2 py-3 text-center" style={{ color: accentColor }}>PP</th>
               </tr>
             </thead>
             <tbody>
               {(grouped[activeTab] || []).map((move, idx) => (
                 <tr
-                  key={`${move.name}-${move.type}-${move.level_learned_at ?? ""}-${move.method}-${move.version_group}-${selectedVersion}-${idx}`}
-                  className="hover:bg-white/5 transition-all"
-                  style={{ height: 48 }}
+                  key={`${move.name}-${idx}`}
+                  className="hover:bg-white/5 transition-colors"
                 >
                   {activeTab === "level-up" && (
-                    <td className="px-2 py-1 text-center font-mono align-middle">
-                      {move.level_learned_at ?? "-"}
-                    </td>
+                    <td className="px-2 py-1 text-center font-mono align-middle">{move.level_learned_at ?? "-"}</td>
                   )}
-                  <td className="px-2 py-1 font-retro capitalize align-middle">
-                    {move.name.replace("-", " ")}
-                  </td>
-                  <td className="px-2 py-1 text-center align-middle">
-                    <TypeChip type={move.type || "normal"} />
-                  </td>
-                  <td className="px-2 py-1 text-center align-middle">
-                    {move.damage_class
-                      ? move.damage_class.charAt(0).toUpperCase() + move.damage_class.slice(1)
-                      : "Status"}
-                  </td>
+                  <td className="px-2 py-1 font-retro capitalize align-middle">{move.name.replace("-", " ")}</td>
+                  <td className="px-2 py-1 text-center align-middle"><TypeChip type={move.type || "normal"} /></td>
+                  <td className="px-2 py-1 text-center align-middle capitalize">{move.damage_class}</td>
                   <td className="px-2 py-1 text-center align-middle">{move.power ?? "-"}</td>
                   <td className="px-2 py-1 text-center align-middle">{move.accuracy ?? "-"}</td>
                   <td className="px-2 py-1 text-center align-middle">{move.pp ?? "-"}</td>
@@ -289,7 +247,7 @@ export default function MovesCardContent({
                 <tr>
                   <td
                     colSpan={activeTab === "level-up" ? 7 : 6}
-                    className="px-2 py-8 text-center text-muted-foreground"
+                    className="px-2 py-8 text-center text-muted-foreground font-retro"
                   >
                     No moves found for this method in {selectedVersion}
                   </td>

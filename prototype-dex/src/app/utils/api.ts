@@ -14,20 +14,21 @@ export interface ApiResponse<T> {
 }
 
 // --- Specific Raw API Response Types (to avoid using 'any') ---
-// These types represent the direct, nested response from your backend API
-
 interface RawSpeciesData {
   evolution_chain?: {
     url: string;
   };
-  // Add other properties from the species response if needed
+}
+
+interface EvolutionChainNode {
+  species: { name: string; url: string };
+  evolution_details: EvolutionStage["evolution_details"];
+  evolves_to: EvolutionChainNode[];
 }
 
 interface RawEvolutionChainData {
   chain: EvolutionChainNode;
-  // Add other properties from the evolution chain response if needed
 }
-
 
 // --- API Constants ---
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -51,22 +52,10 @@ async function fetcher<T>(
   while (attempt <= retries) {
     try {
       const res = await fetch(`${API_URL}${endpoint}`, options);
-
-      if (res.status === 429) {
-        const retryAfter = res.headers.get("Retry-After");
-        const delay = retryAfter
-          ? parseInt(retryAfter, 10) * 1000
-          : Math.min(1000 * 2 ** attempt, MAX_RETRY_DELAY);
-        await new Promise((r) => setTimeout(r, delay));
-        attempt++;
-        continue;
-      }
-
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        return { data: null, error: err?.error || `Error ${res.status}` };
+        throw new Error(err?.error || `Error ${res.status}`);
       }
-
       const data = await res.json();
       return { data, error: null };
     } catch (e) {
@@ -76,8 +65,7 @@ async function fetcher<T>(
           error: e instanceof Error ? e.message : "Unknown error",
         };
       }
-      // Add a small delay before retrying on network errors
-      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+      await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
     }
   }
   return {
@@ -124,43 +112,12 @@ export async function updateProfile(
 }
 
 // --- FAVORITES & CAUGHT ---
-export async function getFavorites(token: string) {
-  return fetcher<string[]>("/api/user/favorite", {
-    headers: authHeaders(token),
-  });
-}
-export async function addFavorite(token: string, pokemon: string) {
-  return fetcher<string[]>("/api/user/favorite", {
-    method: "POST",
-    headers: authHeaders(token),
-    body: JSON.stringify({ pokemon }),
-  });
-}
-export async function removeFavorite(token: string, pokemon: string) {
-  return fetcher<string[]>(`/api/user/favorite/${pokemon}`, {
-    method: "DELETE",
-    headers: authHeaders(token),
-  });
-}
-export async function getCaught(token: string) {
-  return fetcher<string[]>("/api/user/caught", {
-    headers: authHeaders(token),
-  });
-}
-export async function addCaught(token: string, pokemon: string) {
-  return fetcher<string[]>("/api/user/caught", {
-    method: "POST",
-    headers: authHeaders(token),
-    body: JSON.stringify({ pokemon }),
-  });
-}
-export async function removeCaught(token: string, pokemon: string) {
-  return fetcher<string[]>(`/api/user/caught/${pokemon}`, {
-    method: "DELETE",
-    headers: authHeaders(token),
-  });
-}
-
+export async function getFavorites(token: string) { return fetcher<string[]>("/api/user/favorite", { headers: authHeaders(token) }); }
+export async function addFavorite(token: string, pokemon: string) { return fetcher<string[]>("/api/user/favorite", { method: "POST", headers: authHeaders(token), body: JSON.stringify({ pokemon }) }); }
+export async function removeFavorite(token: string, pokemon: string) { return fetcher<string[]>(`/api/user/favorite/${pokemon}`, { method: "DELETE", headers: authHeaders(token) }); }
+export async function getCaught(token: string) { return fetcher<string[]>("/api/user/caught", { headers: authHeaders(token) }); }
+export async function addCaught(token: string, pokemon: string) { return fetcher<string[]>("/api/user/caught", { method: "POST", headers: authHeaders(token), body: JSON.stringify({ pokemon }) }); }
+export async function removeCaught(token: string, pokemon: string) { return fetcher<string[]>(`/api/user/caught/${pokemon}`, { method: "DELETE", headers: authHeaders(token) }); }
 
 // --- POKÉMON ---
 export async function getPokemon(nameOrId: string) {
@@ -189,6 +146,7 @@ export async function getPokedexList(
 export async function getAllPokemonTypes() {
   return fetcher<string[]>("/api/pokemon/types");
 }
+
 export async function getPokemonByGeneration(genId: number): Promise<ApiResponse<FlatVarietyWithTypes[]>> {
   return fetcher<FlatVarietyWithTypes[]>(`/api/pokemon/generation/${genId}`);
 }
@@ -199,11 +157,6 @@ export async function getPokemonEncounters(nameOrId: string) {
 }
 
 // --- EVOLUTION ---
-interface EvolutionChainNode {
-  species: { name: string; url: string };
-  evolution_details: EvolutionStage["evolution_details"];
-  evolves_to: EvolutionChainNode[];
-}
 function getIdFromUrl(url: string): number {
   const parts = url.split("/").filter(Boolean);
   return Number(parts.pop());
