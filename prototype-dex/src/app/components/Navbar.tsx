@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,13 +9,14 @@ import { Sun, Moon } from "lucide-react";
 const POKEBALL_SVG = "/pokeball-colored.svg";
 const GAMEBOY_SVG = "/gameboy.svg";
 
-const PokeballSVG = ({
-  rotated = false,
-  onClick,
-}: {
+type DropdownKey = "user" | "account" | null;
+
+interface PokeballSVGProps {
   rotated?: boolean;
   onClick?: () => void;
-}) => (
+}
+
+const PokeballSVG: React.FC<PokeballSVGProps> = ({ rotated = false, onClick }) => (
   <motion.img
     src={POKEBALL_SVG}
     alt="Poké Ball"
@@ -28,10 +29,11 @@ const PokeballSVG = ({
     role="button"
     aria-label="Go to homepage"
     style={{ filter: "drop-shadow(0 2px 8px #0006)" }}
+    draggable={false}
   />
 );
 
-const GameboySVG = () => (
+const GameboySVG: React.FC = () => (
   <motion.img
     src={GAMEBOY_SVG}
     alt="Game Boy"
@@ -46,65 +48,63 @@ const GameboySVG = () => (
       alignItems: "flex-end",
       height: "40px",
     }}
+    draggable={false}
   />
 );
 
-// Lucide Sun/Moon toggle, animated
-function LucideThemeToggle({
-  isDark,
-  onClick,
-}: {
+interface LucideThemeToggleProps {
   isDark: boolean;
   onClick: () => void;
-}) {
-  return (
-    <motion.button
-      onClick={onClick}
-      className="ml-5 px-4 py-3 rounded-full bg-white/10 text-white hover:bg-yellow-400 hover:text-black transition font-bold z-10 flex items-center justify-center"
-      aria-label="Toggle Light/Dark Mode"
-      style={{
-        boxShadow: isDark
-          ? "0 0 8px #3B4CCA80"
-          : "0 0 8px #FFCB0580",
-      }}
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        {isDark ? (
-          <motion.span
-            key="moon"
-            initial={{ rotate: -90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: 90, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            style={{ display: "flex" }}
-          >
-            <Moon size={28} strokeWidth={2.2} />
-          </motion.span>
-        ) : (
-          <motion.span
-            key="sun"
-            initial={{ rotate: 90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: -90, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            style={{ display: "flex" }}
-          >
-            <Sun size={28} strokeWidth={2.2} />
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </motion.button>
-  );
 }
 
-export default function Navbar() {
-  const [expanded, setExpanded] = useState(false);
-  const [dropdown, setDropdown] = useState<null | "user" | "account">(null);
-  const [isDark, setIsDark] = useState(false);
+const LucideThemeToggle: React.FC<LucideThemeToggleProps> = ({ isDark, onClick }) => (
+  <motion.button
+    onClick={onClick}
+    className="ml-5 px-4 py-3 rounded-full bg-white/10 text-white hover:bg-yellow-400 hover:text-black transition font-bold z-10 flex items-center justify-center"
+    aria-label="Toggle Light/Dark Mode"
+    style={{
+      boxShadow: isDark
+        ? "0 0 8px #3B4CCA80"
+        : "0 0 8px #FFCB0580",
+    }}
+    type="button"
+  >
+    <AnimatePresence mode="wait" initial={false}>
+      {isDark ? (
+        <motion.span
+          key="moon"
+          initial={{ rotate: -90, opacity: 0 }}
+          animate={{ rotate: 0, opacity: 1 }}
+          exit={{ rotate: 90, opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ display: "flex" }}
+        >
+          <Moon size={28} strokeWidth={2.2} />
+        </motion.span>
+      ) : (
+        <motion.span
+          key="sun"
+          initial={{ rotate: 90, opacity: 0 }}
+          animate={{ rotate: 0, opacity: 1 }}
+          exit={{ rotate: -90, opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ display: "flex" }}
+        >
+          <Sun size={28} strokeWidth={2.2} />
+        </motion.span>
+      )}
+    </AnimatePresence>
+  </motion.button>
+);
+
+const Navbar: React.FC = () => {
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [dropdown, setDropdown] = useState<DropdownKey>(null);
+  const [isDark, setIsDark] = useState<boolean>(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Dropdown hover fix
+  // Dropdown hover logic
   const handleDropdownLeave = () => {
     closeTimeout.current = setTimeout(() => setDropdown(null), 200);
   };
@@ -112,7 +112,7 @@ export default function Navbar() {
     if (closeTimeout.current) clearTimeout(closeTimeout.current);
   };
 
-  // Theme toggle logic (add your own theme logic here)
+  // Theme toggle
   const toggleTheme = () => {
     setIsDark((prev) => !prev);
     document.documentElement.classList.toggle("dark");
@@ -126,7 +126,7 @@ export default function Navbar() {
         setDropdown(null);
       }}
       className={`
-        fixed top-6 left-1/2 -translate-x-1/2 z-50
+        fixed top-3 left-1/2 -translate-x-1/2 z-50
         flex items-center
         transition-all duration-500
         ${expanded ? "px-16 py-5 min-w-[900px] max-w-5xl" : "px-6 py-2 min-w-[340px] max-w-lg"}
@@ -137,7 +137,7 @@ export default function Navbar() {
         backdrop-blur-xl
         shadow-lg
         border-8 border-transparent navbar-pixel
-        `}
+      `}
       style={{
         fontFamily: "'Fredoka', 'Montserrat', Arial, sans-serif",
         fontWeight: 500,
@@ -168,6 +168,7 @@ export default function Navbar() {
         >
           Pokedex
         </Link>
+
         {/* User Dropdown */}
         <div
           className="relative"
@@ -182,6 +183,7 @@ export default function Navbar() {
             onClick={() => setDropdown(dropdown === "user" ? null : "user")}
             tabIndex={0}
             style={{ appearance: "none" }}
+            type="button"
           >
             User
           </button>
@@ -217,6 +219,7 @@ export default function Navbar() {
             onClick={() => setDropdown(dropdown === "account" ? null : "account")}
             tabIndex={0}
             style={{ appearance: "none" }}
+            type="button"
           >
             Account
           </button>
@@ -250,4 +253,6 @@ export default function Navbar() {
       </AnimatePresence>
     </motion.div>
   );
-}
+};
+
+export default Navbar;

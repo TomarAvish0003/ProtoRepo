@@ -9,11 +9,19 @@ import SearchBar from "@/app/components/home/SearchBar";
 import { PokemonCard as PokemonCardType, shufflePokemon } from "@/app/utils/pokemon";
 import PokemonCard from "@/app/components/PokemonCard";
 import { toast } from "sonner";
+import { Press_Start_2P } from "next/font/google";
 
 const pokemonNames = [
   "dialga", "palkia", "giratina-altered", "venusaur", "blastoise", "charizard",
   "kyogre", "groudon", "rayquaza", "reshiram", "kyurem", "zekrom",
 ] as const;
+
+// Define and export the font instance
+const pressStart2P = Press_Start_2P({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-retro",
+});
 
 function isPokemon(data: unknown): data is Pokemon {
   return (
@@ -47,8 +55,8 @@ export default function HomePage(): React.JSX.Element {
     if (user && !toastShownRef.current) {
       toast.success(`Welcome back, ${user.email}!`, {
         description: "You're now logged in to your Pokédex account",
-        duration: 5000,
-        position: "top-center",
+        duration: 15000,
+        position: "top-right",
         style: {
           background: "hsl(222.2 47.4% 11.2%)",
           color: "white",
@@ -142,18 +150,18 @@ export default function HomePage(): React.JSX.Element {
   ).slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className={`min-h-screen bg-background text-foreground ${pressStart2P.variable}`}>
       <HeroSection />
       
       <section className="max-w-2xl mx-auto px-4 py-4">
         {!user && (
-          <div className="mb-4 text-muted-foreground">
+          <div className="mb-4 text-muted-foreground text-center">
             Welcome!{" "}
-            <a href="/login" className="text-accent underline hover:text-accent-foreground">
+            <a href="/login" className="font-semibold text-primary underline hover:text-primary/80 transition-colors">
               Login
             </a>{" "}
             or{" "}
-            <a href="/register" className="text-accent underline hover:text-accent-foreground">
+            <a href="/register" className="font-semibold text-primary underline hover:text-primary/80 transition-colors">
               Register
             </a>{" "}
             to save favorites and build teams.
@@ -165,7 +173,9 @@ export default function HomePage(): React.JSX.Element {
           value={searchTerm}
           onChange={setSearchTerm}
         />
-        <h2 className="text-xl font-semibold mb-2 mt-8">Featured Pokémon</h2>
+        <h2 className="text-3xl font-retro text-primary tracking-wider text-center mb-4 mt-12">
+          Featured Pokémon
+        </h2>
       </section>
 
       <section className="w-full px-4 py-4">
