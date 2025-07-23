@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, MouseEvent } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
