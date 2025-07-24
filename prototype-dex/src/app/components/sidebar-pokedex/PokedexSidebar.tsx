@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Layers, ListChecks, X, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { X, ChevronsLeft, ChevronsRight } from "lucide-react";
 import Image from "next/image";
 import SearchBar from "./SearchBar";
 import TypeFilterChips from "./TypeFilterChips";
