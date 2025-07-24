@@ -1,8 +1,10 @@
-// src/controllers/authController.js
-
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
+
+// This is a simple in-memory store for invalidated tokens.
+// For a production environment, you should use a persistent store like Redis.
+const tokenBlocklist = new Set();
 
 const generateToken = (userId) => {
   const jwtSecret = process.env.JWT_SECRET;
@@ -53,3 +55,32 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ error: 'Server error: ' + err.message });
   }
 };
+
+// --- NEW LOGOUT FUNCTION ---
+export const logoutUser = (req, res) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token) {
+      // Add the token to the blocklist to invalidate it
+      tokenBlocklist.add(token);
+    }
+    
+    // The client will handle removing the token from local storage.
+    res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error during logout' });
+  }
+};
+
+// You would also need a middleware to check this blocklist on protected routes
+export const isTokenBlocklisted = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token && tokenBlocklist.has(token)) {
+        return res.status(401).json({ error: 'Token is invalid. Please log in again.' });
+    }
+    next();
+}

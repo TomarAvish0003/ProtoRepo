@@ -97,6 +97,14 @@ export async function loginUser(email: string, password: string) {
   });
 }
 
+// --- NEW LOGOUT FUNCTION ---
+export async function logoutUser(token: string) {
+  return fetcher<{ message: string }>("/api/auth/logout", {
+    method: "POST",
+    headers: authHeaders(token),
+  });
+}
+
 export async function registerUser(username: string, email: string, password: string) {
   return fetcher<{ token: string; user: UserProfile }>(
     "/api/auth/register",
