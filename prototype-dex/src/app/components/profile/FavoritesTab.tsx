@@ -1,21 +1,11 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { getFavorites, removeFavorite } from "@/app/utils/api";
-import { Pokemon } from "@/app/utils/types";
+import { getFavorites, removeFavorite, getPokemon } from "@/app/utils/api";
+import { Pokemon, RawPokemonType } from "@/app/utils/types";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Heart, ArrowRight } from "lucide-react";
-
-function isPokemon(data: unknown): data is Pokemon {
-  return (
-    !!data &&
-    typeof data === "object" &&
-    "id" in data &&
-    "name" in data &&
-    "sprites" in data &&
-    "types" in data
-  );
-}
 
 export default function FavoritesTab() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -38,21 +28,17 @@ export default function FavoritesTab() {
           setLoading(false);
           return;
         }
-        const results: Pokemon[] = [];
+        
+        // Fetch the last 5 favorites in parallel for performance
         const latestFavorites = favoritesRes.data.slice(-5).reverse();
-        for (const nameOrId of latestFavorites) {
-          try {
-            const res = await fetch(`/api/pokemon/${nameOrId}`);
-            if (res.ok) {
-              const data = await res.json();
-              if (isPokemon(data)) {
-                results.push(data);
-              }
-            }
-            await new Promise((resolve) => setTimeout(resolve, 300));
-          } catch {}
-        }
-        setPokemons(results);
+        const promises = latestFavorites.map(nameOrId => getPokemon(nameOrId));
+        const results = await Promise.all(promises);
+
+        const successfulPokemons = results
+          .map(res => res.data)
+          .filter((p): p is Pokemon => p !== null);
+
+        setPokemons(successfulPokemons);
       } catch {
         setError("Failed to load favorites");
       } finally {
@@ -135,7 +121,7 @@ export default function FavoritesTab() {
               />
               <div className="capitalize font-semibold text-white text-center">{pokemon.name}</div>
               <div className="text-xs text-gray-400 text-center">
-                {pokemon.types?.map((t) => t.type?.name).join(", ")}
+                {pokemon.types?.map((t: RawPokemonType) => t.type?.name).join(", ")}
               </div>
             </div>
           ))}
