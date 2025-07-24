@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getFavorites, removeFavorite } from "@/app/utils/api";
-import { Pokemon } from "@/app/utils/types";
+import { getFavorites, removeFavorite, getPokemon } from "@/app/utils/api";
+import { Pokemon, RawPokemonType } from "@/app/utils/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchBar from "@/app/components/home/SearchBar";
@@ -35,7 +35,7 @@ const TetrisLCornerGreen = () => (
 // Charmander peeking from the left corner (face/upper body only)
 const CharmanderPeek = () => (
   <img
-    src="charmader-2.svg"
+    src="/charmader-2.svg"
     alt="Charmander peeking"
     className="fixed bottom-0 left-0 z-40 select-none pointer-events-none"
     style={{
@@ -81,36 +81,13 @@ const PikachuPeek = () => (
 );
 
 const TYPE_COLORS: Record<string, string> = {
-  dragon: "#036DC5",
-  poison: "#923FCC",
-  normal: "#9FA29F",
-  fighting: "#FF8100",
-  flying: "#82BAEF",
-  ground: "#92501B",
-  rock: "#B0A981",
-  bug: "#92A212",
-  ghost: "#703F70",
-  steel: "#5FA2BA",
-  fire: "#E72324",
-  water: "#2481EF",
-  grass: "#3DA224",
-  electric: "#FAC100",
-  psychic: "#EF3F7A",
-  ice: "#3DD9FF",
-  dark: "#4F3F3D",
-  fairy: "#EF70EF",
+  dragon: "#036DC5", poison: "#923FCC", normal: "#9FA29F",
+  fighting: "#FF8100", flying: "#82BAEF", ground: "#92501B",
+  rock: "#B0A981", bug: "#92A212", ghost: "#703F70",
+  steel: "#5FA2BA", fire: "#E72324", water: "#2481EF",
+  grass: "#3DA224", electric: "#FAC100", psychic: "#EF3F7A",
+  ice: "#3DD9FF", dark: "#4F3F3D", fairy: "#EF70EF",
 };
-
-function isPokemon(data: unknown): data is Pokemon {
-  return (
-    !!data &&
-    typeof data === "object" &&
-    "id" in data &&
-    "name" in data &&
-    "sprites" in data &&
-    "types" in data
-  );
-}
 
 export default function FavoritesPage() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -134,19 +111,15 @@ export default function FavoritesPage() {
           setLoading(false);
           return;
         }
-        const results: Pokemon[] = await Promise.all(
-          favoritesRes.data.map(async (nameOrId: string) => {
-            try {
-              const res = await fetch(`/api/pokemon/${nameOrId}`);
-              if (res.ok) {
-                const data = await res.json();
-                if (isPokemon(data)) return data;
-              }
-            } catch {}
-            return null;
-          })
-        ).then((arr) => arr.filter((p): p is Pokemon => p !== null));
-        setPokemons(results);
+
+        const promises = favoritesRes.data.map(nameOrId => getPokemon(nameOrId));
+        const results = await Promise.all(promises);
+        
+        const successfulPokemons = results
+          .map(res => res.data)
+          .filter((p): p is Pokemon => p !== null);
+
+        setPokemons(successfulPokemons);
       } catch {
         setError("Failed to load favorites");
       } finally {
@@ -169,12 +142,11 @@ export default function FavoritesPage() {
 
   return (
     <main className="relative min-h-screen bg-background bg-fixed bg-cover overflow-hidden">
-      {/* Fixed Tetris corners and peeking Pokémon */}
       <TetrisLCornerGreen />
       <CharmanderPeek />
       <TetrisLCornerOrange />
       <PikachuPeek />
-
+      
       <GradientGlassyTextBg text="FAVORITES" />
       <div className="relative z-10 max-w-7xl mx-auto p-8">
         <div className="mb-8">
@@ -220,20 +192,6 @@ export default function FavoritesPage() {
                   transition: "box-shadow 0.25s, transform 0.25s",
                 }}
                 onClick={() => router.push(`/pokemon/${pokemon.name}`)}
-                onMouseEnter={(e) => {
-                  (
-                    e.currentTarget as HTMLDivElement
-                  ).style.boxShadow = `0 12px 48px 0 ${typeColor}99, 0 2px 8px 0 #0002`;
-                  (e.currentTarget as HTMLDivElement).style.transform =
-                    "scale(1.025)";
-                }}
-                onMouseLeave={(e) => {
-                  (
-                    e.currentTarget as HTMLDivElement
-                  ).style.boxShadow = `0 8px 32px 0 ${typeColor}33, 0 2px 8px 0 #0002`;
-                  (e.currentTarget as HTMLDivElement).style.transform =
-                    "scale(1)";
-                }}
               >
                 <div className="relative w-40 h-40 mb-4 mx-auto">
                   <Image
@@ -252,7 +210,7 @@ export default function FavoritesPage() {
                   {pokemon.name}
                 </h2>
                 <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {pokemon.types.map((t) => (
+                  {pokemon.types.map((t: RawPokemonType) => (
                     <span
                       key={t.type.name}
                       className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import RadarChart from "../RadarChart";
@@ -17,6 +17,15 @@ import {
   PokemonEncounter,
   PokemonForm,
 } from "@/app/utils/types";
+import { useAuth } from "@/app/context/AuthContext";
+import {
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+  getCaught,
+  addCaught,
+  removeCaught,
+} from "@/app/utils/api";
 import { Press_Start_2P } from "next/font/google";
 import { Fredoka } from "next/font/google";
 
@@ -78,6 +87,49 @@ export default function PokemonDetailPage({
   const [isFav, setIsFav] = useState(false);
   const [isCaught, setIsCaught] = useState(false);
   const [pokeballBounce, setPokeballBounce] = useState(false);
+  const { token } = useAuth();
+
+  // Fetch favorite/caught state from backend
+  useEffect(() => {
+    let isMounted = true;
+    if (!token || !pokemon?.name) {
+      setIsFav(false);
+      setIsCaught(false);
+      return;
+    }
+    getFavorites(token).then((r) => {
+      if (isMounted && r.data) setIsFav(r.data.includes(pokemon.name));
+    });
+    getCaught(token).then((r) => {
+      if (isMounted && r.data) setIsCaught(r.data.includes(pokemon.name));
+    });
+    return () => { isMounted = false; }
+  }, [token, pokemon?.name]);
+
+  // Handlers for toggling caught/favorite state with API sync
+  const handleFav = async () => {
+    if (!token || !pokemon?.name) return;
+    if (!isFav) {
+      const result = await addFavorite(token, pokemon.name);
+      if (result.data && result.data.includes(pokemon.name)) setIsFav(true);
+    } else {
+      const result = await removeFavorite(token, pokemon.name);
+      if (result.data && !result.data.includes(pokemon.name)) setIsFav(false);
+    }
+  };
+
+  const handleCaught = async () => {
+    if (!token || !pokemon?.name) return;
+    setPokeballBounce(true);
+    setTimeout(() => setPokeballBounce(false), 700);
+    if (!isCaught) {
+      const result = await addCaught(token, pokemon.name);
+      if (result.data && result.data.includes(pokemon.name)) setIsCaught(true);
+    } else {
+      const result = await removeCaught(token, pokemon.name);
+      if (result.data && !result.data.includes(pokemon.name)) setIsCaught(false);
+    }
+  };
 
   const versions = useMemo(
     () =>
@@ -100,16 +152,6 @@ export default function PokemonDetailPage({
 
   const typeColor = TYPE_COLORS[pokemon.types[0].type.name] || "#ccc";
   const lighterTypeColor = `${typeColor}55`;
-
-  function handleCaught() {
-    setIsCaught((prev) => !prev);
-    setPokeballBounce(true);
-    setTimeout(() => setPokeballBounce(false), 700);
-  }
-
-  function handleFav() {
-    setIsFav((prev) => !prev);
-  }
 
   const dropdownClass =
     "text-sm px-3 py-1 rounded-lg border border-transparent bg-white/75 shadow-lg outline-none transition focus:ring-2 focus:ring-offset-1 focus:ring-primary font-semibold text-zinc-800 hover:bg-white focus:bg-white/90";
@@ -139,7 +181,6 @@ export default function PokemonDetailPage({
       className={`${pressStart2P.variable} ${fredoka.variable} w-full min-h-screen bg-gradient-to-br from-background to-card/80 text-foreground flex`}
     >
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-
       <div className="flex-1 flex flex-col items-center py-8 px-2 ml-[60px] md:ml-[200px] transition-all duration-300">
         {activeTab === "about" && (
           <div className="w-full max-w-7xl flex flex-row gap-10 items-start">
@@ -268,7 +309,6 @@ export default function PokemonDetailPage({
                       />
                     </motion.button>
                   </div>
-
                   <h1
                     className="text-5xl leading-tight font-extrabold font-retro capitalize mb-2 tracking-tight"
                     style={{
@@ -327,8 +367,7 @@ export default function PokemonDetailPage({
                   />
                 </motion.div>
               </motion.div>
-
-              {/* Meta Info & Abilities Side-by-Side */}
+              {/* Meta Info & Abilities Section */}
               <div className="flex flex-row gap-8 w-full" style={{ height: META_ABILITIES_HEIGHT }}>
                 <motion.div
                   className="rounded-xl p-6 flex-1 flex flex-col gap-2 h-full min-w-[260px] relative z-10"
@@ -418,7 +457,6 @@ export default function PokemonDetailPage({
                   ))}
                 </motion.div>
               </div>
-
               {/* Pokédex Description with Dropdown */}
               <motion.div
                 className="rounded-xl p-6 w-full flex flex-col justify-between overflow-hidden"
@@ -465,8 +503,7 @@ export default function PokemonDetailPage({
                 <span className="font-fredoka z-10 text-base leading-relaxed">{flavorText}</span>
               </motion.div>
             </div>
-
-            {/* Right Section: Attributes & Radar Chart */}
+            {/* Right side: Attributes & Radar Chart */}
             <motion.div
               className="flex flex-col gap-5 min-w-[220px] max-w-xs mx-auto h-full justify-between"
               style={{
@@ -542,7 +579,6 @@ export default function PokemonDetailPage({
             </motion.div>
           </div>
         )}
-
         {/* Other Tabs */}
         <section className="w-full flex-1 px-2 font-fredoka mt-8">
           <AnimatePresence mode="wait">

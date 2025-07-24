@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCaught, removeCaught } from "@/app/utils/api";
-import { Pokemon } from "@/app/utils/types";
+import { getCaught, removeCaught, getPokemon } from "@/app/utils/api";
+import { Pokemon, RawPokemonType } from "@/app/utils/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchBar from "@/app/components/home/SearchBar";
@@ -10,11 +10,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import GradientGlassyTextBg from "@/app/components/ui/GradientGlassyTextBg";
 import RemoveButton from "@/app/components/ui/RemoveButton";
 
-// Tetris block size and gap (same as reference)
 const BLOCK = 48;
 const GAP = 6;
 
-// Green L-shaped Tetris (bottom-left, extra upper block)
+// Green L-shaped Tetris (bottom-left, 3 vertical, 3 horizontal for asymmetry)
 const TetrisLCornerGreen = () => (
   <svg
     width={BLOCK * 3 + GAP * 2}
@@ -33,7 +32,24 @@ const TetrisLCornerGreen = () => (
   </svg>
 );
 
-// Orange L-shaped Tetris (bottom-right, 3 blocks: bottom, corner, upper)
+// Charmander peeking from the left corner (face/upper body only)
+const CharmanderPeek = () => (
+  <img
+    src="/charmader-2.svg"
+    alt="Charmander peeking"
+    className="fixed bottom-0 left-0 z-40 select-none pointer-events-none"
+    style={{
+      width: 72,
+      height: 72,
+      objectFit: "contain",
+      filter: "drop-shadow(0 4px 16px #0008)",
+      marginLeft: BLOCK / 2 + 5 * GAP,
+      marginBottom: BLOCK / 2 + GAP + 2,
+    }}
+  />
+);
+
+// Orange (yellow) L-shaped Tetris (bottom-right, as before)
 const TetrisLCornerOrange = () => (
   <svg
     width={BLOCK * 2 + GAP}
@@ -48,7 +64,7 @@ const TetrisLCornerOrange = () => (
   </svg>
 );
 
-// Pikachu peeking from the right corner, face/ears only, bottom hidden
+// Pikachu peeking from the right corner, as before
 const PikachuPeek = () => (
   <img
     src="/5.svg"
@@ -64,53 +80,14 @@ const PikachuPeek = () => (
   />
 );
 
-const CharmanderPeek = () => (
-  <img
-    src="charmader-2.svg"
-    alt="Charmander peeking"
-    className="fixed bottom-0 left-0 z-40 select-none pointer-events-none"
-    style={{
-      width: 72,
-      height: 72,
-      objectFit: "contain",
-      filter: "drop-shadow(0 4px 16px #0008)",
-      marginLeft: BLOCK / 2 + 5 * GAP,
-      marginBottom: BLOCK / 2 + GAP + 2,
-    }}
-  />
-);
-
 const TYPE_COLORS: Record<string, string> = {
-  dragon: "#036DC5",
-  poison: "#923FCC",
-  normal: "#9FA29F",
-  fighting: "#FF8100",
-  flying: "#82BAEF",
-  ground: "#92501B",
-  rock: "#B0A981",
-  bug: "#92A212",
-  ghost: "#703F70",
-  steel: "#5FA2BA",
-  fire: "#E72324",
-  water: "#2481EF",
-  grass: "#3DA224",
-  electric: "#FAC100",
-  psychic: "#EF3F7A",
-  ice: "#3DD9FF",
-  dark: "#4F3F3D",
-  fairy: "#EF70EF",
+  dragon: "#036DC5", poison: "#923FCC", normal: "#9FA29F",
+  fighting: "#FF8100", flying: "#82BAEF", ground: "#92501B",
+  rock: "#B0A981", bug: "#92A212", ghost: "#703F70",
+  steel: "#5FA2BA", fire: "#E72324", water: "#2481EF",
+  grass: "#3DA224", electric: "#FAC100", psychic: "#EF3F7A",
+  ice: "#3DD9FF", dark: "#4F3F3D", fairy: "#EF70EF",
 };
-
-function isPokemon(data: unknown): data is Pokemon {
-  return (
-    !!data &&
-    typeof data === "object" &&
-    "id" in data &&
-    "name" in data &&
-    "sprites" in data &&
-    "types" in data
-  );
-}
 
 export default function CaughtPage() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -134,19 +111,15 @@ export default function CaughtPage() {
           setLoading(false);
           return;
         }
-        const results: Pokemon[] = await Promise.all(
-          caughtRes.data.map(async (nameOrId: string) => {
-            try {
-              const res = await fetch(`/api/pokemon/${nameOrId}`);
-              if (res.ok) {
-                const data = await res.json();
-                if (isPokemon(data)) return data;
-              }
-            } catch {}
-            return null;
-          })
-        ).then((arr) => arr.filter((p): p is Pokemon => p !== null));
-        setPokemons(results);
+
+        const promises = caughtRes.data.map(nameOrId => getPokemon(nameOrId));
+        const results = await Promise.all(promises);
+        
+        const successfulPokemons = results
+          .map(res => res.data)
+          .filter((p): p is Pokemon => p !== null);
+
+        setPokemons(successfulPokemons);
       } catch {
         setError("Failed to load caught Pokémon");
       } finally {
@@ -169,11 +142,11 @@ export default function CaughtPage() {
 
   return (
     <main className="relative min-h-screen bg-background bg-fixed bg-cover overflow-hidden">
-      {/* Fixed Tetris corners and Pikachu peeking */}
       <TetrisLCornerGreen />
       <CharmanderPeek />
-      <PikachuPeek />
       <TetrisLCornerOrange />
+      <PikachuPeek />
+      
       <GradientGlassyTextBg text="CAUGHT" />
       <div className="relative z-10 max-w-7xl mx-auto p-8">
         <div className="mb-8">
@@ -198,11 +171,12 @@ export default function CaughtPage() {
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPokemons.map((pokemon) => {
-            const typeColor = TYPE_COLORS[pokemon.types[0].type.name] ?? "#FF0000";
+            const typeColor =
+              TYPE_COLORS[pokemon.types[0].type.name] ?? "#FF0000";
             return (
               <div
                 key={pokemon.id}
-                className="glass-card-outer group"
+                className="glass-card-outer group relative"
                 tabIndex={0}
                 aria-label={`View details for ${pokemon.name}`}
                 style={{
@@ -218,14 +192,6 @@ export default function CaughtPage() {
                   transition: "box-shadow 0.25s, transform 0.25s",
                 }}
                 onClick={() => router.push(`/pokemon/${pokemon.name}`)}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = `0 12px 48px 0 ${typeColor}99, 0 2px 8px 0 #0002`;
-                  (e.currentTarget as HTMLDivElement).style.transform = "scale(1.025)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 32px 0 ${typeColor}33, 0 2px 8px 0 #0002`;
-                  (e.currentTarget as HTMLDivElement).style.transform = "scale(1)";
-                }}
               >
                 <div className="relative w-40 h-40 mb-4 mx-auto">
                   <Image
@@ -237,11 +203,14 @@ export default function CaughtPage() {
                     priority={false}
                   />
                 </div>
-                <h2 className="text-2xl font-bold capitalize text-center mb-3" style={{ color: "#fff" }}>
+                <h2
+                  className="text-2xl font-bold capitalize text-center mb-3"
+                  style={{ color: "#fff" }}
+                >
                   {pokemon.name}
                 </h2>
                 <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {pokemon.types.map((t) => (
+                  {pokemon.types.map((t: RawPokemonType) => (
                     <span
                       key={t.type.name}
                       className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium"
