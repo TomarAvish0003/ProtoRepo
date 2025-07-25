@@ -26,10 +26,14 @@ import {
 import PokemonDetailClient from "./page.client";
 
 // --- Type Definitions for this Page ---
+
+// FIX: Define the props to match what Next.js expects during build.
+// The `params` object is a Promise that resolves to the route parameters.
 interface PageProps {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }
 
+// FIX: Define a specific type for the raw ability response to avoid using 'any'.
 interface RawAbilityResponse {
     effect_entries?: {
         effect: string;
@@ -73,8 +77,8 @@ function humanize(str: string) {
 
 // --- Main Page Component ---
 export default async function PokemonPage({ params }: PageProps) {
-  // FIX: `params` is a regular object, not a promise. It should not be awaited.
-  const { name } = params;
+  // FIX: Await the params promise to get the actual route parameters.
+  const { name } = await params;
 
   const [pokemonRes, speciesRes, encountersRes, evoChainRes] = await Promise.all([
     getPokemon(name),
@@ -89,6 +93,7 @@ export default async function PokemonPage({ params }: PageProps) {
   const pokemon = pokemonRes.data;
   const species = speciesRes.data as PokemonSpecies;
 
+  // Enrich the evolution chain with type information
   const evoChainWithTypes: EvolutionStage[] = evoChainRes.data ? await Promise.all(evoChainRes.data.map(async (stage) => {
       const stagePokemon = await getPokemon(String(stage.id));
       return {
