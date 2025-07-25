@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Radar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
+  ChartData // 1. Import the ChartData type
 } from "chart.js";
 import { Pokemon, RawStat } from "@/app/utils/types";
 
@@ -29,10 +30,8 @@ const getThemeColor = (variableName: string) => {
 // Helper to safely add an alpha value to a color string (works with oklch)
 const addAlpha = (color: string, alpha: number) => {
     if (color.startsWith('oklch')) {
-        // from 'oklch(l a h)' to 'oklch(l a h / alpha)'
         return color.replace(')', ` / ${alpha})`);
     }
-    // Fallback for other color formats like rgb or hex
     if (color.startsWith('rgb')) {
         return color.replace('rgb', 'rgba').replace(')', `, ${alpha})`);
     }
@@ -42,17 +41,18 @@ const addAlpha = (color: string, alpha: number) => {
 
 export default function RadarChart({ pokemon }: RadarChartProps) {
   const [chartOptions, setChartOptions] = useState<ChartOptions<'radar'>>({});
-  const [chartData, setChartData] = useState<any>({ datasets: [] });
+  // 2. Use the specific ChartData type instead of 'any'
+  const [chartData, setChartData] = useState<ChartData<'radar'>>({ datasets: [] });
 
-  // This effect will run whenever the theme changes
+  // This effect will run whenever the theme changes or the pokemon data changes
   useEffect(() => {
     const updateChartTheme = () => {
       const foreground = getThemeColor('--foreground');
       const primary = getThemeColor('--primary');
       const mutedForeground = getThemeColor('--muted-foreground');
       const chartColor1 = getThemeColor('--chart-1');
-      const retroFont = getThemeColor('--font-sans') || "'Press Start 2P', cursive";
-      const sansFont = getThemeColor('--font-sans') || "'Montserrat', sans-serif";
+      const retroFont = "'Press Start 2P', cursive";
+      const sansFont = "'Montserrat', sans-serif";
 
       const statLabels = ["HP", "Attack", "Defense", "Sp. Atk", "Sp. Def", "Speed"];
       const statValues = [
@@ -114,10 +114,8 @@ export default function RadarChart({ pokemon }: RadarChartProps) {
       });
     };
 
-    // Update the chart theme initially
     updateChartTheme();
 
-    // Set up a MutationObserver to watch for theme changes on the <html> element
     const observer = new MutationObserver((mutationsList) => {
       for (const mutation of mutationsList) {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -128,11 +126,9 @@ export default function RadarChart({ pokemon }: RadarChartProps) {
 
     observer.observe(document.documentElement, { attributes: true });
 
-    // Clean up the observer when the component unmounts
     return () => observer.disconnect();
-  }, [pokemon.stats]); // Re-run if the pokemon data changes
+  }, [pokemon.stats]);
 
-  // Render a placeholder or nothing until the chart data is ready
   if (!chartData.datasets.length) {
     return <div style={{ width: 340, height: 340 }} />;
   }
