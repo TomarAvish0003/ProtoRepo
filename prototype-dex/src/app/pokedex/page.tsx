@@ -15,8 +15,15 @@ import PokemonCard from "@/app/components/PokemonCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Menu } from "lucide-react";
 import { motion } from "framer-motion";
+import { Press_Start_2P } from "next/font/google";
 
 const PAGE_SIZE = 48;
+
+const pressStart2P = Press_Start_2P({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-retro",
+});
 
 export default function PokedexPage() {
   const [generation, setGeneration] = useState<number | null>(null);
@@ -158,7 +165,7 @@ export default function PokedexPage() {
             <Menu className="w-6 h-6" />
           </button>
 
-          <h1 className="text-3xl font-bold mb-8 text-center">Pokédex</h1>
+          <h1 className="text-3xl font-retro mb-8 text-center">Pokédex</h1>
 
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">

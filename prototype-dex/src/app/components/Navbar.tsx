@@ -194,7 +194,7 @@ const Navbar: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 18 }}
                 transition={{ duration: 0.22 }}
-                className="absolute left-1/2 -translate-x-1/2 top-full mt-3 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-8 flex flex-col gap-4 z-50 min-w-[210px] text-lg"
+                className="absolute left-1/2 -translate-x-1/2 top-full mt-3 bg-background backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-8 flex flex-col gap-4 z-50 min-w-[210px] text-lg"
                 onMouseEnter={handleDropdownEnter}
                 onMouseLeave={handleDropdownLeave}
               >
@@ -230,7 +230,7 @@ const Navbar: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 18 }}
                 transition={{ duration: 0.22 }}
-                className="absolute left-1/2 -translate-x-1/2 top-full mt-3 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-8 flex flex-col gap-4 z-50 min-w-[210px] text-lg"
+                className="absolute left-1/2 -translate-x-1/2 top-full mt-3 bg-background backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-8 flex flex-col gap-4 z-50 min-w-[210px] text-lg"
                 onMouseEnter={handleDropdownEnter}
                 onMouseLeave={handleDropdownLeave}
               >

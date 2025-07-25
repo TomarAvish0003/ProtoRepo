@@ -26,14 +26,10 @@ import {
 import PokemonDetailClient from "./page.client";
 
 // --- Type Definitions for this Page ---
-
-// FIX: Define the props to match what Next.js expects during build.
-// The `params` object is a Promise that resolves to the route parameters.
 interface PageProps {
-  params: Promise<{ name: string }>;
+  params: { name: string };
 }
 
-// FIX: Define a specific type for the raw ability response to avoid using 'any'.
 interface RawAbilityResponse {
     effect_entries?: {
         effect: string;
@@ -77,8 +73,8 @@ function humanize(str: string) {
 
 // --- Main Page Component ---
 export default async function PokemonPage({ params }: PageProps) {
-  // FIX: Await the params promise to get the actual route parameters.
-  const { name } = await params;
+  // FIX: `params` is a regular object, not a promise. It should not be awaited.
+  const { name } = params;
 
   const [pokemonRes, speciesRes, encountersRes, evoChainRes] = await Promise.all([
     getPokemon(name),
@@ -93,7 +89,14 @@ export default async function PokemonPage({ params }: PageProps) {
   const pokemon = pokemonRes.data;
   const species = speciesRes.data as PokemonSpecies;
 
-  const evoChain: EvolutionStage[] = evoChainRes.data ?? [];
+  const evoChainWithTypes: EvolutionStage[] = evoChainRes.data ? await Promise.all(evoChainRes.data.map(async (stage) => {
+      const stagePokemon = await getPokemon(String(stage.id));
+      return {
+          ...stage,
+          types: stagePokemon.data?.types.map((t: RawPokemonType) => t.type.name) || [],
+      };
+  })) : [];
+  
   const evoError: string | null = evoChainRes.error ?? null;
 
   let forms: PokemonForm[] = [];
@@ -132,12 +135,12 @@ export default async function PokemonPage({ params }: PageProps) {
     const megaAndGmaxForms = forms.filter(f => f.form_type?.includes("Mega") || f.form_type?.includes("Gmax"));
     const regionalForms = forms.filter(f => f.form_type?.includes("Alolan") || f.form_type?.includes("Galarian") || f.form_type?.includes("Hisuian") || f.form_type?.includes("Paldean"));
     
-    if (evoChain.length > 0) {
+    if (evoChainWithTypes.length > 0) {
         if (megaAndGmaxForms.length > 0) {
-            evoChain[evoChain.length - 1].forms = megaAndGmaxForms;
+            evoChainWithTypes[evoChainWithTypes.length - 1].forms = megaAndGmaxForms;
         }
         if (regionalForms.length > 0) {
-            evoChain[0].forms = [...(evoChain[0].forms || []), ...regionalForms];
+            evoChainWithTypes[0].forms = [...(evoChainWithTypes[0].forms || []), ...regionalForms];
         }
     }
   }
@@ -185,7 +188,7 @@ export default async function PokemonPage({ params }: PageProps) {
   return (
     <PokemonDetailClient
       pokemon={enrichedPokemon}
-      evoChain={evoChain}
+      evoChain={evoChainWithTypes}
       evoError={evoError}
       flavorTexts={flavorTexts}
       abilities={forms.find(f => f.id === pokemon.id)?.abilities || []}

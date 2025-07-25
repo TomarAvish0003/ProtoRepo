@@ -56,7 +56,7 @@ export default function SearchBar({ value, onSearch }: SearchBarProps) {
       <Search className="absolute left-3 text-white/60 pointer-events-none" size={20} />
       <input
         type="text"
-        className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-transparent text-white placeholder:text-slate-200/80 font-semibold tracking-wide focus-outline-none"
+        className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-transparent text-sidebar-foreground placeholder:text-sidebar-accent-foreground font-semibold tracking-wide focus-outline-none"
         placeholder="Search Pokémon..."
         value={inputValue}
         aria-label="Search Pokémon"
