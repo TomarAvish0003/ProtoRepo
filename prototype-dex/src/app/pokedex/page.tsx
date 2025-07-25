@@ -126,7 +126,7 @@ export default function PokedexPage() {
   }, [hasMore, loading, loadMoreItems]);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className={`flex min-h-screen bg-background text-foreground ${pressStart2P.variable}`}>
       <PokedexSidebar
         search={search}
         setSearch={setSearch}
