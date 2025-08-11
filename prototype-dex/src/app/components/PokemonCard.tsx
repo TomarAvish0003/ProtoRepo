@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 const TYPE_COLORS: Record<string, string> = {
@@ -101,16 +100,16 @@ export default function PokemonCard({ id, name, sprite, types }: PokemonCardProp
 
           {/* Sprite */}
           <div className="relative w-28 h-28 mb-3 mt-2">
-            <Image
+            <img
               src={validSprite}
               alt={name}
-              fill
-              sizes="112px"
+              width={112}
+              height={112}
               className="object-contain"
-              priority={false}
+              style={{ width: "100%", height: "100%", objectFit: "contain" }}
             />
           </div>
-
+          
           {/* Name */}
           <h2
             className="text-xl font-bold capitalize text-center mb-2"
@@ -136,7 +135,7 @@ export default function PokemonCard({ id, name, sprite, types }: PokemonCardProp
                   boxShadow: `0 2px 8px ${TYPE_COLORS[type] ?? "#eee"}44`,
                 }}
               >
-                <Image
+                <img
                   src={`/icons/${type}.svg`}
                   alt={type}
                   width={16}
