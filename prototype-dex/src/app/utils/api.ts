@@ -50,9 +50,13 @@ async function fetcher<T>(
   retries = MAX_RETRIES
 ): Promise<ApiResponse<T>> {
   let attempt = 0;
+  const mergedOptions: RequestInit = {
+    credentials: "include",
+    ...options,
+  };
   while (attempt <= retries) {
     try {
-      const res = await fetch(`${API_URL}${endpoint}`, options);
+      const res = await fetch(`${API_URL}${endpoint}`, mergedOptions);
 
       if (res.status === 429) {
         const retryAfter = res.headers.get("Retry-After");
@@ -67,7 +71,7 @@ async function fetcher<T>(
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        return { data: null, error: err?.error || `Error ${res.status}` };
+        return { data: null, error: err?.error || err?.message || `Error ${res.status}` };
       }
 
       const data = await res.json();
@@ -90,15 +94,14 @@ async function fetcher<T>(
 
 // --- AUTH / USER ---
 export async function loginUser(email: string, password: string) {
-  return fetcher<{ token: string }>("/api/auth/login", {
+  return fetcher<{ token: string; user: UserProfile }>("/api/auth/login", {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({ email, password }),
   });
 }
 
-// --- NEW LOGOUT FUNCTION ---
-export async function logoutUser(token: string) {
+export async function logoutUser(token?: string) {
   return fetcher<{ message: string }>("/api/auth/logout", {
     method: "POST",
     headers: authHeaders(token),
@@ -116,15 +119,19 @@ export async function registerUser(username: string, email: string, password: st
   );
 }
 
-export async function getProfile(token: string) {
+export async function getMe() {
+  return fetcher<{ user: UserProfile }>("/api/auth/me");
+}
+
+export async function getProfile(token?: string) {
   return fetcher<UserProfile>("/api/user/profile", {
     headers: authHeaders(token),
   });
 }
 
 export async function updateProfile(
-  token: string,
-  updates: { email?: string; password?: string; username?: string; avatar?: string }
+  updates: { email?: string; password?: string; username?: string; avatar?: string },
+  token?: string
 ) {
   return fetcher<UserProfile>("/api/user/profile", {
     method: "PATCH",
@@ -133,13 +140,91 @@ export async function updateProfile(
   });
 }
 
+export async function deleteAccountApi(token?: string) {
+  return fetcher<{ message: string }>("/api/user/profile", {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+}
+
 // --- FAVORITES & CAUGHT ---
-export async function getFavorites(token: string) { return fetcher<string[]>("/api/user/favorite", { headers: authHeaders(token) }); }
-export async function addFavorite(token: string, pokemon: string) { return fetcher<string[]>("/api/user/favorite", { method: "POST", headers: authHeaders(token), body: JSON.stringify({ pokemon }) }); }
-export async function removeFavorite(token: string, pokemon: string) { return fetcher<string[]>(`/api/user/favorite/${pokemon}`, { method: "DELETE", headers: authHeaders(token) }); }
-export async function getCaught(token: string) { return fetcher<string[]>("/api/user/caught", { headers: authHeaders(token) }); }
-export async function addCaught(token: string, pokemon: string) { return fetcher<string[]>("/api/user/caught", { method: "POST", headers: authHeaders(token), body: JSON.stringify({ pokemon }) }); }
-export async function removeCaught(token: string, pokemon: string) { return fetcher<string[]>(`/api/user/caught/${pokemon}`, { method: "DELETE", headers: authHeaders(token) }); }
+export async function getFavorites(token?: string) {
+  return fetcher<string[]>("/api/user/favorite", { headers: authHeaders(token) });
+}
+
+export async function toggleFavoriteApi(pokemon: string) {
+  return fetcher<{ action: 'added' | 'removed'; pokemon: string; favorites: string[] }>(
+    "/api/user/favorite",
+    {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ pokemon }),
+    }
+  );
+}
+
+export async function addFavorite(token?: string, pokemon?: string) {
+  const target = pokemon || token || "";
+  return fetcher<{ favorites: string[] }>("/api/user/favorite", {
+    method: "POST",
+    headers: authHeaders(typeof token === 'string' && pokemon ? token : undefined),
+    body: JSON.stringify({ pokemon: target }),
+  });
+}
+
+export async function removeFavorite(token?: string, pokemon?: string) {
+  const target = pokemon || token || "";
+  return fetcher<string[]>(`/api/user/favorite/${target}`, {
+    method: "DELETE",
+    headers: authHeaders(typeof token === 'string' && pokemon ? token : undefined),
+  });
+}
+
+export async function getCaught(token?: string) {
+  return fetcher<string[]>("/api/user/caught", { headers: authHeaders(token) });
+}
+
+export async function toggleCaughtApi(pokemon: string) {
+  return fetcher<{ action: 'added' | 'removed'; pokemon: string; caught: string[] }>(
+    "/api/user/caught",
+    {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ pokemon }),
+    }
+  );
+}
+
+export async function addCaught(token?: string, pokemon?: string) {
+  const target = pokemon || token || "";
+  return fetcher<{ caught: string[] }>("/api/user/caught", {
+    method: "POST",
+    headers: authHeaders(typeof token === 'string' && pokemon ? token : undefined),
+    body: JSON.stringify({ pokemon: target }),
+  });
+}
+
+export async function removeCaught(token?: string, pokemon?: string) {
+  const target = pokemon || token || "";
+  return fetcher<string[]>(`/api/user/caught/${target}`, {
+    method: "DELETE",
+    headers: authHeaders(typeof token === 'string' && pokemon ? token : undefined),
+  });
+}
+
+export async function syncGuestData(favorites: string[], caught: string[]) {
+  return fetcher<{
+    message: string;
+    syncedFavoritesCount: number;
+    syncedCaughtCount: number;
+    favorites: string[];
+    caught: string[];
+  }>("/api/user/sync", {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ favorites, caught }),
+  });
+}
 
 // --- POKÉMON ---
 export async function getPokemon(nameOrId: string) {

@@ -1,249 +1,182 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getCaught, removeCaught, getPokemon } from "@/app/utils/api";
-import { Pokemon, RawPokemonType } from "@/app/utils/types";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import SearchBar from "@/app/components/home/SearchBar";
-import { Skeleton } from "@/components/ui/skeleton";
-import GradientGlassyTextBg from "@/app/components/ui/GradientGlassyTextBg";
-import RemoveButton from "@/app/components/ui/RemoveButton";
+import React, { useState, useMemo } from "react";
+import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import PokemonCard from "@/app/components/PokemonCard";
+import POKEDEX_DATA from "@/app/data/pokedex-data.json";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
+import { CheckCircle2, Search, ArrowLeft, Sparkles, LogIn, Trophy } from "lucide-react";
 
-const BLOCK = 48;
-const GAP = 6;
-
-// Green L-shaped Tetris (bottom-left, 3 vertical, 3 horizontal for asymmetry)
-const TetrisLCornerGreen = () => (
-  <svg
-    width={BLOCK * 3 + GAP * 2}
-    height={BLOCK * 3 + GAP * 2}
-    viewBox={`0 0 ${BLOCK * 3 + GAP * 2} ${BLOCK * 3 + GAP * 2}`}
-    className="fixed bottom-0 left-0 z-50"
-    style={{ pointerEvents: "none" }}
-  >
-    {/* Vertical bar (3 blocks) */}
-    <rect x="0" y={0} width={BLOCK} height={BLOCK} fill="#EF8200" />
-    <rect x="0" y={BLOCK + GAP} width={BLOCK} height={BLOCK} fill="#EF8200" />
-    <rect x="0" y={2 * (BLOCK + GAP)} width={BLOCK} height={BLOCK} fill="#EF8200" />
-    {/* Horizontal bar (3 blocks, bottom) */}
-    <rect x={BLOCK + GAP} y={2 * (BLOCK + GAP)} width={BLOCK} height={BLOCK} fill="#EF8200" />
-    <rect x={2 * (BLOCK + GAP)} y={2 * (BLOCK + GAP)} width={BLOCK} height={BLOCK} fill="#EF8200" />
-  </svg>
-);
-
-// Charmander peeking from the left corner (face/upper body only)
-const CharmanderPeek = () => (
-  <img
-    src="/charmader-2.svg"
-    alt="Charmander peeking"
-    className="fixed bottom-0 left-0 z-40 select-none pointer-events-none"
-    style={{
-      width: 72,
-      height: 72,
-      objectFit: "contain",
-      filter: "drop-shadow(0 4px 16px #0008)",
-      marginLeft: BLOCK / 2 + 5 * GAP,
-      marginBottom: BLOCK / 2 + GAP + 2,
-    }}
-  />
-);
-
-// Orange (yellow) L-shaped Tetris (bottom-right, as before)
-const TetrisLCornerOrange = () => (
-  <svg
-    width={BLOCK * 2 + GAP}
-    height={BLOCK * 3 + GAP * 2}
-    viewBox={`0 0 ${BLOCK * 2 + GAP} ${BLOCK * 3 + GAP * 2}`}
-    className="fixed bottom-0 right-0 z-50"
-    style={{ pointerEvents: "none" }}
-  >
-    <rect x={BLOCK + GAP} y={BLOCK + GAP} width={BLOCK} height={BLOCK} fill="#F8D51F" />
-    <rect x={BLOCK + GAP} y={2 * (BLOCK + GAP)} width={BLOCK} height={BLOCK} fill="#F8D51F" />
-    <rect x={0} y={2 * (BLOCK + GAP)} width={BLOCK} height={BLOCK} fill="#F8D51F" />
-  </svg>
-);
-
-// Pikachu peeking from the right corner, as before
-const PikachuPeek = () => (
-  <img
-    src="/5.svg"
-    alt="Pikachu peeking"
-    className="fixed bottom-0 right-0 z-40 select-none pointer-events-none"
-    style={{
-      width: 72,
-      height: 72,
-      objectFit: "contain",
-      marginRight: BLOCK / 2 + 2 * GAP,
-      marginBottom: BLOCK / 2 + GAP + 2,
-    }}
-  />
-);
-
-const TYPE_COLORS: Record<string, string> = {
-  dragon: "#036DC5", poison: "#923FCC", normal: "#9FA29F",
-  fighting: "#FF8100", flying: "#82BAEF", ground: "#92501B",
-  rock: "#B0A981", bug: "#92A212", ghost: "#703F70",
-  steel: "#5FA2BA", fire: "#E72324", water: "#2481EF",
-  grass: "#3DA224", electric: "#FAC100", psychic: "#EF3F7A",
-  ice: "#3DD9FF", dark: "#4F3F3D", fairy: "#EF70EF",
-};
+const MASTER_POKEMON_CATALOG = POKEDEX_DATA as FlatVarietyWithTypes[];
+const TOTAL_DEX = 1025;
 
 export default function CaughtPage() {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user, caught, loading: authLoading } = useAuth();
   const [search, setSearch] = useState("");
-  const router = useRouter();
 
-  useEffect(() => {
-    const loadCaught = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("You must be logged in to view caught Pokémon.");
-        setLoading(false);
-        return;
-      }
-      try {
-        const caughtRes = await getCaught(token);
-        if (caughtRes.error || !caughtRes.data) {
-          setError(caughtRes.error || "Failed to load caught Pokémon");
-          setLoading(false);
-          return;
-        }
+  // Resolve caught items from the catalog
+  const caughtPokemonList = useMemo(() => {
+    return caught
+      .map((c) => {
+        const lower = String(c).toLowerCase();
+        const num = Number(c);
+        return MASTER_POKEMON_CATALOG.find(
+          (p) => p.name.toLowerCase() === lower || (!isNaN(num) && p.id === num)
+        );
+      })
+      .filter((p): p is FlatVarietyWithTypes => p !== undefined);
+  }, [caught]);
 
-        const promises = caughtRes.data.map(nameOrId => getPokemon(nameOrId));
-        const results = await Promise.all(promises);
-        
-        const successfulPokemons = results
-          .map(res => res.data)
-          .filter((p): p is Pokemon => p !== null);
+  // Filter with search
+  const filteredList = useMemo(() => {
+    if (!search.trim()) return caughtPokemonList;
+    const q = search.toLowerCase().trim();
+    return caughtPokemonList.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        String(p.id).includes(q) ||
+        p.types.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [caughtPokemonList, search]);
 
-        setPokemons(successfulPokemons);
-      } catch {
-        setError("Failed to load caught Pokémon");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCaught();
-  }, []);
-
-  const handleRemove = async (name: string) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    await removeCaught(token, name);
-    setPokemons((prev) => prev.filter((p) => p.name !== name));
-  };
-
-  const filteredPokemons = pokemons.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const completionPercentage = ((caughtPokemonList.length / TOTAL_DEX) * 100).toFixed(1);
 
   return (
-    <main className="relative min-h-screen bg-background bg-fixed bg-cover overflow-hidden">
-      <TetrisLCornerGreen />
-      <CharmanderPeek />
-      <TetrisLCornerOrange />
-      <PikachuPeek />
-      
-      <GradientGlassyTextBg text="CAUGHT" />
-      <div className="relative z-10 max-w-7xl mx-auto p-8">
-        <div className="mb-8">
-          <SearchBar value={search} onChange={setSearch} />
-        </div>
-        {loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="w-96 h-[28rem] rounded-2xl" />
-            ))}
-          </div>
-        )}
-        {error && (
-          <div className="text-destructive text-center text-base font-semibold">
-            {error}
-          </div>
-        )}
-        {!loading && !error && filteredPokemons.length === 0 && (
-          <div className="text-muted-foreground text-center text-base">
-            No caught Pokémon found.
-          </div>
-        )}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPokemons.map((pokemon) => {
-            const typeColor =
-              TYPE_COLORS[pokemon.types[0].type.name] ?? "#FF0000";
-            return (
-              <div
-                key={pokemon.id}
-                className="glass-card-outer group relative"
-                tabIndex={0}
-                aria-label={`View details for ${pokemon.name}`}
-                style={{
-                  border: `3px solid ${typeColor}`,
-                  boxShadow: `0 8px 32px 0 ${typeColor}33, 0 2px 8px 0 #0002`,
-                  background: "rgba(24,24,27,0.65)",
-                  borderRadius: "1.5rem",
-                  minHeight: "28rem",
-                  padding: "2rem",
-                  overflow: "hidden",
-                  position: "relative",
-                  cursor: "pointer",
-                  transition: "box-shadow 0.25s, transform 0.25s",
-                }}
-                onClick={() => router.push(`/pokemon/${pokemon.name}`)}
+    <main className="min-h-screen bg-background text-on-surface px-4 sm:px-6 lg:px-8 pt-24 pb-12 transition-colors">
+      <div className="max-w-7xl mx-auto flex flex-col gap-6">
+        {/* Header Ribbon */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border-crisp">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <Link
+                href="/pokedex"
+                className="inline-flex items-center gap-1 text-[12px] font-caption-label font-bold text-primary hover:underline uppercase"
               >
-                <div className="relative w-40 h-40 mb-4 mx-auto">
-                  <Image
-                    src={pokemon.sprites?.front_default ?? "/pokeball.svg"}
-                    alt={pokemon.name}
-                    fill
-                    sizes="160px"
-                    className="object-contain"
-                    priority={false}
-                  />
-                </div>
-                <h2
-                  className="text-2xl font-bold capitalize text-center mb-3"
-                  style={{ color: "#fff" }}
-                >
-                  {pokemon.name}
-                </h2>
-                <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {pokemon.types.map((t: RawPokemonType) => (
-                    <span
-                      key={t.type.name}
-                      className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium"
-                      style={{
-                        background: TYPE_COLORS[t.type.name] ?? "#eee",
-                        color: "#fff",
-                      }}
-                    >
-                      <Image
-                        src={`/icons/${t.type.name}.svg`}
-                        alt={t.type.name}
-                        width={20}
-                        height={20}
-                        className="mr-2"
-                        style={{ filter: "brightness(0) invert(1)" }}
-                      />
-                      {t.type.name}
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Return to National Dex</span>
+              </Link>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/30 flex items-center justify-center text-secondary">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="font-headline-sm text-2xl sm:text-3xl font-bold tracking-tight text-on-surface">
+                  Caught Pokémon Registry
+                </h1>
+                <p className="font-body-sm text-xs sm:text-sm text-on-surface-variant">
+                  {user ? (
+                    <span>
+                      Field research linked to <strong className="text-secondary">@{user.username}</strong>&apos;s cloud Pokédex
                     </span>
-                  ))}
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5">
+                      <span>Guest Mode (Stored locally in browser).</span>
+                      <Link href="/login" className="text-secondary underline font-semibold">
+                        Sign in to sync across devices
+                      </Link>
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Dex completion metric */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-charcoal-surface border border-border-crisp shadow-xs">
+              <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+              <div>
+                <div className="font-index-mono text-xs font-bold text-on-surface">
+                  {caughtPokemonList.length} / {TOTAL_DEX} ({completionPercentage}%)
                 </div>
-                <div className="flex justify-center mt-2">
-                  <RemoveButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemove(pokemon.name);
-                    }}
-                    typeColor={typeColor}
+                <div className="w-32 bg-surface-container-high h-1.5 rounded-full overflow-hidden mt-1">
+                  <div
+                    className="bg-secondary h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(0, Number(completionPercentage)))}%` }}
                   />
                 </div>
               </div>
-            );
-          })}
+            </div>
+
+            {!user && (
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary hover:opacity-90 text-white font-caption-label text-xs font-bold transition-colors shadow-xs"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Save to Cloud</span>
+              </Link>
+            )}
+          </div>
         </div>
+
+        {/* Search Bar */}
+        {caughtPokemonList.length > 0 && (
+          <div className="relative max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Filter caught Pokémon..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-charcoal-surface border border-border-crisp text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary transition-colors"
+            />
+          </div>
+        )}
+
+        {/* Loading state */}
+        {authLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-12">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-64 rounded-xl bg-charcoal-surface border border-border-crisp animate-pulse"
+              />
+            ))}
+          </div>
+        ) : caughtPokemonList.length === 0 ? (
+          /* Empty state */
+          <div className="flex flex-col items-center justify-center py-20 px-4 text-center rounded-2xl border border-dashed border-border-crisp bg-charcoal-surface shadow-xs dark:shadow-xl">
+            <div className="w-16 h-16 rounded-full bg-secondary/10 border border-secondary/30 flex items-center justify-center text-secondary mb-4">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <h2 className="font-headline-sm text-xl font-bold mb-1.5 text-on-surface">No Caught Pokémon Logged</h2>
+            <p className="max-w-md text-sm text-on-surface-variant mb-6">
+              You haven&apos;t marked any Pokémon as caught yet. Browse the National Dex and click &ldquo;LOG CATCH&rdquo; on any Pokémon you have caught.
+            </p>
+            <Link
+              href="/pokedex"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:opacity-90 text-white font-caption-label text-xs uppercase font-bold tracking-wider shadow-xs transition-all snappy-btn"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Explore National Dex</span>
+            </Link>
+          </div>
+        ) : filteredList.length === 0 ? (
+          /* Filtered empty state */
+          <div className="py-16 text-center text-sm text-on-surface-variant">
+            No caught Pokémon matching &ldquo;<strong className="text-on-surface">{search}</strong>&rdquo;.
+          </div>
+        ) : (
+          /* Pokémon Grid */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredList.map((pokemon) => (
+              <PokemonCard
+                key={pokemon.id}
+                id={pokemon.id}
+                name={pokemon.name}
+                sprite={pokemon.sprite}
+                types={pokemon.types}
+                stats={pokemon.stats}
+                height={pokemon.height}
+                weight={pokemon.weight}
+                isCaught={true}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

@@ -1,119 +1,137 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getCaught, removeCaught, getPokemon } from "@/app/utils/api";
-import { Pokemon, RawPokemonType } from "@/app/utils/types";
-import { Heart } from "lucide-react";
+
+import React, { useMemo } from "react";
+import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import POKEDEX_DATA from "@/app/data/pokedex-data.json";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
+import { TYPE_CONFIGS, formatPokedexNumber } from "@/app/utils/pokemonDataHelpers";
+import { CheckCircle2, ArrowRight, Trash2 } from "lucide-react";
+
+const MASTER_POKEMON_CATALOG = POKEDEX_DATA as FlatVarietyWithTypes[];
 
 export default function CaughtTab() {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { caught, toggleCaught } = useAuth();
 
-  useEffect(() => {
-    const loadCaught = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("You must be logged in to view caught Pokémon.");
-        setLoading(false);
-        return;
-      }
-      try {
-        const caughtRes = await getCaught(token);
-        if (caughtRes.error || !caughtRes.data) {
-          setError(caughtRes.error || "Failed to load caught Pokémon");
-          setLoading(false);
-          return;
-        }
+  // Resolve the 5 most recent caught Pokémon
+  const recentCaught = useMemo(() => {
+    const list = [...caught].reverse().slice(0, 5);
+    return list
+      .map((c) => {
+        const lower = String(c).toLowerCase();
+        const num = Number(c);
+        return MASTER_POKEMON_CATALOG.find(
+          (p) => p.name.toLowerCase() === lower || (!isNaN(num) && p.id === num)
+        );
+      })
+      .filter((p): p is FlatVarietyWithTypes => p !== undefined);
+  }, [caught]);
 
-        const latestCaught = caughtRes.data.slice(-5).reverse();
-        const promises = latestCaught.map(nameOrId => getPokemon(nameOrId));
-        const results = await Promise.all(promises);
-
-        const successfulPokemons = results
-          .map(res => res.data)
-          .filter((p): p is Pokemon => p !== null);
-
-        setPokemons(successfulPokemons);
-      } catch {
-        setError("Failed to load caught Pokémon");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCaught();
-  }, []);
-
-  const handleRemove = async (name: string) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    await removeCaught(token, name);
-    setPokemons((prev) => prev.filter((p) => p.name !== name));
-  };
+  const progressPercent = ((caught.length / 1025) * 100).toFixed(1);
 
   return (
-    <div
-      className="relative p-[2px] rounded-xl"
-      style={{
-        background: "linear-gradient(270deg, #10b981, #06b6d4, #8b5cf6, #10b981)",
-        backgroundSize: "600% 600%",
-        animation: "gradient-move 6s ease infinite",
-      }}
-    >
-      <div className="rounded-xl bg-[rgba(24,24,27,0.85)] backdrop-blur-lg border border-white/10 shadow-xl p-6">
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-4">
-          <Heart className="h-5 w-5 text-green-500 fill-current" />
-          <h2 className="text-xl font-bold text-white tracking-tight">Recent Caught</h2>
-          <span className="bg-green-500/20 text-green-400 rounded-full px-3 py-1 text-xs font-semibold">
-            {pokemons.length} of 5
-          </span>
+    <div className="rounded-2xl bg-charcoal-surface border border-border-crisp p-6 shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-border-crisp mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-secondary/15 border border-secondary/30 flex items-center justify-center text-secondary">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+          <div>
+            <h2 className="font-headline-sm text-base sm:text-lg font-bold text-on-surface">
+              Field Registry (Caught)
+            </h2>
+            <p className="font-caption-label text-[11px] text-on-surface-variant">
+              {caught.length} / 1025 CAUGHT ({progressPercent}% OF NATIONAL DEX)
+            </p>
+          </div>
         </div>
 
-        {/* Pokemon Grid */}
-        <div className="flex gap-3 overflow-x-auto pb-2">
-          {loading && <div className="text-gray-400">Loading caught Pokémon...</div>}
-          {error && <div className="text-red-400">{error}</div>}
-          {!loading && !error && pokemons.length === 0 && (
-            <div className="text-gray-400">No caught Pokémon yet.</div>
-          )}
-          {pokemons.map((pokemon) => (
-            <div
-              key={pokemon.id}
-              className="relative rounded-lg bg-[rgba(35,35,38,0.8)] backdrop-blur-sm p-3 flex flex-col items-center shadow-lg group transition hover:bg-[rgba(39,39,42,0.9)] cursor-pointer min-w-[120px] border border-white/10"
-              tabIndex={0}
-              aria-label={`View details for ${pokemon.name}`}
-            >
-              <button
-                className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full opacity-80 hover:opacity-100 z-10 transition-all duration-200 hover:scale-105 text-xs font-medium"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove(pokemon.name);
-                }}
-                aria-label={`Remove ${pokemon.name} from caught`}
-                type="button"
-              >
-                Remove
-              </button>
-              <img
-                src={pokemon.sprites?.front_default ?? "/pokeball.svg"}
-                alt={pokemon.name}
-                className="w-16 h-16 mb-2"
-              />
-              <div className="capitalize font-semibold text-white text-center">{pokemon.name}</div>
-              <div className="text-xs text-gray-400 text-center">
-                {pokemon.types?.map((t: RawPokemonType) => t.type?.name).join(", ")}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-400">
-            Showing your 5 most recent caught Pokémon.
-          </p>
-        </div>
+        <Link
+          href="/caught"
+          className="inline-flex items-center gap-1 text-xs font-caption-label font-bold text-secondary hover:underline uppercase tracking-wider"
+        >
+          <span>View All</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
+
+      {/* List */}
+      {recentCaught.length === 0 ? (
+        <div className="py-8 text-center text-xs sm:text-sm text-on-surface-variant">
+          No caught Pokémon logged yet.{" "}
+          <Link href="/pokedex" className="text-secondary underline font-semibold">
+            Explore Pokédex
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {recentCaught.map((pokemon) => {
+            const primaryType = pokemon.types[0]?.toLowerCase() || "normal";
+            const cfg = TYPE_CONFIGS[primaryType] || TYPE_CONFIGS.normal;
+
+            return (
+              <div
+                key={pokemon.id}
+                className="group relative flex items-center gap-3 p-3 rounded-xl bg-surface-container-low border border-border-crisp hover:border-secondary transition-colors shadow-xs"
+              >
+                <Link
+                  href={`/pokemon/${pokemon.name.toLowerCase()}`}
+                  className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border"
+                  style={{
+                    backgroundColor: cfg.softBg,
+                    borderColor: cfg.borderHex,
+                  }}
+                >
+                  <img
+                    src={pokemon.sprite || "/detective-pikachu.jpg"}
+                    alt={pokemon.name}
+                    className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
+                    loading="lazy"
+                  />
+                </Link>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-index-mono text-[11px] font-bold text-secondary">
+                      {formatPokedexNumber(pokemon.id)}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/pokemon/${pokemon.name.toLowerCase()}`}
+                    className="font-headline-sm text-sm font-bold capitalize text-on-surface hover:text-secondary truncate block"
+                  >
+                    {pokemon.name.replace(/-/g, " ")}
+                  </Link>
+                  <div className="flex items-center gap-1 mt-1">
+                    {pokemon.types.map((t) => {
+                      const tcfg = TYPE_CONFIGS[t.toLowerCase()] || TYPE_CONFIGS.normal;
+                      return (
+                        <span
+                          key={t}
+                          style={{ backgroundColor: tcfg.colorHex }}
+                          className={`px-1.5 py-0.2 rounded text-[9px] font-caption-label font-bold uppercase ${tcfg.textClass}`}
+                        >
+                          {tcfg.label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => toggleCaught(pokemon.name)}
+                  className="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-colors shrink-0"
+                  title="Unmark caught status"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

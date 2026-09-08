@@ -7,6 +7,7 @@ import {
   getPokemonType,
   getPokemonEncounters,
   getPokemonAbility,
+  getMovesBatch,
 } from "@/app/utils/api";
 import {
   Pokemon,
@@ -24,6 +25,7 @@ import {
   RawStat,
 } from "@/app/utils/types";
 import PokemonDetailClient from "./page.client";
+import localMovesData from "@/app/data/pokemon_moves.json";
 
 // --- Type Definitions for this Page ---
 
@@ -169,16 +171,92 @@ export default async function PokemonPage({ params }: PageProps) {
   
   const flavorTexts: FlavorTextEntry[] = species.flavor_text_entries
     ?.filter((ft) => ft.language.name === "en")
-    .map((ft) => ({ version: ft.version.name, text: ft.flavor_text.replace(/\f/g, " ") })) ?? [];
+    .map((ft) => ({
+      version: ft.version.name,
+      text: ft.flavor_text.replace(/[\f\n\r\t]/g, " ").replace(/\s+/g, " ").trim(),
+    })) ?? [];
 
   const pokedexNumbers: PokedexNumber[] = species.pokedex_numbers
     ?.map((pn) => ({ name: pn.pokedex.name, number: pn.entry_number })) ?? [];
 
   const eggGroups: string[] = species.egg_groups?.map((g) => g.name) ?? [];
   
-  const moves: Move[] = pokemon.moves.flatMap(pm => pm.version_group_details.map(vgd => ({ name: pm.move.name, method: vgd.move_learn_method.name as Move['method'], level_learned_at: vgd.level_learned_at, version_group: vgd.version_group.name })));
-  const availableMoveVersions = Array.from(new Set(moves.map(m => m.version_group)));
-  const availableEncounterVersions = Array.from(new Set(encounters.map(e => e.version)));
+  // Helper to parse numeric move stats safely
+  const parseStatNum = (val: any): number | undefined => {
+    if (val === undefined || val === null || val === "—" || val === "" || isNaN(Number(val))) return undefined;
+    return Number(val);
+  };
+
+  // Hydrate moves with real damageClass, power, accuracy, pp, and type from Turso database with static fallback
+  const uniqueMoveNames = Array.from(new Set((pokemon.moves || []).map((pm) => pm.move.name)));
+  let moveMetaMap = new Map<string, any>();
+  try {
+    const movesBatchRes = await getMovesBatch(uniqueMoveNames);
+    if (movesBatchRes.data?.moves) {
+      for (const m of movesBatchRes.data.moves) {
+        moveMetaMap.set(m.name.toLowerCase(), m);
+      }
+    }
+  } catch (err) {
+    console.error("Failed to hydrate moves batch:", err);
+  }
+
+  const movesRecord = localMovesData as Record<string, {
+    type?: string;
+    category?: string;
+    power?: string;
+    accuracy?: string;
+    pp?: string;
+    effect?: string;
+  }>;
+
+  const moves: Move[] = (pokemon.moves || []).flatMap((pm) => {
+    const cleanKey = pm.move.name.toLowerCase().trim();
+    const dbMeta = moveMetaMap.get(cleanKey);
+    const localMeta = movesRecord[cleanKey] ||
+      movesRecord[cleanKey.replace(/-/g, " ")] ||
+      movesRecord[cleanKey.replace(/-/g, "")];
+
+    const resolvedPower = dbMeta?.power !== undefined && dbMeta?.power !== null
+      ? dbMeta.power
+      : parseStatNum(localMeta?.power);
+
+    const resolvedAccuracy = dbMeta?.accuracy !== undefined && dbMeta?.accuracy !== null
+      ? dbMeta.accuracy
+      : parseStatNum(localMeta?.accuracy);
+
+    const resolvedPp = dbMeta?.pp !== undefined && dbMeta?.pp !== null
+      ? dbMeta.pp
+      : parseStatNum(localMeta?.pp);
+
+    const resolvedType = (dbMeta?.type || localMeta?.type || "normal").toLowerCase();
+
+    const resolvedDamageClass = (
+      dbMeta?.damageClass ||
+      dbMeta?.damage_class ||
+      localMeta?.category ||
+      "status"
+    ).toLowerCase();
+
+    const resolvedShortDesc = dbMeta?.shortDescription || localMeta?.effect || undefined;
+
+    return pm.version_group_details.map((vgd) => ({
+      name: pm.move.name,
+      method: vgd.move_learn_method.name as Move['method'],
+      level_learned_at: vgd.level_learned_at,
+      version_group: vgd.version_group.name,
+      power: resolvedPower,
+      accuracy: resolvedAccuracy,
+      pp: resolvedPp,
+      type: resolvedType,
+      damage_class: resolvedDamageClass,
+      category: resolvedDamageClass,
+      shortDescription: resolvedShortDesc,
+    }));
+  });
+
+  const availableMoveVersions = Array.from(new Set(moves.map((m) => m.version_group)));
+  const availableEncounterVersions = Array.from(new Set(encounters.map((e) => e.version)));
 
   const enrichedPokemon: Pokemon = {
     ...pokemon,
@@ -196,7 +274,7 @@ export default async function PokemonPage({ params }: PageProps) {
       evoChain={evoChainWithTypes}
       evoError={evoError}
       flavorTexts={flavorTexts}
-      abilities={forms.find(f => f.id === pokemon.id)?.abilities || []}
+      abilities={forms.find((f) => f.id === pokemon.id)?.abilities || []}
       moves={moves}
       encounters={encounters}
       availableVersions={availableMoveVersions}

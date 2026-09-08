@@ -41,18 +41,12 @@ export default function ProfileInfo({ className = "" }) {
     setMsg(null);
     setError(null);
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("You must be logged in to update your profile.");
-      setLoading(false);
-      return;
-    }
     const updates: { email?: string; username?: string; password?: string } = {};
     if (form.email !== profile?.email) updates.email = form.email;
     if (form.username !== profile?.username) updates.username = form.username;
     if (form.password) updates.password = form.password;
 
-    const res = await updateProfile(token, updates);
+    const res = await updateProfile(updates);
     if (res.error) {
       setError(res.error);
     } else {

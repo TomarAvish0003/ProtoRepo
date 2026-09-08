@@ -1,118 +1,131 @@
 "use client";
 
-import { useState } from "react";
-import { useAuth } from "@/app/context/AuthContext";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, Trash2 } from "lucide-react";
-import { logoutUser } from "@/app/utils/api"; // 1. Import the logoutUser API function
+import { useAuth } from "@/app/context/AuthContext";
+import { deleteAccountApi } from "@/app/utils/api";
+import { toast } from "sonner";
+import { LogOut, Trash2, AlertTriangle, Loader2 } from "lucide-react";
 
-export default function ActionButtonsSection() {
+export default function DeleteAccountSection() {
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  
+  const [deleting, setDeleting] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const { logout } = useAuth();
   const router = useRouter();
 
-  // 2. Updated handleLogout to be async and call the backend
   const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      await logoutUser(token); // Invalidate the token on the backend
+    setLoggingOut(true);
+    try {
+      await logout();
+      router.push("/login");
+    } finally {
+      setLoggingOut(false);
     }
-    logout(); // Clear the user state from the context
-    router.push("/login");
   };
 
-  const handleDelete = async () => {
-    setLoading(true);
-    setError(null);
-    setMsg(null);
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("You must be logged in.");
-      setLoading(false);
-      return;
-    }
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
     try {
-      const res = await fetch("/api/user/profile", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMsg("Account deleted. Redirecting...");
-        logout();
-        setTimeout(() => {
-          router.push("/register");
-        }, 2000);
-      } else {
-        setError(data.error || "Failed to delete account.");
+      const res = await deleteAccountApi();
+      if (res.error) {
+        toast.error(res.error);
+        setDeleting(false);
+        return;
       }
+
+      toast.success("Trainer account permanently deleted.");
+      await logout();
+      router.push("/register");
     } catch {
-      setError("Failed to delete account.");
-    } finally {
-      setLoading(false);
+      toast.error("Failed to delete account. Please try again.");
+      setDeleting(false);
     }
   };
 
   return (
-    <div
-      className="relative p-[2px] rounded-xl mt-4"
-      style={{
-        background: "linear-gradient(270deg, #ef4444, #f97316, #eab308, #ef4444)",
-        backgroundSize: "600% 600%",
-        animation: "gradient-move 6s ease infinite",
-      }}
-    >
-      <div className="rounded-xl bg-[rgba(24,24,27,0.85)] backdrop-blur-lg border border-white/10 shadow-xl p-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full sm:w-auto bg-blue-500/10 border-2 border-blue-400 text-blue-300 hover:bg-blue-500/20 hover:text-blue-200 duration-200 h-10 px-4 py-2"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </button>
-        
-        {/* Delete Account Button */}
-        <button
-          onClick={() => setShowModal(true)}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto h-10 px-4 py-2"
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete My Account
-        </button>
+    <>
+      <div className="rounded-2xl bg-charcoal-surface border border-border-crisp p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="font-headline-sm text-base font-bold text-on-surface">
+              Session & Account Security
+            </h2>
+            <p className="font-body-sm text-xs text-on-surface-variant mt-0.5">
+              Safely end your current session or manage permanent account deletion.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              type="button"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-low hover:bg-slate-panel border border-border-crisp text-xs font-caption-label font-bold uppercase tracking-wider text-on-surface transition-colors snappy-btn"
+            >
+              {loggingOut ? (
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+              ) : (
+                <LogOut className="w-4 h-4 text-primary" />
+              )}
+              <span>Log Out</span>
+            </button>
+
+            <button
+              onClick={() => setShowModal(true)}
+              type="button"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-xs font-caption-label font-bold uppercase tracking-wider text-red-600 dark:text-red-400 transition-colors snappy-btn"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Delete Account</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Confirmation Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-[rgba(24,24,27,0.95)] backdrop-blur-lg border border-white/20 p-6 rounded-xl shadow-2xl max-w-sm w-full mx-4">
-            <h4 className="text-lg font-bold text-red-400 mb-2">Are you sure?</h4>
-            <p className="text-gray-300 mb-4">This action is permanent and cannot be undone.</p>
-            {msg && <div className="text-green-400 mb-2 text-sm">{msg}</div>}
-            {error && <div className="text-red-400 mb-2 text-sm">{error}</div>}
-            <div className="flex gap-2 mt-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-2xl bg-charcoal-surface border border-border-crisp p-6 shadow-2xl text-on-surface">
+            <div className="flex items-center gap-3 text-red-600 dark:text-red-400 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <h3 className="font-headline-sm text-lg font-bold text-on-surface">Delete Trainer Account?</h3>
+            </div>
+
+            <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed mb-6">
+              This action is permanent and cannot be undone. All your favorited Pokémon, caught field records, and personal account data will be permanently wiped from the database.
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5">
               <button
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 flex-1 h-10 px-4 py-2"
-                onClick={handleDelete}
-                disabled={loading}
-              >
-                {loading ? "Deleting..." : "Yes, delete my account"}
-              </button>
-              <button
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 flex-1 h-10 px-4 py-2"
+                type="button"
                 onClick={() => setShowModal(false)}
-                disabled={loading}
+                disabled={deleting}
+                className="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-slate-panel border border-border-crisp text-xs font-caption-label font-bold uppercase text-on-surface-variant transition-colors snappy-btn"
               >
                 Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-caption-label font-bold uppercase shadow-sm transition-colors snappy-btn"
+              >
+                {deleting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="w-3.5 h-3.5" />
+                )}
+                <span>{deleting ? "Deleting..." : "Permanently Delete"}</span>
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -1,154 +1,241 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
 
-const TYPE_COLORS: Record<string, string> = {
-  dragon: "#036DC5",
-  poison: "#923FCC",
-  normal: "#9FA29F",
-  fighting: "#FF8100",
-  flying: "#82BAEF",
-  ground: "#92501B",
-  rock: "#B0A981",
-  bug: "#92A212",
-  ghost: "#703F70",
-  steel: "#5FA2BA",
-  fire: "#E72324",
-  water: "#2481EF",
-  grass: "#3DA224",
-  electric: "#FAC100",
-  psychic: "#EF3F7A",
-  ice: "#3DD9FF",
-  dark: "#4F3F3D",
-  fairy: "#EF70EF",
-};
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+  TYPE_CONFIGS,
+  getJapaneseName,
+  formatPokedexNumber,
+  formatArchivalIndex,
+  getOfficialArtwork,
+  getPokemonCryUrl,
+} from "@/app/utils/pokemonDataHelpers";
+import { useAuth } from "@/app/context/AuthContext";
+import { Bookmark, CheckCircle2 } from "lucide-react";
+
+export interface PokemonCardStats {
+  hp?: number;
+  atk?: number;
+  def?: number;
+  spa?: number;
+  spd?: number;
+  spe?: number;
+  bst?: number;
+}
 
 interface PokemonCardProps {
   id: number;
   name: string;
   sprite?: string | null;
   types: string[];
+  stats?: PokemonCardStats;
+  isCaught?: boolean;
+  isFavorite?: boolean;
+  height?: number; // decimeters
+  weight?: number; // hectograms
 }
 
-const FALLBACK_SPRITE = "/fallback-pokemon.png"; // Place a fallback image in /public
+export default function PokemonCard({
+  id,
+  name,
+  sprite,
+  types,
+  stats,
+  isCaught: propIsCaught,
+  isFavorite: propIsFavorite,
+  height,
+  weight,
+}: PokemonCardProps) {
+  const [imageError, setImageError] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
-export default function PokemonCard({ id, name, sprite, types }: PokemonCardProps) {
-  const [hovered, setHovered] = useState(false);
-  const typeColor = TYPE_COLORS[types[0]] ?? "#888";
-  const typeBgUrl = `/icons/${types[0]}.svg`;
-  const validSprite =
-    sprite && typeof sprite === "string" && sprite.trim() !== ""
-      ? sprite
-      : FALLBACK_SPRITE;
+  const { isFavorite: checkFavorite, isCaught: checkCaught, toggleFavorite, toggleCaught } = useAuth();
+  const isCardFavorite = propIsFavorite !== undefined ? propIsFavorite : checkFavorite(name);
+  const isCardCaught = propIsCaught !== undefined ? propIsCaught : checkCaught(name);
+
+  const primaryType = types[0]?.toLowerCase() || "normal";
+  const primaryConfig = TYPE_CONFIGS[primaryType] || TYPE_CONFIGS.normal;
+  const japaneseName = getJapaneseName(id, name);
+  const formattedId = formatPokedexNumber(id);
+  const archivalIndex = formatArchivalIndex(id);
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite(name);
+  };
+
+  const handleToggleCaught = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleCaught(name);
+  };
+
+  // Artwork URL
+  const artworkUrl = !imageError ? getOfficialArtwork(id, sprite) : (sprite || "/detective-pikachu.jpg");
+
+  // Calculated BST
+  const bst = stats?.bst ?? (
+    stats && (stats.hp !== undefined || stats.atk !== undefined)
+      ? ((stats.hp || 0) + (stats.atk || 0) + (stats.def || 0) + (stats.spa || 0) + (stats.spd || 0) + (stats.spe || 0))
+      : undefined
+  );
+
+  // Formatted Metric
+  const formattedHeight = height !== undefined && height !== null ? `${(height / 10).toFixed(1)}m` : null;
+  const formattedWeight = weight !== undefined && weight !== null ? `${(weight / 10).toFixed(1)}kg` : null;
+
+  const handlePlayCry = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      setIsPlayingAudio(true);
+      const audio = new Audio(getPokemonCryUrl(id));
+      audio.play().catch(() => {});
+      audio.onended = () => setIsPlayingAudio(false);
+    } catch {
+      setIsPlayingAudio(false);
+    }
+  };
 
   return (
-    <Link
-      href={`/pokemon/${name.toLowerCase()}`}
-      className="block focus:outline-none"
-      tabIndex={0}
-      aria-label={`View details for ${name}`}
-      scroll={true}
+    <article
+      className="pokemon-card pokemon-card-interactive group relative bg-charcoal-surface hover:bg-slate-panel rounded-xl p-3 sm:p-3.5 border border-border-crisp hover:border-primary shadow-xs hover:shadow-lg dark:shadow-lg dark:hover:shadow-[0_8px_24px_rgba(255,51,85,0.15)] transition-all duration-200 flex flex-col justify-between h-full"
+      style={{
+        ["--type-color" as string]: primaryConfig.colorHex,
+      }}
     >
-      <div
-        className="relative flex flex-col items-center justify-center min-h-[16rem] w-56 p-4 overflow-hidden"
-        style={{
-          border: `3px solid ${typeColor}`,
-          borderRadius: "1.5rem",
-          background: "rgba(24,24,27,0.65)",
-          boxShadow: hovered
-            ? `0 8px 32px 0 ${typeColor}99, 0 2px 8px 0 #0002`
-            : `0 4px 16px 0 ${typeColor}33, 0 2px 8px 0 #0002`,
-          transition: "box-shadow 0.25s, transform 0.25s",
-          cursor: "pointer",
-          transform: hovered ? "scale(1.025)" : "scale(1)",
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        tabIndex={-1}
+      <Link
+        href={`/pokemon/${name.toLowerCase()}`}
+        className="block focus:outline-none h-full flex flex-col justify-between"
+        aria-label={`View Pokédex dossier for ${name}`}
       >
-        {/* Type SVG background */}
-        <div
-          className="absolute inset-0 z-0 pointer-events-none"
-          style={{
-            background: `url(${typeBgUrl}) center/80% no-repeat`,
-            opacity: 0.13,
-          }}
-        />
-
-        {/* Glassy overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none rounded-3xl z-10"
-          style={{
-            background:
-              "linear-gradient(135deg,rgba(255,255,255,0.10) 60%,rgba(255,255,255,0.03) 100%)",
-            backdropFilter: "blur(6px)",
-          }}
-        />
-
-        {/* Card content */}
-        <div className="relative z-20 flex flex-col items-center w-full">
-          {/* Pokédex number */}
-          <span
-            className="absolute top-26 right-16 text-sm font-bold bg-black/40 text-white px-3 py-1 rounded-full backdrop-blur-sm"
-            style={{
-              border: `1.5px solid ${typeColor}`,
-              letterSpacing: "0.05em",
-            }}
-          >
-            #{id}
-          </span>
-
-          {/* Sprite */}
-          <div className="relative w-28 h-28 mb-3 mt-2">
-            <img
-              src={validSprite}
-              alt={name}
-              width={112}
-              height={112}
-              className="object-contain"
-              style={{ width: "100%", height: "100%", objectFit: "contain" }}
-            />
+        {/* Top Meta Row */}
+        <div className="flex items-center justify-between gap-1 pb-2 border-b border-border-crisp">
+          <div className="flex items-center gap-1.5">
+            <span className="font-index-mono text-[13px] font-extrabold text-primary tracking-tight">
+              {formattedId}
+            </span>
+            <span className="font-subhead-kana text-[11px] text-on-surface-variant">
+              {japaneseName}
+            </span>
           </div>
-          
-          {/* Name */}
-          <h2
-            className="text-xl font-bold capitalize text-center mb-2"
-            style={{
-              color: "#fff",
-              fontFamily: "'Fredoka', sans-serif",
-              textShadow: "0 2px 8px #0008",
-              letterSpacing: "0.02em",
-            }}
-          >
-            {name}
-          </h2>
 
-          {/* Type badge(s) */}
-          <div className="flex flex-wrap justify-center gap-2 mb-1">
-            {types.map((type) => (
-              <span
-                key={type}
-                className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
-                style={{
-                  background: TYPE_COLORS[type] ?? "#eee",
-                  color: "#fff",
-                  boxShadow: `0 2px 8px ${TYPE_COLORS[type] ?? "#eee"}44`,
-                }}
-              >
-                <img
-                  src={`/icons/${type}.svg`}
-                  alt={type}
-                  width={16}
-                  height={16}
-                  className="mr-1"
-                  style={{ filter: "brightness(0) invert(1)" }}
-                />
-                {type}
+          <div className="flex items-center gap-1">
+            {/* Quick Favorite toggle button */}
+            <button
+              onClick={handleToggleFavorite}
+              className={`snappy-btn w-6 h-6 rounded-md flex items-center justify-center transition-all ${
+                isCardFavorite
+                  ? "bg-amber-500/20 text-amber-500 dark:text-amber-400 hover:bg-amber-500/30 shadow-2xs"
+                  : "bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-amber-500 dark:hover:text-amber-400"
+              }`}
+              title={isCardFavorite ? "Remove from Favorites" : "Add to Favorites"}
+              type="button"
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${isCardFavorite ? "fill-amber-500 dark:fill-amber-400 text-amber-500 dark:text-amber-400" : ""}`} />
+            </button>
+
+            {/* Quick Caught toggle badge/button */}
+            <button
+              onClick={handleToggleCaught}
+              className={`snappy-btn h-6 px-1.5 rounded-md flex items-center gap-1 transition-all text-[10px] font-caption-label font-bold ${
+                isCardCaught
+                  ? "bg-secondary/15 text-secondary hover:bg-secondary/25 border border-secondary/30"
+                  : "bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-secondary"
+              }`}
+              title={isCardCaught ? "Marked as Caught (click to toggle)" : "Log as Caught"}
+              type="button"
+            >
+              <CheckCircle2 className={`w-3.5 h-3.5 ${isCardCaught ? "text-secondary fill-secondary/20" : ""}`} />
+              {isCardCaught && <span>CAUGHT</span>}
+            </button>
+
+            {/* Quick Audio Cry Preview button directly on card */}
+            <button
+              onClick={handlePlayCry}
+              className={`snappy-btn w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
+                isPlayingAudio
+                  ? "bg-primary text-white shadow-xs"
+                  : "bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-primary"
+              }`}
+              title="Play Pokémon Cry"
+              type="button"
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                {isPlayingAudio ? "graphic_eq" : "volume_up"}
               </span>
-            ))}
+            </button>
           </div>
         </div>
-      </div>
-    </Link>
+
+        {/* Pokemon Illustration Well with Type-Colored Atmosphere */}
+        <div
+          className="relative w-full h-40 my-2.5 rounded-lg flex items-center justify-center overflow-hidden transition-all duration-300 border"
+          style={{
+            backgroundColor: primaryConfig.softBg,
+            borderColor: primaryConfig.borderHex,
+          }}
+        >
+          {/* Subtle Radial Glow in primary type color */}
+          <div
+            className="absolute w-32 h-32 rounded-full blur-xl opacity-60 group-hover:scale-110 transition-transform duration-500 pointer-events-none"
+            style={{ backgroundColor: primaryConfig.colorHex }}
+          ></div>
+
+          {/* Official Artwork */}
+          <img
+            src={artworkUrl}
+            alt={name}
+            onError={() => setImageError(true)}
+            className="relative z-10 max-h-32 object-contain group-hover:scale-108 transition-transform duration-300 drop-shadow-[0_6px_14px_rgba(0,0,0,0.14)]"
+            loading="lazy"
+          />
+
+          {/* Archival Corner Stamp */}
+          <span className="absolute bottom-1 right-2 font-index-mono text-[9px] text-on-surface-variant/60 tracking-wider">
+            {archivalIndex}
+          </span>
+        </div>
+
+        {/* Card Content Footer */}
+        <div className="flex flex-col gap-1.5 pt-0.5">
+          <div className="flex items-baseline justify-between gap-1">
+            <h2 className="font-headline-sm text-[16px] text-on-surface group-hover:text-secondary transition-colors capitalize font-bold truncate">
+              {name.replace(/-/g, " ")}
+            </h2>
+            {bst !== undefined && (
+              <span className="font-caption-label text-[10px] text-secondary font-bold bg-surface-container-low border border-border-crisp px-1.5 py-0.5 rounded shrink-0">
+                BST {bst}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between pt-0.5 flex-wrap gap-1">
+            {/* Standard Authentic Pokémon Type Pills */}
+            <div className="flex items-center gap-1 flex-wrap">
+              {types.map((t) => {
+                const config = TYPE_CONFIGS[t.toLowerCase()] || TYPE_CONFIGS.normal;
+                return (
+                  <span
+                    key={t}
+                    style={{ backgroundColor: config.colorHex }}
+                    className={`px-2 py-0.5 rounded text-[10px] font-caption-label uppercase font-bold tracking-wide shadow-2xs ${config.textClass}`}
+                  >
+                    {config.label}
+                  </span>
+                );
+              })}
+            </div>
+
+            {formattedHeight || formattedWeight ? (
+              <span className="font-caption-label text-[10px] text-on-surface-variant font-mono">
+                {formattedHeight || "—"} / {formattedWeight || "—"}
+              </span>
+            ) : null}
+          </div>
+        </div>
+      </Link>
+    </article>
   );
 }

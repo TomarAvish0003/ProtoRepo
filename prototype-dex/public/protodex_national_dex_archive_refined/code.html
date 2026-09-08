@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;family=Space+Grotesk:wght@500;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;family=Space+Grotesk:wght@100..900&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.anime-grid-bg{background-image:radial-gradient(rgba(23,27,38,0.08) 1px,transparent 0);background-size:20px 20px;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-tertiary-fixed-variant":"#5e4200","tertiary-fixed-dim":"#ffba20","on-secondary-fixed-variant":"#004e60","inverse-surface":"#2c303b","on-tertiary-container":"#fffbff","on-primary-container":"#fffbff","surface-container":"#ebedfc","on-primary":"#ffffff","secondary-container":"#00d2ff","on-error":"#ffffff","primary":"#ba0032","on-primary-fixed":"#40000b","surface-variant":"#dfe2f1","on-primary-fixed-variant":"#920025","surface-dim":"#d7d9e8","inverse-primary":"#ffb3b5","surface":"#faf8ff","surface-container-high":"#e5e7f6","surface-container-lowest":"#ffffff","tertiary":"#795600","secondary-fixed":"#b6ebff","error":"#ba1a1a","on-background":"#171b26","error-container":"#ffdad6","outline":"#916f6f","on-surface":"#171b26","surface-container-highest":"#dfe2f1","tertiary-container":"#986d00","on-secondary":"#ffffff","on-error-container":"#93000a","background":"#faf8ff","surface-bright":"#faf8ff","tertiary-fixed":"#ffdea8","inverse-on-surface":"#edf0ff","on-secondary-fixed":"#001f28","on-surface-variant":"#5c3f40","on-secondary-container":"#00566a","surface-tint":"#be0034","primary-fixed":"#ffdada","primary-fixed-dim":"#ffb3b5","secondary-fixed-dim":"#47d6ff","on-tertiary":"#ffffff","surface-container-low":"#f2f3ff","outline-variant":"#e6bdbd","primary-container":"#e41944","on-tertiary-fixed":"#271900","secondary":"#00677f"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"gutter-mobile":"1rem","gutter-desktop":"1.5rem","unit-3xl":"4rem","unit-xs":"0.5rem","unit-lg":"1.5rem","unit-sm":"0.75rem","unit-2xl":"3rem","unit-xl":"2rem","unit-2xs":"0.25rem","edge-margin-desktop":"2.5rem","edge-margin-mobile":"1rem","unit-md":"1rem"},"fontFamily":{"display-hero":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"onomatopoeia-accent":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"telemetry-data":["Space Grotesk"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-chamfer":["Space Grotesk"],"label-kanji-sub":["Plus Jakarta Sans"],"title-editorial":["Plus Jakarta Sans"]},"fontSize":{"display-hero":["56px",{"lineHeight":"60px","letterSpacing":"-0.03em","fontWeight":"800"}],"body-md":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"500"}],"headline-md":["26px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"700"}],"headline-lg":["38px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"800"}],"body-lg":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"500"}],"onomatopoeia-accent":["22px",{"lineHeight":"24px","letterSpacing":"-0.04em","fontWeight":"800"}],"headline-sm":["20px",{"lineHeight":"26px","letterSpacing":"0em","fontWeight":"700"}],"display-hero-mobile":["36px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"800"}],"telemetry-data":["14px",{"lineHeight":"18px","letterSpacing":"0.04em","fontWeight":"700"}],"headline-lg-mobile":["28px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"800"}],"body-sm":["12px",{"lineHeight":"17px","letterSpacing":"0.01em","fontWeight":"400"}],"label-chamfer":["11px",{"lineHeight":"14px","letterSpacing":"0.08em","fontWeight":"700"}],"label-kanji-sub":["10px",{"lineHeight":"12px","letterSpacing":"0.12em","fontWeight":"700"}],"title-editorial":["16px",{"lineHeight":"22px","letterSpacing":"0.06em","fontWeight":"800"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface anime-grid-bg min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-[0_4px_16px_rgba(23,27,38,0.06)]"><div class="h-20 w-full px-edge-margin-desktop flex items-center justify-between gap-unit-md"><div class="flex items-center gap-unit-lg"><div class="flex items-center gap-unit-sm"><img alt="protoDex Anime Cyber Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X_ghPchZI2-IWrJVci_rR4U4_yTnOc2DtTBYVlSMij1hx1Nr3E_zHQ0D_XWEEMk_yuwPLJwBi7bUKBzUyokNJT6Ud4neNFuYqPWTyXLz5iF9D7etNoh67D0V9Fo0EP2wED_swcVnfhZYqlY-wfGBBbwcFwJbiw8rXCMdqhCpvt7-pESI54Vp7uS7UtcZiWhQQ4RHoAt3SbCdoWaIiSJOXfAbBuszXGRBHHf72xd4XxqLJaXo8bsQBLkKs"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-wider uppercase leading-none">protoDex</span><span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold tracking-widest">携帯生体解析端末 v4.2</span></div></div><div class="hidden xl:flex items-center gap-unit-xs px-unit-sm py-unit-2xs bg-surface-container-high rounded"><span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span><span class="font-telemetry-data text-body-sm text-on-surface font-bold tracking-wider">STATUS: ACTIVE</span><span class="font-telemetry-data text-body-sm text-on-surface-variant font-bold">// REGION: GLOBAL // FREQ: 92.4 MHz</span></div></div><nav class="hidden lg:flex items-center gap-unit-xs" data-active-classes="bg-primary-container text-on-primary-container font-bold shadow-[2px_2px_0px_#171b26]"><a class="px-unit-sm py-unit-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all flex flex-col items-center" data-path="spotlight-&amp;-lab" href="#"><span class="font-title-editorial text-body-md tracking-wider">Spotlight &amp; Lab</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">特報解析</span></a><a aria-current="page" class="px-unit-sm py-unit-xs rounded transition-all flex flex-col items-center bg-primary-container text-on-primary-container font-bold shadow-[2px_2px_0px_#171b26]" data-path="archive-index" href="#"><span class="font-title-editorial text-body-md tracking-wider">Archive Index</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">全図鑑録</span></a><a class="px-unit-sm py-unit-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all flex flex-col items-center" data-path="specimen-dossier" href="#"><span class="font-title-editorial text-body-md tracking-wider">Pokemon Dossier</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">詳細生体</span></a><a class="px-unit-sm py-unit-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all flex flex-col items-center" data-path="battle-simulator" href="#"><span class="font-title-editorial text-body-md tracking-wider">Battle Simulator</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">戦術解析室</span></a></nav><div class="flex items-center gap-unit-md"><div class="hidden md:flex items-center gap-unit-xs px-unit-sm py-unit-2xs bg-surface-container-lowest rounded shadow-[2px_2px_0px_#171b26]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-telemetry-data text-body-sm text-on-surface-variant">CMD SCAN</span><span class="px-unit-2xs bg-surface-container-high font-label-chamfer text-label-chamfer text-on-surface rounded">CTRL+K</span></div><div class="hidden sm:flex flex-col text-right"><span class="font-label-chamfer text-label-chamfer text-primary font-bold tracking-widest">CHAMPION TIER</span><span class="font-telemetry-data text-body-sm text-on-surface font-bold">ID: #9842</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Tactical Broadcast Ticker -->
+<!-- Primary Workstation Container -->
+<div class="w-full px-edge-margin-desktop py-unit-lg flex flex-col gap-unit-xl">
+<!-- Header Banner Panel (Manga Editorial Style) -->
+<div class="relative w-full bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden p-unit-lg md:p-unit-xl">
+<div class="absolute -right-8 -top-8 w-64 h-64 rounded-full bg-gradient-to-br from-secondary-container/20 to-primary/10 blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-unit-lg">
+<div class="flex flex-col gap-unit-xs max-w-3xl">
+<div class="flex items-center gap-unit-sm"><span class="px-unit-xs py-unit-2xs bg-primary text-on-primary font-label-chamfer text-label-chamfer rounded shadow-sm font-bold tracking-wider">SPECIMEN ARCHIVE</span><span class="font-telemetry-data text-body-sm text-secondary font-bold">GEN I – IX COMPLETE ROSTER</span></div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight flex items-baseline gap-unit-sm flex-wrap"><span>NATIONAL SPECIMEN MATRIX</span><span class="font-label-kanji-sub text-headline-sm text-primary/70 font-bold ml-1">全図鑑録</span></h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Universal field telemetry repository spanning Generations I through IX. Calibrated for real-time biological classification, Base Stat Total (BST) power scaling, elemental affinity vectors, and metamorphic stage analysis.
+          </p>
+</div>
+<!-- Quick Summary Mini HUD / Dial -->
+<div class="flex items-center gap-unit-md bg-surface-container-low p-unit-sm rounded-lg shadow-sm">
+<div class="flex flex-col text-right">
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant">DISCOVERED SPECIES</span>
+<span class="font-telemetry-data text-headline-sm text-primary font-bold">1,025 <span class="text-body-sm text-on-surface-variant">SPECIMENS</span></span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-secondary font-bold">捕獲登録率: 89.4%</span>
+</div>
+<div class="w-14 h-14 relative flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-variant" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="89, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-telemetry-data text-body-sm text-on-surface font-bold">89%</span>
+</div>
+</div>
+</div>
+<!-- Action Strip: Command Search & Quick Bar -->
+<div class="mt-unit-lg pt-unit-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-unit-md">
+<div class="flex-1 relative flex items-center">
+<span class="material-symbols-outlined absolute left-unit-sm text-secondary pointer-events-none text-[20px]">radar</span>
+<input class="w-full pl-11 pr-24 py-unit-xs bg-surface-container text-on-surface font-body-md rounded-lg focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary shadow-sm transition-all placeholder:text-on-surface-variant/70" id="archiveSearch" placeholder="SEARCH BY NAME, #ID, ABILITY, OR HABITAT // 検索..." type="text"/>
+<div class="absolute right-unit-xs flex items-center gap-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-surface-container-highest text-on-surface font-label-chamfer text-label-chamfer rounded shadow-sm">CTRL+K</span>
+</div>
+</div>
+<div class="flex items-center gap-unit-xs overflow-x-auto pb-unit-2xs md:pb-0">
+<button class="px-unit-md py-unit-xs bg-primary text-on-primary font-telemetry-data text-body-sm rounded-lg shadow-md hover:bg-primary-container active:scale-95 transition-all flex items-center gap-unit-xs shrink-0" id="btnLucky"><span class="material-symbols-outlined text-[18px]">casino</span><span>LUCKY ENCOUNTER</span></button>
+<button class="px-unit-sm py-unit-xs bg-surface-container-high text-on-surface-variant font-telemetry-data text-body-sm rounded-lg shadow-sm hover:bg-surface-variant active:scale-95 transition-all flex items-center gap-unit-xs shrink-0" id="btnResetFilters">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+<span>RESET</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Asymmetric Main Layout: Left Filter Matrix, Right Pokemon Roster -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-unit-lg items-start">
+<!-- ================= SIDEBAR FILTER MATRIX (4 cols) ================= -->
+<aside class="lg:col-span-4 flex flex-col gap-unit-md sticky top-24">
+<!-- Filter Card Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg p-unit-md flex flex-col gap-unit-lg">
+<!-- Filter Header -->
+<div class="flex items-center justify-between pb-unit-xs">
+<div class="flex items-center gap-unit-xs"><span class="w-2.5 h-2.5 rounded bg-primary"></span><h2 class="font-headline-sm text-headline-sm text-on-surface tracking-wide">FILTER MATRIX</h2><span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant/70">絞込</span></div>
+<span class="px-unit-xs py-unit-2xs bg-secondary-fixed text-on-secondary-fixed font-telemetry-data text-body-sm rounded font-bold" id="activeFilterBadge">ALL SHOWN</span>
+</div>
+<!-- Section 1: Metamorphic Stage -->
+<div class="flex flex-col gap-unit-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-chamfer text-label-chamfer text-on-surface font-bold tracking-wider uppercase">METAMORPHIC TIER // 進化段階</span>
+<span class="font-telemetry-data text-body-sm text-on-surface-variant">4 CATEGORIES</span>
+</div>
+<div class="grid grid-cols-2 gap-unit-xs"><button class="stage-pill active px-unit-sm py-unit-xs bg-primary text-on-primary font-telemetry-data text-body-sm rounded text-left flex items-center justify-between shadow-sm transition-all" data-stage="all"><span>ALL STAGES</span><span class="material-symbols-outlined text-[16px]">done</span></button><button class="stage-pill px-unit-sm py-unit-xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded text-left flex items-center justify-between hover:bg-surface-container-high transition-all" data-stage="basic"><span>BASIC</span><span class="font-label-chamfer text-label-chamfer text-on-surface-variant">420</span></button><button class="stage-pill px-unit-sm py-unit-xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded text-left flex items-center justify-between hover:bg-surface-container-high transition-all" data-stage="apex"><span>FINAL EVOLUTION</span><span class="font-label-chamfer text-label-chamfer text-on-surface-variant">388</span></button><button class="stage-pill px-unit-sm py-unit-xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded text-left flex items-center justify-between hover:bg-surface-container-high transition-all" data-stage="legend"><span>LEGENDARY</span><span class="font-label-chamfer text-label-chamfer text-primary font-bold">82</span></button></div>
+</div>
+<!-- Section 2: 18 Elemental Force Selector -->
+<div class="flex flex-col gap-unit-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-chamfer text-label-chamfer text-on-surface font-bold tracking-wider uppercase">18 ELEMENTAL FORCES // 属性選択</span>
+<span class="font-telemetry-data text-body-sm text-secondary font-bold">CLICK TO ISOLATE</span>
+</div>
+<!-- Type Pill Matrix -->
+<div class="grid grid-cols-3 gap-unit-2xs"><button class="type-btn p-unit-2xs bg-primary-container text-on-primary-container rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="fire"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">local_fire_department</span><span class="font-telemetry-data text-body-sm font-bold">FIRE</span></div><span class="font-telemetry-data text-[10px] opacity-80">86 SPECIES</span></button><button class="type-btn p-unit-2xs bg-secondary text-on-secondary rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="water"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">water_drop</span><span class="font-telemetry-data text-body-sm font-bold">WATER</span></div><span class="font-telemetry-data text-[10px] opacity-80">157 SPECIES</span></button><button class="type-btn p-unit-2xs bg-tertiary-container text-on-tertiary-container rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="grass"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">eco</span><span class="font-telemetry-data text-body-sm font-bold">GRASS</span></div><span class="font-telemetry-data text-[10px] opacity-80">124 SPECIES</span></button><button class="type-btn p-unit-2xs bg-tertiary-fixed-dim text-on-tertiary-fixed rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="electric"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">bolt</span><span class="font-telemetry-data text-body-sm font-bold">ELECTRIC</span></div><span class="font-telemetry-data text-[10px] opacity-80">72 SPECIES</span></button><button class="type-btn p-unit-2xs bg-primary-fixed-dim text-on-primary-fixed rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="psychic"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">psychology</span><span class="font-telemetry-data text-body-sm font-bold">PSYCHIC</span></div><span class="font-telemetry-data text-[10px] opacity-80">103 SPECIES</span></button><button class="type-btn p-unit-2xs bg-inverse-surface text-inverse-on-surface rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="dragon"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">sailing</span><span class="font-telemetry-data text-body-sm font-bold">DRAGON</span></div><span class="font-telemetry-data text-[10px] opacity-80">71 SPECIES</span></button><button class="type-btn p-unit-2xs bg-surface-container-highest text-on-surface rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="ghost"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">visibility_off</span><span class="font-telemetry-data text-body-sm font-bold">GHOST</span></div><span class="font-telemetry-data text-[10px] opacity-80">66 SPECIES</span></button><button class="type-btn p-unit-2xs bg-on-surface text-surface rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="dark"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">dark_mode</span><span class="font-telemetry-data text-body-sm font-bold">DARK</span></div><span class="font-telemetry-data text-[10px] opacity-80">82 SPECIES</span></button><button class="type-btn p-unit-2xs bg-surface-dim text-on-surface rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="steel"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">shield</span><span class="font-telemetry-data text-body-sm font-bold">STEEL</span></div><span class="font-telemetry-data text-[10px] opacity-80">75 SPECIES</span></button><button class="type-btn p-unit-2xs bg-primary-fixed text-on-primary-fixed-variant rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="fairy"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">auto_awesome</span><span class="font-telemetry-data text-body-sm font-bold">FAIRY</span></div><span class="font-telemetry-data text-[10px] opacity-80">69 SPECIES</span></button><button class="type-btn p-unit-2xs bg-primary text-on-primary rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="fighting"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">sports_martial_arts</span><span class="font-telemetry-data text-body-sm font-bold">FIGHTING</span></div><span class="font-telemetry-data text-[10px] opacity-80">78 SPECIES</span></button><button class="type-btn p-unit-2xs bg-secondary-fixed-dim text-on-secondary-fixed-variant rounded flex flex-col items-center justify-center hover:opacity-95 shadow-sm transition-all group" data-type="ice"><div class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">ac_unit</span><span class="font-telemetry-data text-body-sm font-bold">ICE</span></div><span class="font-telemetry-data text-[10px] opacity-80">55 SPECIES</span></button></div>
+</div>
+<!-- Section 3: Stat Range & BST Power Slider -->
+<div class="flex flex-col gap-unit-sm bg-surface-container-low p-unit-sm rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-chamfer text-label-chamfer text-on-surface font-bold tracking-wider uppercase">BST POWER THRESHOLD // 種族値総計</span>
+<span class="font-telemetry-data text-body-sm text-primary font-bold" id="bstDisplayValue">BST ≥ 300</span>
+</div>
+<input class="w-full h-2 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary" id="bstRange" max="720" min="200" step="10" type="range" value="300"/>
+<div class="flex items-center justify-between font-telemetry-data text-body-sm text-on-surface-variant">
+<span>200 (LC)</span>
+<span>500 (Apex)</span>
+<span>720 (Uber)</span>
+</div>
+<!-- Visual Bar Distribution Metric -->
+<div class="flex flex-col gap-unit-2xs pt-unit-xs">
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">FREQUENCY IN CURRENT FILTER</span>
+<div class="flex items-end gap-1 h-8 w-full bg-surface-container rounded p-1">
+<div class="w-1/6 bg-secondary-container h-2/6 rounded-sm"></div>
+<div class="w-1/6 bg-secondary h-4/6 rounded-sm"></div>
+<div class="w-1/6 bg-primary h-5/6 rounded-sm"></div>
+<div class="w-1/6 bg-primary-container h-full rounded-sm"></div>
+<div class="w-1/6 bg-tertiary-fixed-dim h-3/6 rounded-sm"></div>
+<div class="w-1/6 bg-surface-dim h-1/6 rounded-sm"></div>
+</div>
+</div>
+</div>
+<!-- Section 4: Caught / Field Status Toggle -->
+<div class="flex items-center justify-between p-unit-xs bg-surface-container rounded-lg">
+<div class="flex items-center gap-unit-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">20mp</span>
+<div class="flex flex-col">
+<span class="font-title-editorial text-body-md text-on-surface">Caught Only</span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">捕獲済み生体のみ</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="caughtToggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Region Fast Tabs -->
+<div class="flex flex-col gap-unit-2xs">
+<span class="font-label-chamfer text-label-chamfer text-on-surface font-bold tracking-wider uppercase">REGION HUB // 地方区分</span>
+<div class="flex flex-wrap gap-unit-2xs">
+<button class="region-pill px-unit-xs py-unit-2xs bg-primary text-on-primary font-telemetry-data text-body-sm rounded">ALL</button>
+<button class="region-pill px-unit-xs py-unit-2xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded hover:bg-surface-container-high">GEN I Kanto</button>
+<button class="region-pill px-unit-xs py-unit-2xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded hover:bg-surface-container-high">GEN II Johto</button>
+<button class="region-pill px-unit-xs py-unit-2xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded hover:bg-surface-container-high">GEN III Hoenn</button>
+<button class="region-pill px-unit-xs py-unit-2xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded hover:bg-surface-container-high">GEN IV Sinnoh</button>
+<button class="region-pill px-unit-xs py-unit-2xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded hover:bg-surface-container-high">GEN IX Paldea</button>
+</div>
+</div>
+</div>
+<!-- Tactical Laboratory Field Note -->
+<div class="p-unit-sm bg-surface-container-low rounded-lg shadow-sm flex flex-col gap-unit-2xs">
+<div class="flex items-center gap-unit-xs text-primary">
+<span class="material-symbols-outlined text-[18px]">biotech</span>
+<span class="font-telemetry-data text-body-sm font-bold uppercase">RESEARCHER DIRECTIVE</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            High BST specimen profiles (BST &gt; 600) require Champion Class clearance for kinetic battle simulations. Shiny coloration variants exhibit identical combat metrics with altered pigment telemetry.
+          </p>
+</div>
+</aside>
+<!-- ================= SPECIMEN ROSTER GRID (8 cols) ================= -->
+<main class="lg:col-span-8 flex flex-col gap-unit-md">
+<!-- Sorting and View Controls Bar -->
+<div class="w-full bg-surface-container-lowest p-unit-sm rounded-xl shadow-md flex flex-wrap items-center justify-between gap-unit-sm">
+<div class="flex items-center gap-unit-sm">
+<span class="font-label-chamfer text-label-chamfer text-on-surface font-bold uppercase">SORT DISPATCH:</span>
+<select class="bg-surface-container text-on-surface font-telemetry-data text-body-sm px-unit-sm py-unit-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer" id="sortSelect">
+<option value="id-asc">NATIONAL ID: #0001 → #1025</option>
+<option value="id-desc">NATIONAL ID: #1025 → #0001</option>
+<option value="bst-desc">HIGHEST BST // 種族値 (降順)</option>
+<option value="bst-asc">LOWEST BST // 種族値 (昇順)</option>
+<option value="alpha">ALPHABETICAL // アルファベット順</option>
+</select>
+</div>
+<div class="flex items-center gap-unit-md font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant">DISPLAYING: <strong class="text-primary font-bold" id="specimenCount">12</strong> OF 1,025</span>
+<div class="flex items-center gap-1 bg-surface-container p-1 rounded">
+<button class="p-1 bg-surface-container-lowest text-on-surface rounded shadow-xs" title="Grid View">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+<button class="p-1 text-on-surface-variant hover:text-on-surface" title="List Telemetry">
+<span class="material-symbols-outlined text-[18px]">view_list</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Manga Editorial Onomatopoeia Banner Accent -->
+<div class="flex items-center justify-between px-unit-xs"><div class="flex items-center gap-unit-xs"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-chamfer text-label-chamfer text-on-surface font-bold tracking-wider uppercase">SPECIMEN ROSTER</span><span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold">全種一覧</span></div><span class="font-telemetry-data text-body-sm text-on-surface-variant">ACTIVE CATALOG VIEW</span></div>
+<!-- Pokemon Collector Cards Grid (Bespoke Mecha / Card Aesthetics) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-unit-md" id="rosterGrid">
+<!-- Card 1: Bulbasaur -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="318" data-caught="true" data-id="1" data-stage="basic" data-types="grass,poison">
+<!-- Top National Dex Bar -->
+<div class="px-unit-sm py-unit-xs bg-surface-container flex items-center justify-between">
+<span class="font-telemetry-data text-body-sm font-bold text-on-surface">#0001</span>
+<div class="flex items-center gap-1">
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold">フシギダネ</span>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+</div>
+</div>
+<!-- Card Artwork Viewport -->
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high/40 to-transparent pointer-events-none"></div>
+<img class="w-32 h-32 object-contain group-hover:scale-105 transition-transform duration-300 z-10" data-alt="Official high-resolution anime art of Bulbasaur smiling in a lush sunlit forest, botanical energy aura, clean white digital studio lighting, vivid cel shading with mint green and turquoise hues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABFsGQR918QRTgZorMMStYYtOyE5ObFXCjdYugPF_qopA5ymDilSVgrnNs_s4f0BMeHm5rZ_QRINrlPh6wbmOROWA7v72085ioRN5uAQp7TlKyFMbSItf1tl4UzeVlJzQQ9rNK4p0fukDqy499Gl1clghmRPzpt0kakESlmXhbKHUmndbq2TyTEJAgH9Rcavd3c-0FD4onso37CttmcNnZpc7Uah8jxi9XGNi-kAIar5rR6VO8C7Uq"/>
+<!-- Rarity / Catch Badge -->
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<!-- Shiny Star -->
+<span class="absolute top-2 right-2 text-tertiary-fixed-dim material-symbols-outlined text-[20px]" title="Shiny Data Available">star</span>
+</div>
+<!-- Card Content Body -->
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Bulbasaur</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Seed Pokémon</span>
+</div>
+<!-- Elemental Types -->
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-tertiary-container text-on-tertiary-container font-telemetry-data text-body-sm rounded font-bold">GRASS // 草</span>
+<span class="px-unit-xs py-unit-2xs bg-primary-fixed-dim text-on-primary-fixed font-telemetry-data text-body-sm rounded font-bold">POISON // 毒</span>
+</div>
+</div>
+<!-- Stat Gauges Strip -->
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">318</span>
+</div>
+<!-- Micro Stat Cells -->
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">45</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">49</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">49</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-on-surface font-bold">65</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">65</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">45</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Charmander -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="309" data-caught="true" data-id="4" data-stage="basic" data-types="fire">
+<div class="px-unit-sm py-unit-xs bg-surface-container flex items-center justify-between">
+<span class="font-telemetry-data text-body-sm font-bold text-on-surface">#0004</span>
+<div class="flex items-center gap-1">
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold">ヒトカゲ</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+</div>
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none"></div>
+<img class="w-32 h-32 object-contain group-hover:scale-105 transition-transform duration-300 z-10" data-alt="Official dynamic anime character artwork of Charmander with a bright blazing flame at the tip of its tail, cheerful battle stance, crisp warm fiery highlights and bold ink lines on a studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWxIhoNvGmrFWN2686cExyl0-6YCrGJq9Ygeznkafhb8qp_CRJSf4w0Hye6VhBnm4NT0rCtSEd04RwIE8KP-_Ha2xTD5LWN8PybBQ0bRlg_yL4KEO9Z6v1PKTp-fgetfX0hCrX8IFt-dS46vt0q0T9veTr7t6YRJsgffB-9p_SaxFm5zYdP_F56lKs10W08gUdjtVpyHMc-q_vwpG_XjpGx1dkvTAeQ0Vl5LqedQykff3WMcm4ysiH"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<span class="absolute top-2 right-2 text-tertiary-fixed-dim material-symbols-outlined text-[20px]">star</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Charmander</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Lizard Pokémon</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-primary-container text-on-primary-container font-telemetry-data text-body-sm rounded font-bold">FIRE // 炎</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">309</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">39</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">52</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">43</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-on-surface font-bold">60</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">50</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">65</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Charizard (Apex) -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="534" data-caught="true" data-id="6" data-stage="apex" data-types="fire,flying">
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-primary-container/20 to-transparent pointer-events-none"></div>
+<img class="w-36 h-36 object-contain group-hover:scale-110 transition-transform duration-300 z-10" data-alt="Fierce full anime action pose of Charizard roaring with outstretched dragon wings, incandescent fiery breath curling from maw, high cinematic contrast, manga speedline particles, vibrant orange and teal underglow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnlO25pRMmzozTL8DFHQd-EC_oR2TZFM2xoRJfqp89VZyNs33vs6WqtZw9WXJW5V1MPAF5YxM9pVwLLUVVneS2t5KFT79ZO10a3dOYyW8D0JhNjoEanq06ob49yFoM9FGM7krFNRfTIs4cIxxGGLRpm-pwux9aj8pp8YkVvX3eq_nDDf64G1e-JZ9DhhY7v6_D9Ux6ZjMkJFDotpg3bOyybuwx8YYulolI7uXml0cBRNyAtnn312iA"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<span class="absolute bottom-2 right-2 px-unit-xs py-unit-2xs bg-primary text-on-primary font-label-chamfer text-label-chamfer rounded font-bold shadow-sm">S-RANK</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Charizard</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Flame Pokémon</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-primary-container text-on-primary-container font-telemetry-data text-body-sm rounded font-bold">FIRE // 炎</span>
+<span class="px-unit-xs py-unit-2xs bg-secondary-fixed text-on-secondary-fixed font-telemetry-data text-body-sm rounded font-bold">FLYING // 飛</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">534</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">78</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">84</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">78</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-primary font-bold">109</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">85</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-primary font-bold">100</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4: Squirtle -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="314" data-caught="true" data-id="7" data-stage="basic" data-types="water">
+<div class="px-unit-sm py-unit-xs bg-surface-container flex items-center justify-between">
+<span class="font-telemetry-data text-body-sm font-bold text-on-surface">#0007</span>
+<div class="flex items-center gap-1">
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold">ゼニガメ</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+</div>
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-secondary/15 to-transparent pointer-events-none"></div>
+<img class="w-32 h-32 object-contain group-hover:scale-105 transition-transform duration-300 z-10" data-alt="Energetic anime character portrait of Squirtle squirting a spiral water stream from its mouth, splash droplet physics, light blue prismatic water reflections, crisp cel shading." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPnvGyInuhqLz_Sg7OFORqlZG2egEIdb6nqQbztc11DmdLqS1tcbhwhjr9Zhg5TbqPcEFYhL-4Y9z87fgCvVeKtnFy7MNNXbsqWUTg8RtrgF4hXfZp1YnGccV9d6smNTAgYb81pxmfx1m9w3FisuUiKiWdyhV_G0sq3xAza-RAW6uOQ5WtgI6SnImbGlv9F9qs1S6bKDpIaq_Wrb9BPzv_vDh4SdC_qkUF5K3InGemJvKXWxhEHPuC"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<span class="absolute top-2 right-2 text-tertiary-fixed-dim material-symbols-outlined text-[20px]">star</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Squirtle</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Tiny Turtle</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-telemetry-data text-body-sm rounded font-bold">WATER // 水</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">314</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">44</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">48</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">65</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-on-surface font-bold">50</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">64</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">43</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 5: Blastoise (Apex) -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="530" data-caught="true" data-id="9" data-stage="apex" data-types="water">
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-secondary/20 to-transparent pointer-events-none"></div>
+<img class="w-36 h-36 object-contain group-hover:scale-110 transition-transform duration-300 z-10" data-alt="Heavy anime mech-styled combat illustration of Blastoise firing dual high-pressure hydro cannons from shell carapace, mist steam clouds, heavy dynamic ground tremors, bold graphic outlines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW0wh01q8MatPkbVv65ReANzEYcf3pR8KKjmAvhSmuLSxglqWmM9sSLrtlO6U9xsn1NToDufXlsNogasXtG8Y08dNHI5EWjq-dy-XLNZ1Bhuk4iOYcljnXSVqL6Q3GHpQbfw75ilcDDWKasRBXl18H6-RF7j31gxGFookR4mkRp2M8izrlw6BHTs8OQZWPDZj8VYEOF8LiuaHHfHeYyMF9wwn3kJm_wb06Uo5qGbmeYfMqQc5XM9i5"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<span class="absolute bottom-2 right-2 px-unit-xs py-unit-2xs bg-primary text-on-primary font-label-chamfer text-label-chamfer rounded font-bold shadow-sm">S-RANK</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Blastoise</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Shellfish</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-telemetry-data text-body-sm rounded font-bold">WATER // 水</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">530</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">79</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">83</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-primary font-bold">100</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-on-surface font-bold">85</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-primary font-bold">105</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">78</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 6: Pikachu -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="320" data-caught="true" data-id="25" data-stage="basic" data-types="electric">
+<div class="px-unit-sm py-unit-xs bg-surface-container flex items-center justify-between">
+<span class="font-telemetry-data text-body-sm font-bold text-on-surface">#0025</span>
+<div class="flex items-center gap-1">
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold">ピカチュウ</span>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
+</div>
+</div>
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary-fixed-dim/20 to-transparent pointer-events-none"></div>
+<img class="w-32 h-32 object-contain group-hover:scale-105 transition-transform duration-300 z-10" data-alt="Anime master artwork of Pikachu leaping with crackling electric lightning sparks from its rosy cheeks, lightning bolt tail, high voltage neon yellow arcs, dynamic manga speedlines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvlKYwH3_RbIEXTpUcWJq8SOHV6acF47NhCuZwtIEqZAoonvja2vDWByAHfqG-c_EufMl5aM0fMRlQmXkEt6JjDDdszphT2ksRVuOZG5o-HxhRUzbC4uHYC2Ai7V6KAuksXsb4Zk_lBUpoKpApYmohfoUZmdK7e8gyYrI6tbbAic3s4zPhtAPl9-nlC6FIMzkc_WWlk81vhRMScuTrWyv_31_ntYmJU1nAAUGxKRqArOJbg5TOQjtJ"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<span class="absolute top-2 right-2 text-tertiary-fixed-dim material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Pikachu</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Mouse Pokémon</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-tertiary-fixed-dim text-on-tertiary-fixed font-telemetry-data text-body-sm rounded font-bold">ELECTRIC // 電</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">320</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">35</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">55</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">40</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-on-surface font-bold">50</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">50</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-primary font-bold">90</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 7: Gengar (Apex) -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="500" data-caught="true" data-id="94" data-stage="apex" data-types="ghost,poison">
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"></div>
+<img class="w-36 h-36 object-contain group-hover:scale-110 transition-transform duration-300 z-10" data-alt="Mischievous anime illustration of Gengar with glowing crimson eyes, broad toothy sinister grin, phantom purple aura tendrils, floating menacingly out of shadow portals." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_-5qVplSCo9yXFtF5dSdyP_6IR7G_Su1lxMx5D4ERalVJKI9w9eX49KAPWHQp65bh8bTZNTPloQeYDEGx1oWfoIPVXR-xVSA3esJUCfIgX10Y-uTz0z6u-QxkMvg6LDqTl8iIPtERDkKXxPdJPUPZZ37_mZETFryFcS2cxm-_3IxMy_ZUdrAyhtX9uec8dcGYqCJMY6abfXr-LQmi7ukC_bP_9ujHAm5114HWG766j1JLCydLxjps"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Gengar</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Shadow Pokémon</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-surface-container-highest text-on-surface font-telemetry-data text-body-sm rounded font-bold">GHOST // 霊</span>
+<span class="px-unit-xs py-unit-2xs bg-primary-fixed-dim text-on-primary-fixed font-telemetry-data text-body-sm rounded font-bold">POISON // 毒</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">500</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">60</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">65</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">60</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-primary font-bold">130</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">75</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-primary font-bold">110</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 8: Eevee -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="325" data-caught="true" data-id="133" data-stage="basic" data-types="normal">
+<div class="px-unit-sm py-unit-xs bg-surface-container flex items-center justify-between">
+<span class="font-telemetry-data text-body-sm font-bold text-on-surface">#0133</span>
+<div class="flex items-center gap-1">
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold">イーブイ</span>
+<span class="w-1.5 h-1.5 rounded-full bg-surface-dim"></span>
+</div>
+</div>
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-tertiary/10 to-transparent pointer-events-none"></div>
+<img class="w-32 h-32 object-contain group-hover:scale-105 transition-transform duration-300 z-10" data-alt="Delightful anime art of Eevee with fluffy cream neck ruff, curious tilted head, bright expressive brown eyes, prism light refractions hinting at eight evolutionary paths." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZTEaUnWuq9tc7dAfwSVbRiqArFjC_zIXq1fjObvVENaQr4rYBnPt6rPjxoHyPoJaP5Cv6igUGIXXfZTbMuU8vY66WdDpH7_IKTQjjaV61JV88XGp1VNFCnSkwuJlrUiffkWxZPIjl2GqDE4TaA91PpWLW8-6vEwinSEBZmlV5UmqfE2Y54Sc2COgUoaqjcXmCGozSM9ZTA8DlJe-sUZldpHGPRLT0Xqiy_5goofkP2Qg28KXBPFAL"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<span class="absolute top-2 right-2 text-tertiary-fixed-dim material-symbols-outlined text-[20px]">stream</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Eevee</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Evolution</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-surface-variant text-on-surface font-telemetry-data text-body-sm rounded font-bold">NORMAL // 無</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">325</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">55</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-on-surface font-bold">55</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">50</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-on-surface font-bold">45</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">65</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">55</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 9: Mewtwo (Legendary) -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="680" data-caught="false" data-id="150" data-stage="legend" data-types="psychic">
+<div class="px-unit-sm py-unit-xs bg-primary text-on-primary flex items-center justify-between">
+<div class="flex items-center gap-1">
+<span class="px-unit-2xs bg-inverse-surface text-inverse-on-surface font-label-chamfer text-label-chamfer rounded">LEGEND</span>
+<span class="font-telemetry-data text-body-sm font-bold">#0150</span>
+</div>
+<span class="font-label-kanji-sub text-label-kanji-sub text-surface-container font-bold">ミュウツー</span>
+</div>
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"></div>
+<img class="w-36 h-36 object-contain group-hover:scale-110 transition-transform duration-300 z-10" data-alt="Epic laboratory sci-fi anime artwork of Mewtwo levitating with glowing psionic orb in hand, psychic shockwaves rippling in air, neon cyan and magenta bio-chamber telemetry reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtVO9InujaRF56-pTRHFVOa09jH89xZKksQAZxnqx6X6Mk54xgdtIoNGrwxrZrjCh49c6hoAvRSh8nvnP0QH_-LbI0VzqGnoXr0f9vxneLkjtAoIkk0LjDDd8iWJfm5N16a2CT-Yk8gYNai3In9LasP3cDVdA7cdhp2bGeRvJ7ZRlDR5V1Cvc-dZMkAg5lAojtISVgOSDRo2EEBg2R9xIIjoL4Il7ZZj_rH-Y-XAnHuuuOPz5GOUc7"/>
+<!-- Uncaught Tactical Tag -->
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-surface-variant text-on-surface font-label-chamfer text-label-chamfer rounded shadow-sm">UNREGISTERED // 未捕獲</span>
+<span class="absolute bottom-2 right-2 px-unit-xs py-unit-2xs bg-primary text-on-primary font-label-chamfer text-label-chamfer rounded font-bold shadow-sm">BST 680</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Mewtwo</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Genetic</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-primary-fixed-dim text-on-primary-fixed font-telemetry-data text-body-sm rounded font-bold">PSYCHIC // 超</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">680</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-primary font-bold">106</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-primary font-bold">110</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">90</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-primary font-bold">154</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">90</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-primary font-bold">130</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 10: Lucario (Apex) -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="525" data-caught="true" data-id="448" data-stage="apex" data-types="fighting,steel">
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-secondary/20 to-transparent pointer-events-none"></div>
+<img class="w-36 h-36 object-contain group-hover:scale-110 transition-transform duration-300 z-10" data-alt="High intensity shonen anime style artwork of Lucario charging an Aura Sphere between glowing blue paws, steel spikes gleaming, fierce focused gaze, aura energy ribbon particles." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAvbefc9SjPdRi4yI6qk4iPb9aKeHvsMNLbzJpjzI22al8Lv3tOAJHQu4dfHLEhvlumD5KKd8AjRRrR9nl1sGkxAyyagEu8KGQUUEhVqfJbtKM2U7cgwl4YR0S0YaSm6a0-ujdMQuagcmvCm0rt_3tgXjGFfUft3fSk2c_BH4wOr2XFZMSI1ScQls4JQtwz8ezj8pE4viOxJNe7uoKuSTQundxeqY_LwIqyJjyfhAP6za6POHhxsO6"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+<span class="absolute bottom-2 right-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded font-bold shadow-sm">AURA TECH</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Lucario</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Aura Pokémon</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-primary text-on-primary font-telemetry-data text-body-sm rounded font-bold">FIGHT // 闘</span>
+<span class="px-unit-xs py-unit-2xs bg-surface-dim text-on-surface font-telemetry-data text-body-sm rounded font-bold">STEEL // 鋼</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">525</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">70</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-primary font-bold">110</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">70</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-primary font-bold">115</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">70</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">90</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 11: Rayquaza (Legendary) -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="680" data-caught="true" data-id="384" data-stage="legend" data-types="dragon,flying">
+<div class="px-unit-sm py-unit-xs bg-primary text-on-primary flex items-center justify-between">
+<div class="flex items-center gap-1">
+<span class="px-unit-2xs bg-inverse-surface text-inverse-on-surface font-label-chamfer text-label-chamfer rounded">LEGEND</span>
+<span class="font-telemetry-data text-body-sm font-bold">#0384</span>
+</div>
+<span class="font-label-kanji-sub text-label-kanji-sub text-surface-container font-bold">レックウザ</span>
+</div>
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/25 to-transparent pointer-events-none"></div>
+<img class="w-36 h-36 object-contain group-hover:scale-110 transition-transform duration-300 z-10" data-alt="Magnificent anime dragon composition of Rayquaza coiling through ozone stratosphere, glowing gold ancient glyph runes on emerald green scales, cosmic starfield clouds, lightning storm." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYZIKhLrumWKBvrPKh1ErB4nPWd8TMR5jRwzmW3vMCsu3vyVlr89vSd5_Gm0obZZe0Scn1AMiNTwRxpTvsaTf1T4hEO6x-B9cmrVKJ9z3SskgBlsgbq57H_9AiYdgncQtxIMPViV5Xi_RbK4_4rJ6taJrXm_gt9MwyPD4oswqlBtDNIbWyyBqo18GZBVBqUd-HfrHTdnszhdk1KGw8euUef2AjMljPB8d3ziu1oUXDctlf_NWXYFSk"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-secondary text-on-secondary font-label-chamfer text-label-chamfer rounded shadow-sm">GET!! 捕獲済</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Rayquaza</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Sky High</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-inverse-surface text-inverse-on-surface font-telemetry-data text-body-sm rounded font-bold">DRAGON // 竜</span>
+<span class="px-unit-xs py-unit-2xs bg-secondary-fixed text-on-secondary-fixed font-telemetry-data text-body-sm rounded font-bold">FLYING // 飛</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">680</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-primary font-bold">105</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-primary font-bold">150</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">90</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-primary font-bold">150</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-on-surface font-bold">90</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">95</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 12: Ceruledge (Apex) -->
+<div class="specimen-card group bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative" data-bst="525" data-caught="false" data-id="937" data-stage="apex" data-types="fire,ghost">
+<div class="relative w-full h-44 bg-surface-container-low flex items-center justify-center p-unit-sm overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"></div>
+<img class="w-36 h-36 object-contain group-hover:scale-110 transition-transform duration-300 z-10" data-alt="Dramatic anime combat render of Ceruledge brandishing twin blades made of spectral cyan and indigo spirit fire, dark knight armor silhouette, glowing ember particle sparks." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbahF0yHQn_oNW4Hp931q-dNmtiorH2g_gC8HyqIwloFogEtRlU0BsuUYCEcirLvlNrdOxjnF_wikUoSxd88I4ki0VLejA5Y9rzCqjok80Wf5Ch-DClvR8jGxRu3fDOK3SdvEPNidsvWsm0QkkPbQoa_JgRFuMj1tPsZ2FWB1pHfKN22HKYlcCqxfH7A3mqyQiOs3Uc2BLZtCHjpFCqCEOXcNd1cBQASS6vRDyqUSULPxsOKC6Pzo-"/>
+<span class="absolute top-2 left-2 px-unit-xs py-unit-2xs bg-surface-variant text-on-surface font-label-chamfer text-label-chamfer rounded shadow-sm">UNREGISTERED // 未捕獲</span>
+<span class="absolute bottom-2 right-2 px-unit-xs py-unit-2xs bg-primary-container text-on-primary-container font-label-chamfer text-label-chamfer rounded font-bold shadow-sm">PALDEA CORE</span>
+</div>
+<div class="p-unit-sm flex flex-col gap-unit-xs flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Ceruledge</h3>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">Fire Blades</span>
+</div>
+<div class="flex items-center gap-1 mt-unit-2xs">
+<span class="px-unit-xs py-unit-2xs bg-primary-container text-on-primary-container font-telemetry-data text-body-sm rounded font-bold">FIRE // 炎</span>
+<span class="px-unit-xs py-unit-2xs bg-surface-container-highest text-on-surface font-telemetry-data text-body-sm rounded font-bold">GHOST // 霊</span>
+</div>
+</div>
+<div class="mt-unit-xs pt-unit-xs bg-surface-container-low p-unit-xs rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="text-on-surface-variant font-bold">BST (種族値)</span>
+<span class="text-primary font-bold text-headline-sm">525</span>
+</div>
+<div class="grid grid-cols-6 gap-1 mt-1 text-center font-telemetry-data text-body-sm">
+<div class="flex flex-col"><span class="text-on-surface-variant">HP</span><span class="text-on-surface font-bold">75</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">ATK</span><span class="text-primary font-bold">125</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">DEF</span><span class="text-on-surface font-bold">80</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPA</span><span class="text-on-surface font-bold">60</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPD</span><span class="text-primary font-bold">100</span></div>
+<div class="flex flex-col"><span class="text-on-surface-variant">SPE</span><span class="text-on-surface font-bold">85</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State / No Match Notice (Hidden by Default) -->
+<div class="hidden w-full p-unit-xl bg-surface-container-lowest rounded-xl shadow-md flex flex-col items-center justify-center text-center gap-unit-sm" id="noMatchMessage">
+<span class="material-symbols-outlined text-primary text-[48px]">search_off</span>
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">NO SPECIMENS IN CURRENT SPECTRUM</h4>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+            No bio-signatures match the designated elemental combination and BST power threshold. Adjust your filter matrix parameters.
+          </p>
+<button class="px-unit-md py-unit-xs bg-primary text-on-primary font-telemetry-data text-body-sm rounded-lg shadow-sm hover:bg-primary-container" id="btnResetInEmpty">
+            REVERT FILTERS // リセット
+          </button>
+</div>
+<!-- Tactical Pagination Footer -->
+<div class="w-full bg-surface-container-lowest p-unit-sm rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-unit-sm mt-unit-sm">
+<div class="flex items-center gap-unit-xs font-telemetry-data text-body-sm text-on-surface-variant">
+<span>SECTOR PAGE</span>
+<span class="px-unit-xs py-unit-2xs bg-primary text-on-primary rounded font-bold">01</span>
+<span>OF 86 PAGES // 全86頁</span>
+</div>
+<div class="flex items-center gap-unit-xs">
+<button class="px-unit-sm py-unit-xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded hover:bg-surface-container-high transition-all disabled:opacity-40" disabled="">
+              ← PREV
+            </button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary font-telemetry-data text-body-sm font-bold flex items-center justify-center shadow-xs">1</button>
+<button class="w-8 h-8 rounded bg-surface-container text-on-surface font-telemetry-data text-body-sm flex items-center justify-center hover:bg-surface-container-high">2</button>
+<button class="w-8 h-8 rounded bg-surface-container text-on-surface font-telemetry-data text-body-sm flex items-center justify-center hover:bg-surface-container-high">3</button>
+<span class="text-on-surface-variant">...</span>
+<button class="w-8 h-8 rounded bg-surface-container text-on-surface font-telemetry-data text-body-sm flex items-center justify-center hover:bg-surface-container-high">86</button>
+<button class="px-unit-sm py-unit-xs bg-surface-container text-on-surface font-telemetry-data text-body-sm rounded hover:bg-surface-container-high transition-all">
+              NEXT →
+            </button>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- Inline Tactical Interactive Filter Engine -->
+<script>
+    (function initProtoDexArchive() {
+      const state = {
+        selectedType: 'all',
+        selectedStage: 'all',
+        minBst: 300,
+        caughtOnly: false,
+        searchQuery: '',
+        sortBy: 'id-asc'
+      };
+
+      const rosterGrid = document.getElementById('rosterGrid');
+      const cards = Array.from(rosterGrid.querySelectorAll('.specimen-card'));
+      const specimenCountEl = document.getElementById('specimenCount');
+      const noMatchMsg = document.getElementById('noMatchMessage');
+      const bstSlider = document.getElementById('bstRange');
+      const bstDisplay = document.getElementById('bstDisplayValue');
+      const caughtToggle = document.getElementById('caughtToggle');
+      const searchInput = document.getElementById('archiveSearch');
+      const sortSelect = document.getElementById('sortSelect');
+      const filterBadge = document.getElementById('activeFilterBadge');
+      const typeButtons = document.querySelectorAll('.type-btn');
+      const stagePills = document.querySelectorAll('.stage-pill');
+      const luckyBtn = document.getElementById('btnLucky');
+      const resetBtn = document.getElementById('btnResetFilters');
+      const resetEmptyBtn = document.getElementById('btnResetInEmpty');
+
+      function filterAndRender() {
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const id = parseInt(card.dataset.id, 10);
+          const bst = parseInt(card.dataset.bst, 10);
+          const types = card.dataset.types.split(',');
+          const stage = card.dataset.stage;
+          const isCaught = card.dataset.caught === 'true';
+          const name = card.querySelector('h3').textContent.toLowerCase();
+
+          // Stage check
+          const stageMatch = (state.selectedStage === 'all') || (state.selectedStage === stage);
+
+          // Type check
+          const typeMatch = (state.selectedType === 'all') || types.includes(state.selectedType);
+
+          // BST check
+          const bstMatch = bst >= state.minBst;
+
+          // Caught check
+          const caughtMatch = !state.caughtOnly || isCaught;
+
+          // Search check
+          const q = state.searchQuery.trim().toLowerCase();
+          const searchMatch = !q || name.includes(q) || id.toString().includes(q) || types.some(t => t.includes(q));
+
+          if (stageMatch && typeMatch && bstMatch && caughtMatch && searchMatch) {
+            card.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        // Sorting
+        sortCards();
+
+        // Update counts and empty state
+        specimenCountEl.textContent = visibleCount;
+        if (visibleCount === 0) {
+          noMatchMsg.classList.remove('hidden');
+        } else {
+          noMatchMsg.classList.add('hidden');
+        }
+
+        // Active status badge
+        if (state.selectedType !== 'all' || state.selectedStage !== 'all' || state.caughtOnly || state.minBst > 200 || state.searchQuery) {
+          filterBadge.textContent = 'FILTERED STREAM';
+          filterBadge.className = 'px-unit-xs py-unit-2xs bg-primary text-on-primary font-telemetry-data text-body-sm rounded font-bold';
+        } else {
+          filterBadge.textContent = 'ALL SHOWN';
+          filterBadge.className = 'px-unit-xs py-unit-2xs bg-secondary-fixed text-on-secondary-fixed font-telemetry-data text-body-sm rounded font-bold';
+        }
+      }
+
+      function sortCards() {
+        const sorted = [...cards].sort((a, b) => {
+          const idA = parseInt(a.dataset.id, 10);
+          const idB = parseInt(b.dataset.id, 10);
+          const bstA = parseInt(a.dataset.bst, 10);
+          const bstB = parseInt(b.dataset.bst, 10);
+          const nameA = a.querySelector('h3').textContent;
+          const nameB = b.querySelector('h3').textContent;
+
+          switch (state.sortBy) {
+            case 'id-asc': return idA - idB;
+            case 'id-desc': return idB - idA;
+            case 'bst-desc': return bstB - bstA;
+            case 'bst-asc': return bstA - bstB;
+            case 'alpha': return nameA.localeCompare(nameB);
+            default: return idA - idB;
+          }
+        });
+
+        sorted.forEach(card => rosterGrid.appendChild(card));
+      }
+
+      // Stage Pill Click
+      stagePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          stagePills.forEach(p => {
+            p.classList.remove('bg-primary', 'text-on-primary');
+            p.classList.add('bg-surface-container', 'text-on-surface');
+          });
+          pill.classList.remove('bg-surface-container', 'text-on-surface');
+          pill.classList.add('bg-primary', 'text-on-primary');
+          state.selectedStage = pill.dataset.stage;
+          filterAndRender();
+        });
+      });
+
+      // Type Buttons Toggle
+      typeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const type = btn.dataset.type;
+          if (state.selectedType === type) {
+            state.selectedType = 'all';
+            typeButtons.forEach(b => b.classList.remove('ring-4', 'ring-primary'));
+          } else {
+            state.selectedType = type;
+            typeButtons.forEach(b => b.classList.remove('ring-4', 'ring-primary'));
+            btn.classList.add('ring-4', 'ring-primary');
+          }
+          filterAndRender();
+        });
+      });
+
+      // BST Power Slider
+      bstSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        state.minBst = val;
+        bstDisplay.textContent = 'BST \u2265 ' + val;
+        filterAndRender();
+      });
+
+      // Caught Toggle
+      caughtToggle.addEventListener('change', (e) => {
+        state.caughtOnly = e.target.checked;
+        filterAndRender();
+      });
+
+      // Search
+      searchInput.addEventListener('input', (e) => {
+        state.searchQuery = e.target.value;
+        filterAndRender();
+      });
+
+      // Keyboard Shortcut CTRL+K Focus
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      });
+
+      // Sort Select
+      sortSelect.addEventListener('change', (e) => {
+        state.sortBy = e.target.value;
+        sortCards();
+      });
+
+      // Reset Actions
+      function resetAll() {
+        state.selectedType = 'all';
+        state.selectedStage = 'all';
+        state.minBst = 200;
+        state.caughtOnly = false;
+        state.searchQuery = '';
+        state.sortBy = 'id-asc';
+
+        bstSlider.value = 200;
+        bstDisplay.textContent = 'BST \u2265 200';
+        caughtToggle.checked = false;
+        searchInput.value = '';
+        sortSelect.value = 'id-asc';
+
+        typeButtons.forEach(b => b.classList.remove('ring-4', 'ring-primary'));
+        stagePills.forEach(p => {
+          if (p.dataset.stage === 'all') {
+            p.classList.add('bg-primary', 'text-on-primary');
+            p.classList.remove('bg-surface-container', 'text-on-surface');
+          } else {
+            p.classList.remove('bg-primary', 'text-on-primary');
+            p.classList.add('bg-surface-container', 'text-on-surface');
+          }
+        });
+
+        filterAndRender();
+      }
+
+      resetBtn.addEventListener('click', resetAll);
+      resetEmptyBtn.addEventListener('click', resetAll);
+
+      // Lucky Encounter Shuffle (Picks a random card and highlights it)
+      luckyBtn.addEventListener('click', () => {
+        resetAll();
+        const randIndex = Math.floor(Math.random() * cards.length);
+        const target = cards[randIndex];
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('scale-105', 'shadow-2xl', 'transition-all');
+        setTimeout(() => {
+          target.classList.remove('scale-105', 'shadow-2xl');
+        }, 1200);
+      });
+
+      // Initial execution
+      filterAndRender();
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low shadow-[0_-4px_16px_rgba(23,27,38,0.04)] py-unit-xl mt-unit-2xl"><div class="w-full px-edge-margin-desktop flex flex-col md:flex-row items-center justify-between gap-unit-md"><div class="flex flex-col gap-unit-2xs"><div class="flex items-center gap-unit-xs"><span class="w-2 h-2 rounded bg-primary"></span><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-wide">protoDex // FIELD TACTICAL OS</span><span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">生物情報総合研究機構</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">© 2025 protoDex Biological Consortium. Tribute to Pokémon / Game Freak / Creatures Inc. Field specimen data strictly for research telemetry.</p></div><div class="flex items-center gap-unit-lg"><div class="flex flex-col text-right"><span class="font-telemetry-data text-body-sm text-on-surface font-bold tracking-wider">UTC+09:00 // TOKYO LAB</span><span class="font-body-sm text-body-sm text-on-surface-variant">INDEX VER 9.4.2</span></div></div></div></footer></body></html>

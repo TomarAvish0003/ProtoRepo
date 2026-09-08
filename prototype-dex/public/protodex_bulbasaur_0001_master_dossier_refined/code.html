@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;family=Space+Grotesk:wght@500;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;family=Space+Grotesk:wght@100..900&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.anime-grid-bg{background-image:radial-gradient(rgba(23,27,38,0.08) 1px,transparent 0);background-size:20px 20px;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-tertiary-fixed-variant":"#5e4200","tertiary-fixed-dim":"#ffba20","on-secondary-fixed-variant":"#004e60","inverse-surface":"#2c303b","on-tertiary-container":"#fffbff","on-primary-container":"#fffbff","surface-container":"#ebedfc","on-primary":"#ffffff","secondary-container":"#00d2ff","on-error":"#ffffff","primary":"#ba0032","on-primary-fixed":"#40000b","surface-variant":"#dfe2f1","on-primary-fixed-variant":"#920025","surface-dim":"#d7d9e8","inverse-primary":"#ffb3b5","surface":"#faf8ff","surface-container-high":"#e5e7f6","surface-container-lowest":"#ffffff","tertiary":"#795600","secondary-fixed":"#b6ebff","error":"#ba1a1a","on-background":"#171b26","error-container":"#ffdad6","outline":"#916f6f","on-surface":"#171b26","surface-container-highest":"#dfe2f1","tertiary-container":"#986d00","on-secondary":"#ffffff","on-error-container":"#93000a","background":"#faf8ff","surface-bright":"#faf8ff","tertiary-fixed":"#ffdea8","inverse-on-surface":"#edf0ff","on-secondary-fixed":"#001f28","on-surface-variant":"#5c3f40","on-secondary-container":"#00566a","surface-tint":"#be0034","primary-fixed":"#ffdada","primary-fixed-dim":"#ffb3b5","secondary-fixed-dim":"#47d6ff","on-tertiary":"#ffffff","surface-container-low":"#f2f3ff","outline-variant":"#e6bdbd","primary-container":"#e41944","on-tertiary-fixed":"#271900","secondary":"#00677f"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"gutter-mobile":"1rem","gutter-desktop":"1.5rem","unit-3xl":"4rem","unit-xs":"0.5rem","unit-lg":"1.5rem","unit-sm":"0.75rem","unit-2xl":"3rem","unit-xl":"2rem","unit-2xs":"0.25rem","edge-margin-desktop":"2.5rem","edge-margin-mobile":"1rem","unit-md":"1rem"},"fontFamily":{"display-hero":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"onomatopoeia-accent":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"telemetry-data":["Space Grotesk"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-chamfer":["Space Grotesk"],"label-kanji-sub":["Plus Jakarta Sans"],"title-editorial":["Plus Jakarta Sans"]},"fontSize":{"display-hero":["56px",{"lineHeight":"60px","letterSpacing":"-0.03em","fontWeight":"800"}],"body-md":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"500"}],"headline-md":["26px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"700"}],"headline-lg":["38px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"800"}],"body-lg":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"500"}],"onomatopoeia-accent":["22px",{"lineHeight":"24px","letterSpacing":"-0.04em","fontWeight":"800"}],"headline-sm":["20px",{"lineHeight":"26px","letterSpacing":"0em","fontWeight":"700"}],"display-hero-mobile":["36px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"800"}],"telemetry-data":["14px",{"lineHeight":"18px","letterSpacing":"0.04em","fontWeight":"700"}],"headline-lg-mobile":["28px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"800"}],"body-sm":["12px",{"lineHeight":"17px","letterSpacing":"0.01em","fontWeight":"400"}],"label-chamfer":["11px",{"lineHeight":"14px","letterSpacing":"0.08em","fontWeight":"700"}],"label-kanji-sub":["10px",{"lineHeight":"12px","letterSpacing":"0.12em","fontWeight":"700"}],"title-editorial":["16px",{"lineHeight":"22px","letterSpacing":"0.06em","fontWeight":"800"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface anime-grid-bg min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-[0_4px_16px_rgba(23,27,38,0.06)]"><div class="h-20 w-full px-edge-margin-desktop flex items-center justify-between gap-unit-md"><div class="flex items-center gap-unit-lg"><div class="flex items-center gap-unit-sm"><img alt="protoDex Anime Cyber Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X_ghPchZI2-IWrJVci_rR4U4_yTnOc2DtTBYVlSMij1hx1Nr3E_zHQ0D_XWEEMk_yuwPLJwBi7bUKBzUyokNJT6Ud4neNFuYqPWTyXLz5iF9D7etNoh67D0V9Fo0EP2wED_swcVnfhZYqlY-wfGBBbwcFwJbiw8rXCMdqhCpvt7-pESI54Vp7uS7UtcZiWhQQ4RHoAt3SbCdoWaIiSJOXfAbBuszXGRBHHf72xd4XxqLJaXo8bsQBLkKs"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-wider uppercase leading-none">protoDex</span><span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant font-bold tracking-widest">携帯生体解析端末 v4.2</span></div></div><div class="hidden xl:flex items-center gap-unit-xs px-unit-sm py-unit-2xs bg-surface-container-high rounded"><span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span><span class="font-telemetry-data text-body-sm text-on-surface font-bold tracking-wider">STATUS: ACTIVE</span><span class="font-telemetry-data text-body-sm text-on-surface-variant font-bold">// REGION: GLOBAL // FREQ: 92.4 MHz</span></div></div><nav class="hidden lg:flex items-center gap-unit-xs" data-active-classes="bg-primary-container text-on-primary-container font-bold shadow-[2px_2px_0px_#171b26]"><a class="px-unit-sm py-unit-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all flex flex-col items-center" data-path="spotlight-&amp;-lab" href="#"><span class="font-title-editorial text-body-md tracking-wider">Spotlight &amp; Lab</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">特報解析</span></a><a class="px-unit-sm py-unit-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all flex flex-col items-center" data-path="archive-index" href="#"><span class="font-title-editorial text-body-md tracking-wider">Archive Index</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">全図鑑録</span></a><a aria-current="page" class="px-unit-sm py-unit-xs rounded transition-all flex flex-col items-center bg-primary-container text-on-primary-container font-bold shadow-[2px_2px_0px_#171b26]" data-path="specimen-dossier" href="#"><span class="font-title-editorial text-body-md tracking-wider">Pokemon Dossier</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">詳細生体</span></a><a class="px-unit-sm py-unit-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all flex flex-col items-center" data-path="battle-simulator" href="#"><span class="font-title-editorial text-body-md tracking-wider">Battle Simulator</span><span class="font-label-kanji-sub text-label-kanji-sub opacity-80">戦術解析室</span></a></nav><div class="flex items-center gap-unit-md"><div class="hidden md:flex items-center gap-unit-xs px-unit-sm py-unit-2xs bg-surface-container-lowest rounded shadow-[2px_2px_0px_#171b26]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-telemetry-data text-body-sm text-on-surface-variant">CMD SCAN</span><span class="px-unit-2xs bg-surface-container-high font-label-chamfer text-label-chamfer text-on-surface rounded">CTRL+K</span></div><div class="hidden sm:flex flex-col text-right"><span class="font-label-chamfer text-label-chamfer text-primary font-bold tracking-widest">CHAMPION TIER</span><span class="font-telemetry-data text-body-sm text-on-surface font-bold">ID: #9842</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full">
+<div class="w-full px-edge-margin-mobile md:px-edge-margin-desktop py-unit-lg flex flex-col gap-unit-xl">
+<!-- TOP TELEMETRY HUD BAR -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-wrap items-center justify-between gap-unit-sm"><div class="flex items-center gap-unit-sm"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span><span class="font-telemetry-data text-body-md text-on-surface font-bold tracking-wide">KANTO FIELD SPECIMEN DOSSIER</span><span class="font-label-chamfer text-label-chamfer bg-surface-container px-unit-xs py-unit-2xs rounded text-on-surface-variant font-bold">DATABASE ENTRY #0001</span></div><div class="flex items-center gap-unit-xs"><button class="bg-primary hover:bg-primary-container text-on-primary px-unit-sm py-unit-2xs rounded flex items-center gap-unit-xs shadow-sm transition-transform active:scale-95" id="cryBtn"><span class="material-symbols-outlined text-[16px]">volume_up</span><span class="font-label-chamfer text-label-chamfer font-bold uppercase tracking-wider">AUDIO CRY</span></button><button class="bg-surface-container hover:bg-surface-variant text-on-surface px-unit-sm py-unit-2xs rounded flex items-center gap-unit-xs transition-colors" id="shinyToggle"><span class="material-symbols-outlined text-[16px] text-tertiary">auto_awesome</span><span class="font-label-chamfer text-label-chamfer font-bold tracking-wider" id="shinyLabel">NORMAL PALETTE</span></button></div></div>
+<!-- MAIN DOSSIER GRID (BENTO 12-COL) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-unit-lg items-start">
+<!-- LEFT: VISUAL SPECIMEN CARD & BIOMETRICS (5 COLS) -->
+<div class="lg:col-span-5 flex flex-col gap-unit-md">
+<!-- HOLOGRAPHIC SPECIMEN CARD -->
+<div class="relative bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden group"><div class="bg-on-background text-surface px-unit-md py-unit-xs flex items-center justify-between"><div class="flex items-center gap-unit-xs"><span class="font-telemetry-data text-body-lg text-secondary-container font-bold">#0001</span><span class="font-headline-sm text-headline-sm tracking-wide">BULBASAUR</span><span class="font-label-kanji-sub text-body-sm font-semibold opacity-75 text-primary-fixed ml-1">フシギダネ</span></div><span class="font-label-chamfer text-label-chamfer uppercase tracking-wider text-surface-variant opacity-80">Seed Pokémon</span></div><div class="relative w-full aspect-square bg-surface-container-low flex items-center justify-center p-unit-md overflow-hidden"><div class="absolute inset-0 bg-gradient-to-tr from-secondary-container/10 via-transparent to-primary/10"></div><svg class="absolute inset-0 w-full h-full opacity-15 pointer-events-none" fill="none" viewbox="0 0 400 400"><line class="text-on-surface" stroke="currentColor" stroke-width="1.5" x1="200" x2="0" y1="200" y2="0"></line><line class="text-on-surface" stroke="currentColor" stroke-width="1.5" x1="200" x2="400" y1="200" y2="0"></line><line class="text-on-surface" stroke="currentColor" stroke-width="1.5" x1="200" x2="400" y1="200" y2="400"></line><line class="text-on-surface" stroke="currentColor" stroke-width="1.5" x1="200" x2="0" y1="200" y2="400"></line><circle class="text-primary" cx="200" cy="200" r="140" stroke="currentColor" stroke-dasharray="6 4" stroke-width="0.75"></circle></svg><img class="relative z-10 w-4/5 h-4/5 object-contain filter drop-shadow-[0_12px_24px_rgba(23,27,38,0.25)] transition-transform duration-300 group-hover:scale-105" data-alt="Official tactical render of Bulbasaur #0001, seed quadruped Pokémon" id="specimenImg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmzXYgAXDyUWOa-yfvsnsFHx368tlEQdWbKZRMAI66nZOck1M9C8KwA-DewXR9Ga4GxNAGP30GEzoU-BCUkG1Uqcha00i3TBncVibABWrS08oIovGW85FX6j87oi3kTAVJpXcCP2hzi9miETguTwb5xLZEoYBJ0ncjN9ekwu6LC_D_bbSEMeLTNXJo3dqndttZR7Yo2QX8ynm3dFJQ3s3kRKUdpYFyoygON5JHDJbqlcAQXPHm4F1e"/><div class="absolute bottom-3 left-3 z-20 flex items-center gap-unit-2xs"><span class="bg-primary text-on-primary font-label-chamfer text-label-chamfer font-bold px-unit-sm py-unit-2xs rounded shadow-md tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>GRASS</span><span class="bg-inverse-surface text-inverse-on-surface font-label-chamfer text-label-chamfer font-bold px-unit-sm py-unit-2xs rounded shadow-md tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim"></span>POISON</span></div><div class="absolute bottom-3 right-3 z-20 bg-surface-container-highest px-unit-xs py-unit-2xs rounded shadow-md flex items-center gap-unit-2xs"><span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim">military_tech</span><span class="font-telemetry-data text-body-sm font-bold text-on-surface">CHAMPION TIER</span></div></div></div>
+<!-- BIOMETRIC DATA & ANATOMY MODULE -->
+<div class="bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-sm"><div class="flex items-center justify-between"><span class="font-title-editorial text-body-md text-on-surface flex items-center gap-unit-xs"><span class="material-symbols-outlined text-primary text-[18px]">straighten</span>BIOMETRIC SPECIFICATIONS</span><span class="font-label-chamfer text-label-chamfer text-on-surface-variant font-bold">METRIC STANDARD</span></div><div class="grid grid-cols-2 gap-unit-sm"><div class="bg-surface-container-low p-unit-sm rounded flex flex-col"><span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">HEIGHT</span><span class="font-telemetry-data text-headline-sm text-on-surface font-bold">0.7 m <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">(2'04")</span></span><div class="w-full bg-surface-container-highest h-1 rounded mt-1 overflow-hidden"><div class="bg-secondary h-full w-[28%]"></div></div></div><div class="bg-surface-container-low p-unit-sm rounded flex flex-col"><span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">WEIGHT</span><span class="font-telemetry-data text-headline-sm text-on-surface font-bold">6.9 kg <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">(15.2 lbs)</span></span><div class="w-full bg-surface-container-highest h-1 rounded mt-1 overflow-hidden"><div class="bg-primary h-full w-[35%]"></div></div></div><div class="bg-surface-container-low p-unit-sm rounded flex flex-col"><span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">PRIMARY ABILITY</span><span class="font-title-editorial text-body-md text-primary font-bold">Overgrow</span><span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">Boosts Grass-type power by 50% when HP is below 1/3.</span></div><div class="bg-surface-container-low p-unit-sm rounded flex flex-col"><span class="font-label-chamfer text-label-chamfer text-on-surface-variant uppercase">HIDDEN ABILITY</span><span class="font-title-editorial text-body-md text-tertiary font-bold">Chlorophyll</span><span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">Doubles base Speed stat in harsh sunlight.</span></div></div><div class="bg-surface-container-high/60 p-unit-sm rounded flex items-start gap-unit-xs"><span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">science</span><div class="flex flex-col"><span class="font-title-editorial text-body-md text-on-surface font-bold">SEED BULB SYMBIOSIS</span><p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">The bulb stores photosynthetic nutrient reserves, fueling rapid solar discharge and defensive spores during combat.</p></div></div></div>
+</div>
+<!-- RIGHT: COMBAT DIAGNOSTICS & BASE STAT GAUGE (7 COLS) -->
+<div class="lg:col-span-7 flex flex-col gap-unit-md">
+<!-- BASE STAT RADAR & GAUGE BARS -->
+<div class="bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-md">
+<div class="flex items-center justify-between"><div class="flex items-center gap-unit-xs"><span class="font-headline-sm text-headline-sm text-on-surface">COMBAT CAPABILITY SPECTRUM</span><span class="font-label-chamfer text-label-chamfer bg-primary-container text-on-primary-container px-unit-xs py-unit-2xs rounded font-bold">BST: 318</span></div><span class="font-label-chamfer text-label-chamfer text-on-surface-variant font-bold">TIER CLASSIFICATION // S-01</span></div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-unit-md items-center">
+<!-- Left: Stat Gauges (7 cols) -->
+<div class="md:col-span-7 flex flex-col gap-unit-xs"><div class="flex flex-col gap-0.5"><div class="flex items-center justify-between text-body-sm font-telemetry-data"><span class="font-bold text-on-surface">HP (Hit Points)</span><span class="text-primary font-bold">45 <span class="text-on-surface-variant font-normal">/ 255</span></span></div><div class="w-full bg-surface-container-high h-2.5 rounded overflow-hidden flex"><div class="bg-primary h-full rounded transition-all duration-500" style="width: 17.6%;"></div></div></div><div class="flex flex-col gap-0.5"><div class="flex items-center justify-between text-body-sm font-telemetry-data"><span class="font-bold text-on-surface">ATTACK</span><span class="text-tertiary font-bold">49 <span class="text-on-surface-variant font-normal">/ 255</span></span></div><div class="w-full bg-surface-container-high h-2.5 rounded overflow-hidden flex"><div class="bg-tertiary-fixed-dim h-full rounded transition-all duration-500" style="width: 19.2%;"></div></div></div><div class="flex flex-col gap-0.5"><div class="flex items-center justify-between text-body-sm font-telemetry-data"><span class="font-bold text-on-surface">DEFENSE</span><span class="text-tertiary font-bold">49 <span class="text-on-surface-variant font-normal">/ 255</span></span></div><div class="w-full bg-surface-container-high h-2.5 rounded overflow-hidden flex"><div class="bg-tertiary-container h-full rounded transition-all duration-500" style="width: 19.2%;"></div></div></div><div class="flex flex-col gap-0.5"><div class="flex items-center justify-between text-body-sm font-telemetry-data"><span class="font-bold text-primary">SP. ATK <span class="font-label-chamfer text-label-chamfer bg-surface-variant px-1 rounded">PEAK</span></span><span class="text-primary font-bold">65 <span class="text-on-surface-variant font-normal">/ 255</span></span></div><div class="w-full bg-surface-container-high h-2.5 rounded overflow-hidden flex"><div class="bg-primary-container h-full rounded transition-all duration-500" style="width: 25.5%;"></div></div></div><div class="flex flex-col gap-0.5"><div class="flex items-center justify-between text-body-sm font-telemetry-data"><span class="font-bold text-secondary">SP. DEF <span class="font-label-chamfer text-label-chamfer bg-surface-variant px-1 rounded">PEAK</span></span><span class="text-secondary font-bold">65 <span class="text-on-surface-variant font-normal">/ 255</span></span></div><div class="w-full bg-surface-container-high h-2.5 rounded overflow-hidden flex"><div class="bg-secondary h-full rounded transition-all duration-500" style="width: 25.5%;"></div></div></div><div class="flex flex-col gap-0.5"><div class="flex items-center justify-between text-body-sm font-telemetry-data"><span class="font-bold text-on-surface">SPEED</span><span class="text-on-surface-variant font-bold">45 <span class="text-on-surface-variant font-normal">/ 255</span></span></div><div class="w-full bg-surface-container-high h-2.5 rounded overflow-hidden flex"><div class="bg-outline h-full rounded transition-all duration-500" style="width: 17.6%;"></div></div></div></div>
+<!-- Right: Hexagonal Visual SVG Stat Radar (5 cols) -->
+<div class="md:col-span-5 flex flex-col items-center justify-center p-unit-xs">
+<svg class="w-48 h-48 drop-shadow-sm" viewbox="0 0 200 200">
+<!-- Background Web Polygons -->
+<polygon class="text-surface-variant" fill="none" points="100,20 170,60 170,140 100,180 30,140 30,60" stroke="currentColor" stroke-width="1"></polygon>
+<polygon class="text-surface-variant" fill="none" points="100,40 152,70 152,130 100,160 48,130 48,70" stroke="currentColor" stroke-dasharray="3 3" stroke-width="1"></polygon>
+<polygon class="text-surface-variant" fill="none" points="100,60 135,80 135,120 100,140 65,120 65,80" stroke="currentColor" stroke-width="1"></polygon>
+<!-- Axes -->
+<line class="text-outline-variant" stroke="currentColor" stroke-width="0.75" x1="100" x2="100" y1="20" y2="180"></line>
+<line class="text-outline-variant" stroke="currentColor" stroke-width="0.75" x1="30" x2="170" y1="60" y2="140"></line>
+<line class="text-outline-variant" stroke="currentColor" stroke-width="0.75" x1="30" x2="170" y1="140" y2="60"></line>
+<!-- Stat Polygon Fill (Values mapped relative to center 100,100) -->
+<!-- HP: 45, ATK: 49, DEF: 49, SPE: 45, SPD: 65, SPA: 65 -->
+<polygon class="text-primary" fill="rgba(186, 0, 50, 0.25)" points="100,64 139,78 139,122 100,136 62,122 62,78" stroke="currentColor" stroke-width="2"></polygon>
+<!-- Stat Key Vertices -->
+<circle class="fill-primary" cx="100" cy="64" r="3"></circle>
+<circle class="fill-tertiary" cx="139" cy="78" r="3"></circle>
+<circle class="fill-tertiary" cx="139" cy="122" r="3"></circle>
+<circle class="fill-outline" cx="100" cy="136" r="3"></circle>
+<circle class="fill-secondary" cx="62" cy="122" r="3"></circle>
+<circle class="fill-primary-container" cx="62" cy="78" r="3"></circle>
+<!-- Label text -->
+<text class="fill-on-surface" font-family="Space Grotesk" font-size="9" font-weight="700" text-anchor="middle" x="100" y="14">HP</text>
+<text class="fill-on-surface" font-family="Space Grotesk" font-size="9" font-weight="700" text-anchor="start" x="180" y="60">ATK</text>
+<text class="fill-on-surface" font-family="Space Grotesk" font-size="9" font-weight="700" text-anchor="start" x="180" y="144">DEF</text>
+<text class="fill-on-surface" font-family="Space Grotesk" font-size="9" font-weight="700" text-anchor="middle" x="100" y="194">SPE</text>
+<text class="fill-on-surface" font-family="Space Grotesk" font-size="9" font-weight="700" text-anchor="end" x="20" y="144">SP.DEF</text>
+<text class="fill-on-surface" font-family="Space Grotesk" font-size="9" font-weight="700" text-anchor="end" x="20" y="60">SP.ATK</text>
+</svg>
+<span class="font-label-chamfer text-label-chamfer text-on-surface-variant mt-1 font-bold">RADIAL COGNITIVE BALANCE</span>
+</div>
+</div>
+</div>
+<!-- TACTICAL COMBAT TYPE MATCHUP MATRIX -->
+<div class="bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-sm"><div class="flex items-center justify-between"><span class="font-title-editorial text-body-md text-on-surface flex items-center gap-unit-xs"><span class="material-symbols-outlined text-primary text-[18px]">shield</span>TYPE EFFECTIVENESS PROFILE</span><span class="font-telemetry-data text-body-sm text-on-surface-variant font-bold">GRASS / POISON DUAL</span></div><div class="grid grid-cols-1 md:grid-cols-2 gap-unit-md"><div class="bg-surface-container-low p-unit-sm rounded flex flex-col gap-unit-xs"><div class="flex items-center justify-between"><span class="font-label-chamfer text-label-chamfer text-error font-bold uppercase tracking-wider flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span>DEFENSIVE VULNERABILITY (2.0x)</span><span class="font-label-chamfer text-label-chamfer text-error font-bold">4 TYPES</span></div><div class="grid grid-cols-2 gap-unit-xs"><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">FIRE</span><span class="font-telemetry-data text-body-sm font-bold text-primary">2.0x</span></div><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">FLYING</span><span class="font-telemetry-data text-body-sm font-bold text-primary">2.0x</span></div><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">ICE</span><span class="font-telemetry-data text-body-sm font-bold text-primary">2.0x</span></div><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">PSYCHIC</span><span class="font-telemetry-data text-body-sm font-bold text-primary">2.0x</span></div></div></div><div class="bg-surface-container-low p-unit-sm rounded flex flex-col gap-unit-xs"><div class="flex items-center justify-between"><span class="font-label-chamfer text-label-chamfer text-secondary font-bold uppercase tracking-wider flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary"></span>TACTICAL RESISTANCE (0.5x / 0.25x)</span><span class="font-label-chamfer text-label-chamfer text-secondary font-bold">5 TYPES</span></div><div class="grid grid-cols-2 gap-unit-xs"><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">WATER</span><span class="font-telemetry-data text-body-sm font-bold text-secondary">0.5x</span></div><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">ELECTRIC</span><span class="font-telemetry-data text-body-sm font-bold text-secondary">0.5x</span></div><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">FIGHTING</span><span class="font-telemetry-data text-body-sm font-bold text-secondary">0.5x</span></div><div class="bg-surface-container-lowest px-unit-sm py-unit-2xs rounded flex items-center justify-between shadow-sm"><span class="font-telemetry-data text-body-sm font-bold text-on-surface">GRASS</span><span class="font-telemetry-data text-body-sm font-bold text-secondary">0.25x</span></div></div></div></div></div>
+</div>
+</div>
+<!-- SECTION: EVOLUTION MATRIX (形態進化連鎖) -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-md">
+<div class="flex items-center justify-between"><div class="flex items-center gap-unit-xs"><span class="material-symbols-outlined text-primary text-[22px]">account_tree</span><span class="font-headline-sm text-headline-sm text-on-surface">EVOLUTIONARY MORPHOLOGY MATRIX</span></div><span class="font-label-chamfer text-label-chamfer text-on-surface-variant font-bold">COMPLETE STAGE PROGRESSION</span></div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-unit-md items-center">
+<!-- Phase 1: Bulbasaur (Active) -->
+<div class="bg-surface-container-high p-unit-sm rounded-xl flex flex-col items-center text-center relative shadow-sm">
+<div class="absolute top-2 left-2">
+<span class="font-label-chamfer text-label-chamfer bg-primary text-on-primary px-unit-xs py-unit-2xs rounded font-bold">CURRENT // 現在</span>
+</div>
+<img class="w-28 h-28 object-contain my-unit-xs" data-alt="Official anime studio render of Bulbasaur #0001, cute seed pokemon resting on grass with vibrant leaf highlights and anime cyber glow background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCyI6zeHmVKY3RHC0he-bUm8UzUXR60WFROmUduqc16b4jxJUWYfofpLblzA1U1DgIwfA-llWcipl6pHlY22SrTxII5pKI_Ggv8VnkECBS4WWWDSV6lVXcqKvPR19i9qvK2Bv8b6XTRZw37igRcMJJUeacpN9COWe2BrEG0nbLTTp0uFLiRyWWZDq3CsEmuQGuUPDdOS4xWpoek380DV2LlRHnTbAr_kI-bb6IrYkvCBYlqBQfd_HE"/>
+<span class="font-telemetry-data text-body-sm text-primary font-bold">#0001 BULBASAUR</span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface font-bold">フシギダネ</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Base Pokemon</span>
+</div>
+<!-- Arrow 1 to Ivysaur -->
+<div class="hidden md:flex flex-col items-center justify-center -mx-unit-md z-10">
+<span class="font-label-chamfer text-label-chamfer bg-surface-container px-unit-xs py-unit-2xs rounded font-bold text-primary">LV. 16</span>
+<span class="material-symbols-outlined text-primary text-[28px]">arrow_forward</span>
+</div>
+<!-- Phase 2: Ivysaur -->
+<div class="bg-surface-container-low p-unit-sm rounded-xl flex flex-col items-center text-center relative hover:bg-surface-container transition-colors shadow-sm">
+<img class="w-28 h-28 object-contain my-unit-xs" data-alt="Official dynamic render of Ivysaur #0002, evolved quadruped with pink flower bud on its back, aggressive battle stance, vivid botanical colors in anime tech style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzuJ14tImzwQt2L9kWNIekhK_HTEvKkqQ2zpssHb16h4tABl9Whq5Js-l8xfqdBdyx9yxXSY16GP6fQhbSNhcdR2IS62yALb5NC34e9asYP5d65EaP9AvM0xY-Y7FEu7hh7ErlgkcNG6Hi6AeF7PvYYXuFQA2-1kz3R_5OWsRUuQQBrbOlhse41bKJgC2zk5RpJCs-ys-7HWfleek7gPBWDujEJVW94XdPCYMnHxYs59PKqHSVv6Rv"/>
+<span class="font-telemetry-data text-body-sm text-on-surface font-bold">#0002 IVYSAUR</span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface font-bold">フシギソウ</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Mid Evolution // Lv.16</span>
+</div>
+<!-- Arrow 2 to Venusaur -->
+<div class="hidden md:flex flex-col items-center justify-center -mx-unit-md z-10">
+<span class="font-label-chamfer text-label-chamfer bg-surface-container px-unit-xs py-unit-2xs rounded font-bold text-primary">LV. 32</span>
+<span class="material-symbols-outlined text-primary text-[28px]">arrow_forward</span>
+</div>
+<!-- Phase 3: Venusaur -->
+<div class="bg-surface-container-low p-unit-sm rounded-xl flex flex-col items-center text-center relative hover:bg-surface-container transition-colors shadow-sm">
+<img class="w-28 h-28 object-contain my-unit-xs" data-alt="Official powerhouse render of Venusaur #0003 with massive tropical flower tree on its back, releasing solar energy spores, bold anime mecha action lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfradkOp0uUIZ8wcnLNXB59IDU3TyR4lMXXU6yWLJABHz-hQxGP6HD4m_GVEdUv7HWxFS30caVSNrBjlHT2sIPlsr5g7NYP54QNllGf7ruluzSybx3g7QFET7EPBBS-rAS_rdfjmJtQq4bGzYp8oHUZeJCqGWwweYtFBhOxMLvQwl6DeLmd-BJUoGWrv3AfdES0xbo7bTAQsY2SQu0paLJURm_IlCPDh9DLRTT2ZwJYQojII3Rpzhk"/>
+<span class="font-telemetry-data text-body-sm text-on-surface font-bold">#0003 VENUSAUR</span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface font-bold">フシギバナ</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Apex Stage // Lv.32</span>
+</div>
+<!-- Apex Overdrive Branch: Mega & Gigantamax -->
+<div class="bg-gradient-to-br from-primary/10 via-surface-container-low to-secondary/10 p-unit-sm rounded-xl flex flex-col justify-between h-full shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-chamfer text-label-chamfer text-primary font-bold uppercase tracking-wider">SPECIAL FORMS</span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-primary font-bold">極限覚醒</span>
+</div>
+<div class="flex items-center gap-unit-xs my-unit-xs">
+<div class="flex-1 bg-surface-container-lowest p-unit-xs rounded text-center">
+<span class="font-label-chamfer text-label-chamfer text-on-surface font-bold">MEGA FORM</span>
+<span class="block font-body-sm text-body-sm text-secondary font-bold">Thick Fat</span>
+</div>
+<div class="flex-1 bg-surface-container-lowest p-unit-xs rounded text-center">
+<span class="font-label-chamfer text-label-chamfer text-on-surface font-bold">G-MAX FORM</span>
+<span class="block font-body-sm text-body-sm text-primary font-bold">G-Max Vine Lash</span>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-center">Venusaurite or Dynamax Energy</span>
+</div>
+</div>
+</div>
+<!-- SECTION: COMPREHENSIVE TACTICAL MOVEPOOL (技一覧) -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-unit-sm">
+<div class="flex items-center gap-unit-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">swords</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">TACTICAL MOVE MATRIX // 技一覧</span>
+</div>
+<!-- Move Category Filter Tabs -->
+<div class="flex items-center gap-unit-2xs bg-surface-container-high p-1 rounded" id="moveFilters"><button class="filter-tab bg-primary text-on-primary font-label-chamfer text-label-chamfer px-unit-sm py-unit-2xs rounded transition-all font-bold" data-cat="all">ALL MOVES</button><button class="filter-tab text-on-surface font-label-chamfer text-label-chamfer px-unit-sm py-unit-2xs rounded transition-all font-bold hover:bg-surface" data-cat="level">LEVEL-UP</button><button class="filter-tab text-on-surface font-label-chamfer text-label-chamfer px-unit-sm py-unit-2xs rounded transition-all font-bold hover:bg-surface" data-cat="tm">TM / HM</button><button class="filter-tab text-on-surface font-label-chamfer text-label-chamfer px-unit-sm py-unit-2xs rounded transition-all font-bold hover:bg-surface" data-cat="egg">EGG / TUTOR</button></div>
+</div>
+<!-- Moves Table -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high text-on-surface font-label-chamfer text-label-chamfer uppercase tracking-wider">
+<th class="p-unit-sm rounded-l">TRIGGER / LV</th>
+<th class="p-unit-sm">TACTICAL MOVE // 和名</th>
+<th class="p-unit-sm">ELEMENT</th>
+<th class="p-unit-sm">CATEGORY</th>
+<th class="p-unit-sm">PWR</th>
+<th class="p-unit-sm">ACC</th>
+<th class="p-unit-sm">PP</th>
+<th class="p-unit-sm rounded-r">COMBAT FUNCTION // 戦術特性</th>
+</tr>
+</thead>
+<tbody class="font-telemetry-data text-body-sm" id="moveTableBody">
+<!-- Move 1 -->
+<tr class="move-row border-b border-surface-variant hover:bg-surface-container transition-colors" data-category="level">
+<td class="p-unit-sm font-bold text-primary">Lv. 1</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Tackle</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">たいあたり</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-surface-container-highest px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">NORMAL</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-error">⚔️ Physical</span>
+</td>
+<td class="p-unit-sm font-bold">40</td>
+<td class="p-unit-sm">100%</td>
+<td class="p-unit-sm">35</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Charges the foe with a full-body tackle assault.</td>
+</tr>
+<!-- Move 2 -->
+<tr class="move-row border-b border-surface-variant hover:bg-surface-container transition-colors" data-category="level">
+<td class="p-unit-sm font-bold text-primary">Lv. 7</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Leech Seed</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">やどりぎのタネ</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-primary text-on-primary px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">GRASS</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-secondary">🛡️ Status</span>
+</td>
+<td class="p-unit-sm font-bold">—</td>
+<td class="p-unit-sm">90%</td>
+<td class="p-unit-sm">10</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Drains 1/8th target HP each turn to heal user. Elite attrition.</td>
+</tr>
+<!-- Move 3 -->
+<tr class="move-row border-b border-surface-variant hover:bg-surface-container transition-colors" data-category="level">
+<td class="p-unit-sm font-bold text-primary">Lv. 9</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Vine Whip</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">つるのムチ</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-primary text-on-primary px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">GRASS</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-error">⚔️ Physical</span>
+</td>
+<td class="p-unit-sm font-bold">45</td>
+<td class="p-unit-sm">100%</td>
+<td class="p-unit-sm">25</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Strikes the target with slender, whip-like tentacles.</td>
+</tr>
+<!-- Move 4 -->
+<tr class="move-row border-b border-surface-variant hover:bg-surface-container transition-colors" data-category="level">
+<td class="p-unit-sm font-bold text-primary">Lv. 12</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Razor Leaf</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">はっぱカッター</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-primary text-on-primary px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">GRASS</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-error">⚔️ Physical</span>
+</td>
+<td class="p-unit-sm font-bold">55</td>
+<td class="p-unit-sm">95%</td>
+<td class="p-unit-sm">25</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Sharp-edged leaves launched. High critical-hit ratio (+1 stage).</td>
+</tr>
+<!-- Move 5 -->
+<tr class="move-row border-b border-surface-variant hover:bg-surface-container transition-colors" data-category="tm">
+<td class="p-unit-sm font-bold text-secondary">TM 06</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Toxic</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">どくどく</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-inverse-surface text-inverse-on-surface px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">POISON</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-secondary">🛡️ Status</span>
+</td>
+<td class="p-unit-sm font-bold">—</td>
+<td class="p-unit-sm">90%</td>
+<td class="p-unit-sm">10</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Badly poisons the target; damage accelerates exponentially each turn.</td>
+</tr>
+<!-- Move 6 -->
+<tr class="move-row border-b border-surface-variant hover:bg-surface-container transition-colors" data-category="tm">
+<td class="p-unit-sm font-bold text-secondary">TM 22</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Solar Beam</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">ソーラービーム</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-primary text-on-primary px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">GRASS</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-tertiary">✨ Special</span>
+</td>
+<td class="p-unit-sm font-bold text-primary">120</td>
+<td class="p-unit-sm">100%</td>
+<td class="p-unit-sm">10</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Charges solar radiation on turn 1, unleashes tactical beam on turn 2. Instant in Sun.</td>
+</tr>
+<!-- Move 7 -->
+<tr class="move-row border-b border-surface-variant hover:bg-surface-container transition-colors" data-category="tm">
+<td class="p-unit-sm font-bold text-secondary">TM 36</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Sludge Bomb</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">ヘドロばくだん</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-inverse-surface text-inverse-on-surface px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">POISON</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-tertiary">✨ Special</span>
+</td>
+<td class="p-unit-sm font-bold text-primary">90</td>
+<td class="p-unit-sm">100%</td>
+<td class="p-unit-sm">10</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Hurls filthy sludge at target. Has a 30% chance to induce poison status.</td>
+</tr>
+<!-- Move 8 -->
+<tr class="move-row hover:bg-surface-container transition-colors" data-category="egg">
+<td class="p-unit-sm font-bold text-tertiary">EGG</td>
+<td class="p-unit-sm">
+<div class="font-bold text-on-surface">Giga Drain</div>
+<div class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">ギガドレイン</div>
+</td>
+<td class="p-unit-sm">
+<span class="bg-primary text-on-primary px-unit-xs py-unit-2xs rounded font-label-chamfer text-label-chamfer font-bold">GRASS</span>
+</td>
+<td class="p-unit-sm">
+<span class="flex items-center gap-1 font-body-sm text-body-sm font-bold text-tertiary">✨ Special</span>
+</td>
+<td class="p-unit-sm font-bold">75</td>
+<td class="p-unit-sm">100%</td>
+<td class="p-unit-sm">10</td>
+<td class="p-unit-sm font-body-sm text-body-sm text-on-surface-variant">Nutrient-siphoning strike. Restores user HP equal to 50% of damage dealt.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- SECTION: TRAINER FIELD LOG & CAPTURE TELEMETRY -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-unit-md">
+<!-- Capture Telemetry -->
+<div class="bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-editorial text-body-md text-on-surface flex items-center gap-unit-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">20mp</span>
+            CAPTURE DOSSIER
+          </span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">捕獲記録</span>
+</div>
+<div class="flex items-center gap-unit-sm bg-surface-container-low p-unit-sm rounded">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center shadow-inner shrink-0">
+<span class="material-symbols-outlined text-secondary text-[26px]">adjust</span>
+</div>
+<div class="flex flex-col">
+<span class="font-telemetry-data text-body-sm font-bold text-on-surface">BALL: ULTRA BALL (ハイパーボール)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Catch Rate Modifier: 2.0x Efficiency</span>
+</div>
+</div>
+<div class="flex flex-col gap-unit-2xs text-body-sm font-telemetry-data">
+<div class="flex justify-between py-1 border-b border-surface-variant">
+<span class="text-on-surface-variant">BIOME HABITAT:</span>
+<span class="font-bold text-on-surface">Pallet Forest Reserve (マサラの森)</span>
+</div>
+<div class="flex justify-between py-1 border-b border-surface-variant">
+<span class="text-on-surface-variant">LEVEL ENCOUNTERED:</span>
+<span class="font-bold text-on-surface">Lv. 5 [STARTER PARTNER]</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-on-surface-variant">NATURE:</span>
+<span class="font-bold text-primary">Modest (+Sp.Atk, -Atk)</span>
+</div>
+</div>
+</div>
+<!-- Optimal EV / Tactical Training -->
+<div class="bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-editorial text-body-md text-on-surface flex items-center gap-unit-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">tune</span>
+            EV TRAINING PROTOCOL
+          </span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">努力値配分</span>
+</div>
+<div class="flex flex-col gap-unit-xs bg-surface-container-low p-unit-sm rounded">
+<div class="flex items-center justify-between font-telemetry-data text-body-sm">
+<span class="font-bold text-on-surface">252 Special Attack</span>
+<span class="font-label-chamfer text-label-chamfer bg-primary text-on-primary px-1 rounded">MAX</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded overflow-hidden">
+<div class="bg-primary h-full w-full"></div>
+</div>
+<div class="flex items-center justify-between font-telemetry-data text-body-sm mt-1">
+<span class="font-bold text-on-surface">252 Speed</span>
+<span class="font-label-chamfer text-label-chamfer bg-secondary text-on-secondary px-1 rounded">MAX</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded overflow-hidden">
+<div class="bg-secondary h-full w-full"></div>
+</div>
+<div class="flex items-center justify-between font-telemetry-data text-body-sm mt-1">
+<span class="font-bold text-on-surface">4 HP</span>
+<span class="font-label-chamfer text-label-chamfer bg-surface-variant text-on-surface px-1 rounded">+1 PT</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded overflow-hidden">
+<div class="bg-outline h-full w-[4%]"></div>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Optimized for Chlorophyll sun-sweeper loadouts with Growth + Solar Beam.</span>
+</div>
+<!-- Field Researcher Notes -->
+<div class="bg-surface-container-lowest rounded-xl p-unit-md shadow-md flex flex-col gap-unit-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-editorial text-body-md text-on-surface flex items-center gap-unit-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">edit_note</span>
+            PROF. OAK FIELD MEMO
+          </span>
+<span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">オーキド博士の覚書</span>
+</div>
+<div class="bg-surface-container-low p-unit-sm rounded flex flex-col gap-unit-xs">
+<p class="font-body-sm text-body-sm text-on-surface italic">
+            "Pokemon #0001 displays exceptional docility toward its handler while retaining potent territorial instincts. Its plant bulb absorbs ultraviolet radiation directly, decreasing food requirements significantly during spring migrations."
+          </p>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant">
+<span class="font-label-chamfer text-label-chamfer text-primary font-bold">CHLOROPHYLL CONFIRMED</span>
+<span class="font-telemetry-data text-body-sm text-on-surface-variant">KANTO LAB #01</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-telemetry-data">
+<span class="text-on-surface-variant">ITEM HELD:</span>
+<span class="font-bold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary text-[16px]">eco</span>
+            Miracle Seed (きせきのタネ)
+          </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Cry Audio Feedback Simulation
+  const cryBtn = document.getElementById('cryBtn');
+  if (cryBtn) {
+    cryBtn.addEventListener('click', () => {
+      cryBtn.classList.add('scale-95', 'opacity-80');
+      const originalText = cryBtn.innerHTML;
+      cryBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span class="font-label-chamfer text-label-chamfer font-bold">PLAYING...</span>';
+      setTimeout(() => {
+        cryBtn.innerHTML = originalText;
+        cryBtn.classList.remove('scale-95', 'opacity-80');
+      }, 900);
+    });
+  }
+
+  // Shiny Toggle Micro-interaction
+  let isShiny = false;
+  const shinyToggle = document.getElementById('shinyToggle');
+  const shinyLabel = document.getElementById('shinyLabel');
+  const specimenImg = document.getElementById('specimenImg');
+
+  if (shinyToggle && shinyLabel && specimenImg) {
+    shinyToggle.addEventListener('click', () => {
+      isShiny = !isShiny;
+      if (isShiny) {
+        shinyLabel.textContent = 'SHINY FORM // 色違い';
+        shinyToggle.classList.add('bg-tertiary-container', 'text-on-tertiary-container');
+        shinyToggle.classList.remove('bg-surface-container', 'text-on-surface');
+        specimenImg.style.filter = 'hue-rotate(60deg) drop-shadow(0 0 16px rgba(0, 210, 255, 0.4))';
+      } else {
+        shinyLabel.textContent = 'NORMAL FORM';
+        shinyToggle.classList.remove('bg-tertiary-container', 'text-on-tertiary-container');
+        shinyToggle.classList.add('bg-surface-container', 'text-on-surface');
+        specimenImg.style.filter = 'none';
+      }
+    });
+  }
+
+  // Movepool Category Interactive Filter
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const moveRows = document.querySelectorAll('.move-row');
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Update active styling
+      filterTabs.forEach(t => {
+        t.classList.remove('bg-primary', 'text-on-primary');
+        t.classList.add('text-on-surface');
+      });
+      tab.classList.add('bg-primary', 'text-on-primary');
+      tab.classList.remove('text-on-surface');
+
+      const cat = tab.getAttribute('data-cat');
+      moveRows.forEach(row => {
+        if (cat === 'all') {
+          row.style.display = '';
+        } else {
+          if (row.getAttribute('data-category') === cat) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
+      });
+    });
+  });
+</script></main><footer class="w-full bg-surface-container-low shadow-[0_-4px_16px_rgba(23,27,38,0.04)] py-unit-xl mt-unit-2xl"><div class="w-full px-edge-margin-desktop flex flex-col md:flex-row items-center justify-between gap-unit-md"><div class="flex flex-col gap-unit-2xs"><div class="flex items-center gap-unit-xs"><span class="w-2 h-2 rounded bg-primary"></span><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-wide">protoDex // FIELD TACTICAL OS</span><span class="font-label-kanji-sub text-label-kanji-sub text-on-surface-variant">生物情報総合研究機構</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">© 2025 protoDex Biological Consortium. Tribute to Pokémon / Game Freak / Creatures Inc. Field specimen data strictly for research telemetry.</p></div><div class="flex items-center gap-unit-lg"><div class="flex items-center gap-unit-xs bg-surface-container-lowest px-unit-sm py-unit-2xs rounded"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-chamfer text-label-chamfer text-on-surface font-bold tracking-wider">STATUS: STABLE</span></div><div class="flex flex-col text-right"><span class="font-telemetry-data text-body-sm text-on-surface font-bold tracking-wider">KANTO BIOLOGICAL INDEX</span><span class="font-telemetry-data text-body-sm text-on-surface-variant">VER 4.89 PROTODEX</span></div></div></div></footer></body></html>

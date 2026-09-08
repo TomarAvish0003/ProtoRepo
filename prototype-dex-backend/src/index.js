@@ -10,16 +10,28 @@ import userRoutes from './routes/userRoutes.js';
 import pokeRoutes from './routes/pokeRoutes.js';
 import cloudinaryRoutes from './routes/cloudinaryRoutes.js';
 
-// Local Imports
-import { connectDB } from './config/db.js';
+// Database Imports
+import { client } from './db/index.js';
 
 // Initialize
 dotenv.config();
 const app = express();
 
 // CORS Configuration
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://proto-repo.vercel.app'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Permissive for local development
+  },
   credentials: true
 }));
 
@@ -30,8 +42,7 @@ app.use(cookieParser());
 // Rate Limiting
 app.use(generalLimiter);
 app.use('/api/auth', authLimiter);
-app.use('/api/favorite', favoritesLimiter);
-app.use('/api/caught', favoritesLimiter);
+app.use('/api/user', favoritesLimiter);
 app.use('/api/pokemon', pokemonAPILimiter);
 
 // Route Mounting
@@ -64,11 +75,16 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+// Verify Turso / libSQL connection
+client
+  .execute('SELECT 1')
+  .then(() => {
+    console.log('✅ Connected to Turso / libSQL Database');
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('❌ Failed to connect to Turso / libSQL database:', err);
+    process.exit(1);
   });
-}).catch(err => {
-  console.error('❌ Failed to connect to the database. Server did not start.', err);
-  process.exit(1);
-});

@@ -46,6 +46,9 @@ export interface UserProfile {
   username: string;
   email: string;
   avatar?: string;
+  createdAt?: string | Date;
+  favorites?: string[];
+  caught?: string[];
 }
 
 // --- Simplified/Processed Types ---
@@ -112,6 +115,7 @@ export interface EvolutionStage {
   sprite: string;
   evolution_details: EvolutionDetail[];
   forms?: PokemonForm[];
+  types?: string[];
 }
 
 export type MoveMethod = "level-up" | "machine" | "egg" | "tutor" | "event";
@@ -129,6 +133,7 @@ export interface Move {
   effect?: string;
   flavor_text?: string;
   damage_class?: string;
+  shortDescription?: string;
 }
 
 export interface Ability {
@@ -189,6 +194,17 @@ export interface FlatVarietyWithTypes {
   name: string;
   sprite: string;
   types: string[];
+  height?: number;
+  weight?: number;
+  stats?: {
+    hp?: number;
+    atk?: number;
+    def?: number;
+    spa?: number;
+    spd?: number;
+    spe?: number;
+    bst?: number;
+  };
 }
 
 export interface PokedexListResponse {

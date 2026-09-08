@@ -40,8 +40,7 @@ export default function AvatarUpload() {
       const data = await res.json();
       if (data.secure_url) {
         setAvatarUrl(data.secure_url);
-        const token = localStorage.getItem("token");
-        if (token) await updateProfile(token, { avatar: data.secure_url });
+        await updateProfile({ avatar: data.secure_url });
       } else {
         setError("Upload failed. Please try again.");
       }

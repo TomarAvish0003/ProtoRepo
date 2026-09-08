@@ -1,261 +1,267 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { getProfile, updateProfile } from "@/app/utils/api";
-import { Loader2, Camera, Eye, EyeOff, Pencil } from "lucide-react";
+
+import React, { useState, useRef } from "react";
 import Image from "next/image";
+import { useAuth } from "@/app/context/AuthContext";
+import { updateProfile } from "@/app/utils/api";
+import { toast } from "sonner";
+import {
+  Camera,
+  Loader2,
+  Eye,
+  EyeOff,
+  Pencil,
+  ShieldCheck,
+  Calendar,
+  Mail,
+  User as UserIcon,
+  Check,
+  X,
+} from "lucide-react";
 
 const DEFAULT_AVATAR = "/user.png";
 
 export default function UserInfoCard() {
-  const [avatarUrl, setAvatarUrl] = useState<string>(DEFAULT_AVATAR);
+  const { user, refreshProfile } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string>(user?.avatar || DEFAULT_AVATAR);
   const [uploading, setUploading] = useState(false);
-  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [form, setForm] = useState({ username: user?.username || "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [profile, setProfile] = useState<{ email: string; username: string } | null>(null);
-  const [edit, setEdit] = useState(false);
-  const [form, setForm] = useState({ username: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [profileError, setProfileError] = useState<string | null>(null);
+  if (!user) return null;
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    getProfile(token).then((res) => {
-      if (res.data) {
-        setProfile(res.data);
-        setForm({ username: res.data.username, password: "" });
-        if (res.data.avatar) setAvatarUrl(res.data.avatar);
-      } else {
-        setProfileError(res.error || "Failed to load profile.");
-      }
-    });
-  }, []);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
-    setAvatarError(null);
 
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      toast.error("Avatar upload service is not configured.");
+      return;
+    }
+
+    setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+    formData.append("upload_preset", uploadPreset);
 
     try {
       const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         { method: "POST", body: formData }
       );
       const data = await res.json();
       if (data.secure_url) {
         setAvatarUrl(data.secure_url);
-        const token = localStorage.getItem("token");
-        if (token) await updateProfile(token, { avatar: data.secure_url });
+        const updateRes = await updateProfile({ avatar: data.secure_url });
+        if (updateRes.error) {
+          toast.error(updateRes.error);
+        } else {
+          toast.success("Avatar updated!");
+          await refreshProfile();
+        }
       } else {
-        setAvatarError("Upload failed. Please try again.");
+        toast.error("Upload failed. Please try again.");
       }
     } catch {
-      setAvatarError("Upload failed. Please try again.");
+      toast.error("Upload failed. Please try again.");
     } finally {
       setUploading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setMsg(null);
-    setProfileError(null);
+    setSaving(true);
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setProfileError("You must be logged in to update your profile.");
-      setLoading(false);
+    const updates: { username?: string; password?: string } = {};
+    if (form.username && form.username !== user.username) {
+      updates.username = form.username;
+    }
+    if (form.password) {
+      if (form.password.length < 6) {
+        toast.error("Password must be at least 6 characters.");
+        setSaving(false);
+        return;
+      }
+      updates.password = form.password;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      setEditMode(false);
+      setSaving(false);
       return;
     }
-    const updates: { username?: string; password?: string } = {};
-    if (form.username !== profile?.username) updates.username = form.username;
-    if (form.password) updates.password = form.password;
 
-    const res = await updateProfile(token, updates);
+    const res = await updateProfile(updates);
     if (res.error) {
-      setProfileError(res.error);
+      toast.error(res.error);
     } else {
-      setMsg("Profile updated!");
-      setProfile({ ...profile!, ...updates });
-      setEdit(false);
-      setForm({ ...form, password: "" });
+      toast.success("Trainer profile updated!");
+      await refreshProfile();
+      setEditMode(false);
+      setForm({ username: res.data?.username || form.username, password: "" });
     }
-    setLoading(false);
+    setSaving(false);
   };
 
-  if (profileError) return <div className="text-red-500">{profileError}</div>;
-  if (!profile) return <div className="text-white">Loading...</div>;
+  const formattedDate = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "Active Trainer";
 
   return (
-    <div
-      className="relative p-[3px] rounded-2xl"
-      style={{
-        background: "linear-gradient(270deg, #a855f7, #ec4899, #facc15, #a855f7)",
-        backgroundSize: "600% 600%",
-        animation: "gradient-move 6s ease infinite",
-      }}
-    >
-      <div className="relative rounded-2xl bg-[rgba(24,24,27,0.85)] backdrop-blur-lg border border-white/10 shadow-2xl p-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Avatar + Username + Email (left) */}
-          <div className="flex items-center gap-6 flex-1">
-            {/* Enhanced Avatar with Glowing Ring */}
-            <div className="relative flex items-center justify-center">
-              <div className="absolute w-28 h-28 rounded-full bg-gradient-to-tr from-purple-400 via-pink-400 to-yellow-300 blur-xl opacity-80 animate-pulse" />
-              <button
-                type="button"
-                className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary group"
-                onClick={() => fileInputRef.current?.click()}
-                aria-label="Change avatar"
-              >
-                <Image
-                  src={avatarUrl}
-                  alt="User avatar"
-                  width={96}
-                  height={96}
-                  className="relative w-24 h-24 rounded-full border-4 border-white shadow-xl object-cover bg-gray-200 group-hover:opacity-80 transition"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 rounded-full transition">
-                  {uploading ? (
-                    <Loader2 className="animate-spin text-white w-8 h-8" />
-                  ) : (
-                    <Camera className="text-white w-8 h-8" />
-                  )}
-                </div>
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleFileChange}
-                aria-label="Upload avatar"
+    <div className="rounded-2xl bg-charcoal-surface border border-border-crisp p-6 sm:p-8 shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        {/* Left: Avatar + Trainer Name */}
+        <div className="flex items-center gap-5 sm:gap-6">
+          {/* Avatar Well */}
+          <div className="relative group shrink-0">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-primary/30 bg-surface-container-low shadow-sm flex items-center justify-center">
+              <Image
+                src={avatarUrl}
+                alt={user.username}
+                width={96}
+                height={96}
+                className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity cursor-pointer"
+              title="Change trainer avatar"
+              type="button"
+            >
+              {uploading ? (
+                <Loader2 className="w-6 h-6 animate-spin text-secondary" />
+              ) : (
+                <Camera className="w-6 h-6 text-white drop-shadow" />
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+          </div>
 
-            {/* Username & Email */}
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-300 bg-clip-text text-transparent">
-                  {profile.username}
-                </h1>
-                <button
-                  className="ml-1 p-1 rounded hover:bg-white/10 transition"
-                  title="Edit Profile"
-                  onClick={() => setEdit(true)}
-                >
-                  <Pencil className="w-5 h-5 text-purple-400" />
-                </button>
-              </div>
-              <p className="text-gray-300 text-lg">{profile.email}</p>
+          {/* Trainer Info */}
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-caption-label font-bold uppercase bg-primary/10 text-primary border border-primary/20">
+                <ShieldCheck className="w-3 h-3" />
+                <span>Verified Trainer</span>
+              </span>
+            </div>
+
+            <h1 className="font-headline-sm text-2xl sm:text-3xl font-bold tracking-tight text-on-surface capitalize">
+              {user.username}
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-body-sm text-on-surface-variant mt-1">
+              <span className="inline-flex items-center gap-1">
+                <Mail className="w-3.5 h-3.5 text-secondary" />
+                <span>{user.email}</span>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-secondary" />
+                <span>Joined {formattedDate}</span>
+              </span>
             </div>
           </div>
+        </div>
 
-          {/* User Info (right) */}
-          <div className="flex flex-col gap-3 min-w-[240px] items-end">
-            {!edit ? (
-              <>
-                <div className="flex items-center gap-2 text-right">
-                  <span className="text-gray-400 font-medium">Email:</span>
-                  <span className="text-white font-semibold">{profile.email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-right">
-                  <span className="text-gray-400 font-medium">Password:</span>
-                  <span className="text-white font-semibold">
-                    {showPassword ? form.password || "•••••••••" : "•••••••••"}
-                  </span>
-                  <button
-                    type="button"
-                    className="text-purple-400 hover:text-purple-300"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                  <button
-                    className="ml-2 text-xs text-purple-400 underline hover:text-purple-300"
-                    onClick={() => setEdit(true)}
-                  >
-                    Change
-                  </button>
-                </div>
-              </>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-3 w-full">
-                <div>
-                  <label htmlFor="profile-username" className="block text-gray-400 text-sm mb-1">
-                    Username:
-                  </label>
+        {/* Right: Edit Button or Form */}
+        <div>
+          {!editMode ? (
+            <button
+              onClick={() => {
+                setForm({ username: user.username, password: "" });
+                setEditMode(true);
+              }}
+              type="button"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-low hover:bg-slate-panel border border-border-crisp text-xs font-caption-label font-bold uppercase tracking-wider text-on-surface transition-colors snappy-btn"
+            >
+              <Pencil className="w-3.5 h-3.5 text-primary" />
+              <span>Edit Profile</span>
+            </button>
+          ) : (
+            <form onSubmit={handleSaveProfile} className="flex flex-col gap-3 min-w-[280px]">
+              <div>
+                <label className="block text-[11px] font-caption-label font-bold uppercase text-on-surface-variant mb-1">
+                  Username
+                </label>
+                <div className="relative">
+                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                   <input
-                    id="profile-username"
-                    name="username"
-                    value={form.username}
-                    onChange={handleChange}
-                    className="border border-white/20 px-3 py-2 rounded-lg w-full bg-black/20 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20"
                     type="text"
+                    value={form.username}
+                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    className="w-full pl-9 pr-3 py-1.5 rounded-lg text-sm bg-surface-container-low border border-border-crisp text-on-surface focus:outline-none focus:border-secondary"
+                    placeholder="Enter username"
                     required
-                    placeholder="Enter your username"
                   />
                 </div>
-                <div>
-                  <label htmlFor="profile-password" className="block text-gray-400 text-sm mb-1">
-                    New Password:
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="profile-password"
-                      name="password"
-                      value={form.password}
-                      onChange={handleChange}
-                      className="border border-white/20 px-3 py-2 rounded-lg w-full bg-black/20 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 pr-10"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Leave blank to keep current"
-                      autoComplete="new-password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-white"
-                      onClick={() => setShowPassword((v) => !v)}
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-                <div className="flex gap-2 pt-2">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
-                    disabled={loading}
-                  >
-                    {loading ? "Saving..." : "Save"}
-                  </button>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-caption-label font-bold uppercase text-on-surface-variant mb-1">
+                  New Password (optional)
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    className="w-full pl-3 pr-9 py-1.5 rounded-lg text-sm bg-surface-container-low border border-border-crisp text-on-surface focus:outline-none focus:border-secondary"
+                    placeholder="Leave blank to keep current"
+                  />
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition"
-                    onClick={() => setEdit(false)}
-                    disabled={loading}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
                   >
-                    Cancel
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </form>
-            )}
-            {msg && <div className="text-green-400 text-sm">{msg}</div>}
-            {avatarError && <div className="text-red-400 text-sm">{avatarError}</div>}
-          </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-caption-label font-bold uppercase shadow-xs transition-colors snappy-btn"
+                >
+                  {saving ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Check className="w-3.5 h-3.5" />
+                  )}
+                  <span>Save</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditMode(false)}
+                  className="px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-slate-panel border border-border-crisp text-xs font-caption-label font-bold uppercase text-on-surface-variant transition-colors snappy-btn"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>

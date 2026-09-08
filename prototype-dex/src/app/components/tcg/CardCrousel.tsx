@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import RadarChart from "../RadarChart";
@@ -18,14 +18,6 @@ import {
   PokemonForm,
 } from "@/app/utils/types";
 import { useAuth } from "@/app/context/AuthContext";
-import {
-  getFavorites,
-  addFavorite,
-  removeFavorite,
-  getCaught,
-  addCaught,
-  removeCaught,
-} from "@/app/utils/api";
 import { Press_Start_2P } from "next/font/google";
 import { Fredoka } from "next/font/google";
 
@@ -84,51 +76,22 @@ export default function PokemonDetailPage({
   availableEncounterVersions,
 }: CardCarouselProps) {
   const [activeTab, setActiveTab] = useState("about");
-  const [isFav, setIsFav] = useState(false);
-  const [isCaught, setIsCaught] = useState(false);
+  const { isFavorite, isCaught: checkCaught, toggleFavorite, toggleCaught } = useAuth();
+  const isFav = pokemon?.name ? isFavorite(pokemon.name) : false;
+  const isCaught = pokemon?.name ? checkCaught(pokemon.name) : false;
   const [pokeballBounce, setPokeballBounce] = useState(false);
-  const { token } = useAuth();
 
-  // Fetch favorite/caught state from backend
-  useEffect(() => {
-    let isMounted = true;
-    if (!token || !pokemon?.name) {
-      setIsFav(false);
-      setIsCaught(false);
-      return;
-    }
-    getFavorites(token).then((r) => {
-      if (isMounted && r.data) setIsFav(r.data.includes(pokemon.name));
-    });
-    getCaught(token).then((r) => {
-      if (isMounted && r.data) setIsCaught(r.data.includes(pokemon.name));
-    });
-    return () => { isMounted = false; }
-  }, [token, pokemon?.name]);
-
-  // Handlers for toggling caught/favorite state with API sync
+  // Handlers for toggling caught/favorite state with AuthContext
   const handleFav = async () => {
-    if (!token || !pokemon?.name) return;
-    if (!isFav) {
-      const result = await addFavorite(token, pokemon.name);
-      if (result.data && result.data.includes(pokemon.name)) setIsFav(true);
-    } else {
-      const result = await removeFavorite(token, pokemon.name);
-      if (result.data && !result.data.includes(pokemon.name)) setIsFav(false);
-    }
+    if (!pokemon?.name) return;
+    await toggleFavorite(pokemon.name);
   };
 
   const handleCaught = async () => {
-    if (!token || !pokemon?.name) return;
+    if (!pokemon?.name) return;
     setPokeballBounce(true);
     setTimeout(() => setPokeballBounce(false), 700);
-    if (!isCaught) {
-      const result = await addCaught(token, pokemon.name);
-      if (result.data && result.data.includes(pokemon.name)) setIsCaught(true);
-    } else {
-      const result = await removeCaught(token, pokemon.name);
-      if (result.data && !result.data.includes(pokemon.name)) setIsCaught(false);
-    }
+    await toggleCaught(pokemon.name);
   };
 
   const versions = useMemo(
