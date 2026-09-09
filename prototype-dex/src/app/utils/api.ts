@@ -36,10 +36,37 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const MAX_RETRIES = 3;
 const MAX_RETRY_DELAY = 30000;
 
+// --- Token Storage & Authentication Management ---
+export const AUTH_TOKEN_KEY = 'protodex_auth_token';
+
+export function getStoredToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredToken(token: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token) {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+    }
+  } catch {}
+}
+
 // --- Headers ---
-function authHeaders(token?: string): HeadersInit {
-  const headers: HeadersInit = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
+export function authHeaders(token?: string): HeadersInit {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const activeToken = token || getStoredToken();
+  if (activeToken) {
+    headers.Authorization = `Bearer ${activeToken}`;
+    headers['x-auth-token'] = activeToken;
+  }
   return headers;
 }
 
@@ -70,6 +97,10 @@ async function fetcher<T>(
       }
 
       if (!res.ok) {
+        // If server returns 401 Unauthorized, automatically clear any stale token
+        if (res.status === 401 && getStoredToken()) {
+          setStoredToken(null);
+        }
         const err = await res.json().catch(() => ({}));
         return { data: null, error: err?.error || err?.message || `Error ${res.status}` };
       }
@@ -94,22 +125,29 @@ async function fetcher<T>(
 
 // --- AUTH / USER ---
 export async function loginUser(email: string, password: string) {
-  return fetcher<{ token: string; user: UserProfile }>("/api/auth/login", {
+  const res = await fetcher<{ token: string; user: UserProfile }>("/api/auth/login", {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({ email, password }),
   });
+  if (res.data?.token) {
+    setStoredToken(res.data.token);
+  }
+  return res;
 }
 
 export async function logoutUser(token?: string) {
-  return fetcher<{ message: string }>("/api/auth/logout", {
+  const activeToken = token || getStoredToken();
+  const res = await fetcher<{ message: string }>("/api/auth/logout", {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(activeToken || undefined),
   });
+  setStoredToken(null);
+  return res;
 }
 
 export async function registerUser(username: string, email: string, password: string) {
-  return fetcher<{ token: string; user: UserProfile }>(
+  const res = await fetcher<{ token: string; user: UserProfile }>(
     "/api/auth/register",
     {
       method: "POST",
@@ -117,10 +155,30 @@ export async function registerUser(username: string, email: string, password: st
       body: JSON.stringify({ username, email, password }),
     }
   );
+  if (res.data?.token) {
+    setStoredToken(res.data.token);
+  }
+  return res;
 }
 
-export async function getMe() {
-  return fetcher<{ user: UserProfile }>("/api/auth/me");
+export async function getMe(token?: string): Promise<ApiResponse<{ user: UserProfile }>> {
+  const activeToken = token || getStoredToken();
+
+  // Primary: Use /api/user/profile (supported on current Render build and local backend)
+  const profileRes = await fetcher<UserProfile>("/api/user/profile", {
+    headers: authHeaders(activeToken || undefined),
+  });
+
+  if (profileRes.data) {
+    return { data: { user: profileRes.data }, error: null };
+  }
+
+  // Fallback: If /api/user/profile fails or is unconfigured, try /api/auth/me
+  const meRes = await fetcher<{ user: UserProfile }>("/api/auth/me", {
+    headers: authHeaders(activeToken || undefined),
+  });
+
+  return meRes;
 }
 
 export async function getProfile(token?: string) {

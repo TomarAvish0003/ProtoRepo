@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import { generalLimiter, authLimiter, favoritesLimiter, pokemonAPILimiter } from './middleware/rateLimiter.js';
+import { generalLimiter, favoritesLimiter, pokemonAPILimiter } from './middleware/rateLimiter.js';
 
 // Route Imports
 import authRoutes from './routes/authRoutes.js';
@@ -16,6 +16,9 @@ import { client } from './db/index.js';
 // Initialize
 dotenv.config();
 const app = express();
+
+// Trust reverse proxy (e.g. Render, Vercel, Cloudflare) for accurate client IP rate limiting
+app.set('trust proxy', 1);
 
 // CORS Configuration
 const allowedOrigins = [
@@ -41,7 +44,6 @@ app.use(cookieParser());
 
 // Rate Limiting
 app.use(generalLimiter);
-app.use('/api/auth', authLimiter);
 app.use('/api/user', favoritesLimiter);
 app.use('/api/pokemon', pokemonAPILimiter);
 

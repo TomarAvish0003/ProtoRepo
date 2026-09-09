@@ -44,11 +44,11 @@ export default function LoginPage() {
         <div className="flex flex-col gap-1.5 pb-4 border-b border-border-crisp">
           <div className="flex items-center justify-between">
             <span className="font-caption-label text-[10px] text-secondary font-bold uppercase tracking-wider bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
-              TRAINER OS // AUTH
+              PROTODEX // AUTH
             </span>
             <div className="flex items-center gap-1 text-[11px] text-on-surface-variant font-mono">
               <ShieldCheck className="w-3.5 h-3.5 text-secondary" />
-              <span>HTTPONLY SECURED</span>
+              <span>SECURE ENCRYPTED SESSION</span>
             </div>
           </div>
           <h1 className="font-headline-sm text-2xl font-extrabold text-on-surface tracking-tight mt-1">

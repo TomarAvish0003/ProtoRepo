@@ -10,6 +10,8 @@ import {
   toggleFavoriteApi,
   toggleCaughtApi,
   syncGuestData,
+  getStoredToken,
+  setStoredToken,
 } from '@/app/utils/api';
 import { UserProfile } from '@/app/utils/types';
 
@@ -84,23 +86,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [getGuestData, clearGuestData]);
 
-  // Load session from HttpOnly cookie via /api/auth/me on mount
+  // Load session using stored JWT token (with resilient cookie fallback)
   const refreshProfile = useCallback(async () => {
+    const token = getStoredToken();
+
+    // If there is no stored token, initialize guest state without making failed network requests
+    if (!token) {
+      setUser(null);
+      const { guestFavs, guestCaught } = getGuestData();
+      setFavorites(guestFavs);
+      setCaught(guestCaught);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { data, error: meError } = await getMe();
+      const { data, error: meError } = await getMe(token);
       if (!meError && data?.user) {
         setUser(data.user);
         setFavorites(data.user.favorites || []);
         setCaught(data.user.caught || []);
         setError(null);
       } else {
-        // Unauthenticated -> load guest state from localStorage
+        // Unauthenticated or token expired -> clear token and load guest state
+        setStoredToken(null);
         setUser(null);
         const { guestFavs, guestCaught } = getGuestData();
         setFavorites(guestFavs);
         setCaught(guestCaught);
       }
     } catch {
+      setStoredToken(null);
       setUser(null);
       const { guestFavs, guestCaught } = getGuestData();
       setFavorites(guestFavs);
@@ -306,6 +322,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // Ignore network errors on logout
     }
+    setStoredToken(null);
     setUser(null);
     // Reload fresh guest state
     const { guestFavs, guestCaught } = getGuestData();
