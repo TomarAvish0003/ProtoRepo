@@ -35,7 +35,7 @@ export default function ProfilePage() {
               className="inline-flex items-center gap-1 text-[12px] font-caption-label font-bold text-primary hover:underline uppercase tracking-wider"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Return to National Dex</span>
+              <span>Return to Pokédex</span>
             </Link>
           </div>
 
@@ -126,7 +126,7 @@ export default function ProfilePage() {
             className="inline-flex items-center gap-1 text-[12px] font-caption-label font-bold text-primary hover:underline uppercase tracking-wider"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to National Dex</span>
+            <span>Return to Pokédex</span>
           </Link>
 
           <span className="font-index-mono text-xs text-on-surface-variant">

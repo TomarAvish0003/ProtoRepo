@@ -48,21 +48,21 @@ export default function Navbar() {
   const navLinks = [
     {
       href: "/",
-      label: "Spotlight",
-      kanji: "発見",
+      label: "Home",
+      kanji: "ホーム",
       isActive: pathname === "/",
     },
     {
       href: "/pokedex",
-      label: "National Dex",
+      label: "Pokédex",
       kanji: "図鑑",
       isActive: pathname.startsWith("/pokedex"),
     },
     {
-      href: "/pokemon/bulbasaur",
-      label: "Master Dossier",
-      kanji: "詳細",
-      isActive: pathname.startsWith("/pokemon"),
+      href: "/builder",
+      label: "Team Builder",
+      kanji: "編成",
+      isActive: pathname.startsWith("/builder"),
     },
     {
       href: "/caught",
@@ -85,53 +85,72 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0 snappy-btn">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 80 80"
-            className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 drop-shadow-[0_0_8px_rgba(0,229,255,0.3)]"
+            viewBox="0 0 48 48"
+            className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 drop-shadow-[0_2px_8px_rgba(255,51,85,0.25)] dark:drop-shadow-[0_2px_12px_rgba(255,51,85,0.4)] transition-transform duration-200 group-hover:scale-105"
           >
             <defs>
-              <linearGradient id="navProtoGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FF3355" />
-                <stop offset="100%" stopColor="#FF5277" />
+              <linearGradient id="protoBallRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FF385C" />
+                <stop offset="100%" stopColor="#D90429" />
               </linearGradient>
-              <linearGradient id="navCyberBorder" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FF3355" />
-                <stop offset="50%" stopColor="#00E5FF" />
-                <stop offset="100%" stopColor="#3B82F6" />
+              <linearGradient id="protoBallWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="100%" stopColor="#E2E8F0" />
               </linearGradient>
             </defs>
-            <polygon
-              points="12,0 68,0 80,12 80,68 68,80 12,80 0,68 0,12"
-              fill="#090D16"
-              stroke="url(#navCyberBorder)"
-              strokeWidth="2.5"
+            {/* Rounded squircle protective badge frame */}
+            <rect
+              x="2"
+              y="2"
+              width="44"
+              height="44"
+              rx="12"
+              fill="#0B0F17"
+              stroke="#1E293B"
+              strokeWidth="1.5"
             />
-            <circle cx="40" cy="40" r="32" fill="#111827" stroke="#1E2638" strokeWidth="2" />
-            {/* Top Half (Red Accent) */}
-            <path d="M 10 40 A 30 30 0 0 1 70 40 Z" fill="url(#navProtoGradDark)" />
-            {/* Bottom Half (Dark Charcoal) */}
-            <path d="M 10 40 A 30 30 0 0 0 70 40 Z" fill="#0B0F17" />
-            {/* Divider Band */}
-            <line x1="8" y1="40" x2="72" y2="40" stroke="#000000" strokeWidth="4" />
-            {/* Outer Core Ring */}
-            <circle cx="40" cy="40" r="10" fill="#0B0F17" stroke="#000000" strokeWidth="3" />
-            {/* Center Button (Cyan Active Light) */}
-            <circle cx="40" cy="40" r="5" fill="#00E5FF" />
-            <circle cx="40" cy="40" r="2" fill="#FFFFFF" />
-            {/* Corner Tech Ticks */}
-            <line x1="3" y1="12" x2="12" y2="3" stroke="#00E5FF" strokeWidth="2" />
-            <line x1="77" y1="68" x2="68" y2="77" stroke="#FF3355" strokeWidth="2" />
+            {/* Pokéball Geometry */}
+            <g transform="translate(4, 4)">
+              <circle cx="20" cy="20" r="17.5" fill="#0B0F17" stroke="#1E293B" strokeWidth="1" />
+              {/* Top Red Dome */}
+              <path
+                d="M 3.5 20 A 16.5 16.5 0 0 1 36.5 20 Z"
+                fill="url(#protoBallRed)"
+              />
+              {/* Specular Highlight Arc */}
+              <path
+                d="M 8 13 A 14 14 0 0 1 27 7.5"
+                stroke="rgba(255,255,255,0.45)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                fill="none"
+              />
+              {/* Bottom White Dome */}
+              <path
+                d="M 3.5 20 A 16.5 16.5 0 0 0 36.5 20 Z"
+                fill="url(#protoBallWhite)"
+              />
+              {/* Central Divider Band */}
+              <rect x="3" y="18" width="34" height="4" fill="#0B0F17" />
+              {/* Outer Button Ring */}
+              <circle cx="20" cy="20" r="6" fill="#0B0F17" />
+              <circle cx="20" cy="20" r="4.5" fill="#F8FAFC" />
+              {/* Inner Core Button with Cyan Glow */}
+              <circle cx="20" cy="20" r="2.8" fill="#00E5FF" />
+              <circle cx="19.2" cy="19.2" r="0.9" fill="#FFFFFF" />
+            </g>
           </svg>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 leading-none">
               <span className="font-headline-sm text-[17px] sm:text-[18px] text-on-surface tracking-tight font-black uppercase">
                 Proto<span className="text-primary">Dex</span>
               </span>
-              <span className="font-caption-label text-[9px] text-secondary bg-surface-container-low border border-secondary/30 px-1.5 py-0.5 rounded font-bold">
-                OS v4.2
+              <span className="font-caption-label text-[9px] text-primary bg-primary/10 border border-primary/25 px-1.5 py-0.5 rounded font-bold">
+                v1.0
               </span>
             </div>
             <span className="font-caption-label text-[8px] sm:text-[9px] text-secondary font-bold tracking-widest opacity-85 mt-0.5 uppercase">
-              RESEARCH OS
+              POKÉDEX &amp; BUILDER
             </span>
           </div>
         </Link>
@@ -171,7 +190,7 @@ export default function Navbar() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Quick scan species, № ID..."
+              placeholder="Quick search Pokémon, № ID..."
               className="bg-transparent outline-none font-body-sm text-[13px] text-on-surface placeholder:text-on-surface-variant/60 w-32 lg:w-40"
             />
           </form>
@@ -213,7 +232,7 @@ export default function Navbar() {
                   <>
                     <div className="px-2 py-2 border-b border-border-crisp">
                       <p className="font-caption-label text-[10px] text-secondary uppercase font-bold tracking-wider">
-                        FIELD RESEARCHER
+                        TRAINER PROFILE
                       </p>
                       <p className="font-headline-sm text-sm text-on-surface font-bold truncate">
                         {user.username}
@@ -234,14 +253,14 @@ export default function Navbar() {
                       className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-surface-container-low text-body-sm text-on-surface transition-colors snappy-btn"
                     >
                       <CheckCircle2 className="w-4 h-4 text-secondary" />
-                      <span>Caught Pokémon Log</span>
+                      <span>Caught Pokémon</span>
                     </Link>
                     <Link
                       href="/favorites"
                       className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-surface-container-low text-body-sm text-on-surface transition-colors snappy-btn"
                     >
                       <Heart className="w-4 h-4 text-primary" />
-                      <span>Priority Favorites</span>
+                      <span>Favorite Pokémon</span>
                     </Link>
                     <button
                       onClick={() => {
@@ -258,7 +277,7 @@ export default function Navbar() {
                   <>
                     <div className="px-2 py-2 border-b border-border-crisp">
                       <p className="font-caption-label text-[10px] text-secondary uppercase font-bold tracking-wider">
-                        GUEST RESEARCHER
+                        GUEST TRAINER
                       </p>
                       <p className="font-body-sm text-[12px] text-on-surface-variant mt-0.5 leading-snug">
                         Sign in to record caught Pokémon &amp; sync across devices.

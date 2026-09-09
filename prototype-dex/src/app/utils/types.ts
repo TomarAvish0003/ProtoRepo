@@ -73,15 +73,22 @@ export interface PokemonEncounter {
   rate?: number;
 }
 
+export type FormCategory = "mega" | "gmax" | "regional" | "battle" | "cosmetic" | "standard";
+
 export interface PokemonForm {
   id: number;
   name: string;
   form_name: string | undefined;
   sprite: string;
+  officialArtwork?: string;
   types: string[];
   abilities: Ability[];
   stats: { name: string; value: number }[];
+  bst?: number;
+  height?: number;
+  weight?: number;
   form_type: string;
+  category?: FormCategory;
 }
 
 export interface TypeEffectiveness {
@@ -116,6 +123,7 @@ export interface EvolutionStage {
   evolution_details: EvolutionDetail[];
   forms?: PokemonForm[];
   types?: string[];
+  evolves_to?: EvolutionStage[];
 }
 
 export type MoveMethod = "level-up" | "machine" | "egg" | "tutor" | "event";

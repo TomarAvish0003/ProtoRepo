@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   Pokemon,
   EvolutionStage,
+  EvolutionDetail,
   Move,
   Ability,
   FlavorTextEntry,
@@ -16,7 +17,6 @@ import {
   TYPE_CONFIGS,
   getJapaneseName,
   formatPokedexNumber,
-  formatArchivalIndex,
   getOfficialArtwork,
   getShinyArtwork,
   getPokemonCryUrl,
@@ -31,6 +31,7 @@ import {
   ArrowLeft,
   ShieldAlert,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -100,6 +101,7 @@ const VERSION_GROUP_LABELS: Record<string, { label: string; gen: string }> = {
 interface PokemonDetailClientProps {
   pokemon: Pokemon;
   evoChain: EvolutionStage[];
+  evoTree?: EvolutionStage | null;
   evoError: string | null;
   flavorTexts: FlavorTextEntry[];
   abilities: Ability[];
@@ -113,11 +115,16 @@ interface PokemonDetailClientProps {
 export default function PokemonDetailClient({
   pokemon,
   evoChain,
+  evoTree,
   flavorTexts,
   abilities,
   moves,
   availableVersions = [],
+  forms = [],
 }: PokemonDetailClientProps) {
+  const [selectedForm, setSelectedForm] = useState<PokemonForm | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [formSearch, setFormSearch] = useState<string>("");
   const [isShiny, setIsShiny] = useState(false);
   const [isPlayingCry, setIsPlayingCry] = useState(false);
   const { isFavorite, isCaught: isCaughtInDex, toggleFavorite, toggleCaught } = useAuth();
@@ -130,13 +137,63 @@ export default function PokemonDetailClient({
 
   const pokemonId = pokemon.id;
   const formattedId = formatPokedexNumber(pokemonId);
-  const archivalIndex = formatArchivalIndex(pokemonId);
   const japaneseName = getJapaneseName(pokemonId, pokemon.name);
+
+  // Alternate Forms classification
+  const alternateForms = useMemo(() => {
+    return (forms || []).filter(
+      (f) => f.category !== "standard" && f.name.toLowerCase() !== pokemon.name.toLowerCase()
+    );
+  }, [forms, pokemon.name]);
+
+  const categoriesWithCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      all: alternateForms.length,
+      mega: 0,
+      gmax: 0,
+      regional: 0,
+      battle: 0,
+      cosmetic: 0,
+    };
+    for (const f of alternateForms) {
+      if (f.category && counts[f.category] !== undefined) {
+        counts[f.category]++;
+      }
+    }
+    const tabs = [{ id: "all", label: "All Formations", count: counts.all }];
+    if (counts.mega > 0) tabs.push({ id: "mega", label: "Mega Evolution", count: counts.mega });
+    if (counts.gmax > 0) tabs.push({ id: "gmax", label: "Gigantamax", count: counts.gmax });
+    if (counts.regional > 0) tabs.push({ id: "regional", label: "Regional Adaptations", count: counts.regional });
+    if (counts.battle > 0) tabs.push({ id: "battle", label: "Tactical Stances", count: counts.battle });
+    if (counts.cosmetic > 0) tabs.push({ id: "cosmetic", label: "Special Variants", count: counts.cosmetic });
+    return tabs;
+  }, [alternateForms]);
+
+  const displayedForms = useMemo(() => {
+    return alternateForms.filter((f) => {
+      if (selectedCategory !== "all" && f.category !== selectedCategory) return false;
+      if (formSearch) {
+        const query = formSearch.toLowerCase().trim();
+        const matchName = f.name.toLowerCase().includes(query);
+        const matchFormType = f.form_type.toLowerCase().includes(query);
+        if (!matchName && !matchFormType) return false;
+      }
+      return true;
+    });
+  }, [alternateForms, selectedCategory, formSearch]);
+
+  // Dynamic Telemetry Data (Base vs Selected Form)
+  const activeArtwork = selectedForm
+    ? (selectedForm.officialArtwork || selectedForm.sprite)
+    : (isShiny ? getShinyArtwork(pokemonId) : getOfficialArtwork(pokemonId));
 
   // Types
   const pokemonTypes = useMemo(() => {
+    if (selectedForm && selectedForm.types && selectedForm.types.length > 0) {
+      return selectedForm.types.map((t) => t.toLowerCase());
+    }
     return pokemon.types.map((t) => t.type.name.toLowerCase());
-  }, [pokemon.types]);
+  }, [pokemon.types, selectedForm]);
 
   const primaryType = pokemonTypes[0] || "normal";
   const primaryConfig = TYPE_CONFIGS[primaryType] || TYPE_CONFIGS.normal;
@@ -151,13 +208,16 @@ export default function PokemonDetailClient({
       "special-defense": 65,
       speed: 45,
     };
-    if (pokemon.stats) {
-      pokemon.stats.forEach((s: RawStat) => {
-        map[s.stat.name] = s.base_stat;
+    const targetStats = selectedForm?.stats || pokemon.stats;
+    if (targetStats) {
+      targetStats.forEach((s: RawStat | { name: string; value: number }) => {
+        const statName = "stat" in s ? s.stat.name : s.name;
+        const statVal = "base_stat" in s ? s.base_stat : s.value;
+        map[statName] = statVal;
       });
     }
     return map;
-  }, [pokemon.stats]);
+  }, [pokemon.stats, selectedForm]);
 
   const hp = statsMap["hp"] ?? 45;
   const atk = statsMap["attack"] ?? 49;
@@ -168,10 +228,12 @@ export default function PokemonDetailClient({
   const bst = hp + atk + def + spa + spd + spe;
 
   // Biometrics
-  const heightM = (pokemon.height / 10).toFixed(1);
-  const heightFtIn = `${Math.floor((pokemon.height * 0.1) * 3.28084)}′${Math.round(((pokemon.height * 0.1) * 3.28084 % 1) * 12).toString().padStart(2, "0")}″`;
-  const weightKg = (pokemon.weight / 10).toFixed(1);
-  const weightLbs = ((pokemon.weight / 10) * 2.20462).toFixed(1);
+  const currentHeight = selectedForm?.height !== undefined ? selectedForm.height : pokemon.height;
+  const currentWeight = selectedForm?.weight !== undefined ? selectedForm.weight : pokemon.weight;
+  const heightM = (currentHeight / 10).toFixed(1);
+  const heightFtIn = `${Math.floor((currentHeight * 0.1) * 3.28084)}′${Math.round(((currentHeight * 0.1) * 3.28084 % 1) * 12).toString().padStart(2, "0")}″`;
+  const weightKg = (currentWeight / 10).toFixed(1);
+  const weightLbs = ((currentWeight / 10) * 2.20462).toFixed(1);
 
   // Audio Cry
   const playCry = () => {
@@ -186,6 +248,7 @@ export default function PokemonDetailClient({
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
       audioRef.current.onended = () => setIsPlayingCry(false);
+      audioRef.current.onerror = () => setIsPlayingCry(false);
     } catch {
       setIsPlayingCry(false);
     }
@@ -205,10 +268,10 @@ export default function PokemonDetailClient({
       return [
         {
           version: "standard",
-          label: "National Archive",
-          gen: "ARCHIVE",
+          label: "Pokédex Standard",
+          gen: "POKÉDEX",
           year: "1996",
-          text: `${pokemon.name} displays exceptional survival instincts across ecological biomes. Its physical structure allows it to command elemental energy with distinct precision.`,
+          text: `${pokemon.name} is a Pokémon species observed across various regions. It demonstrates remarkable natural instincts and distinctive abilities in battle.`,
         },
       ];
     }
@@ -434,42 +497,297 @@ export default function PokemonDetailClient({
     };
   }, [hp, atk, def, spa, spd, spe]);
 
+  // Helper to format evolution triggers
+  const formatEvolutionTrigger = (details?: EvolutionDetail): string => {
+    if (!details) return "Level Up";
+    if (details.min_level) return `LV. ${details.min_level}`;
+    if (details.item?.name) return details.item.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    if (details.trigger?.name === "trade") {
+      return details.held_item?.name
+        ? `Trade (${details.held_item.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())})`
+        : "Trade";
+    }
+    if (details.min_happiness) return "Friendship";
+    if (details.known_move?.name) return `Knows ${details.known_move.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`;
+    if (details.time_of_day) return `Evolve (${details.time_of_day})`;
+    if (details.location?.name) return details.location.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    if (details.gender === 1) return "Female ♀";
+    if (details.gender === 2) return "Male ♂";
+    if (details.needs_overworld_rain) return "Rain Weather";
+    if (details.turn_upside_down) return "Turn Upside-Down";
+    return details.trigger?.name ? details.trigger.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "Evolve";
+  };
+
+  // Helper to render an individual evolution stage card
+  const renderEvolutionStageCard = (stage: EvolutionStage, depth: number) => {
+    const isCurrent = stage.name.toLowerCase() === pokemon.name.toLowerCase();
+    const stageNum = String(depth).padStart(2, "0");
+    const stageForms = stage.forms || (stage.name.toLowerCase() === pokemon.name.toLowerCase() ? alternateForms : []);
+
+    return (
+      <div
+        key={stage.name}
+        className={`w-44 sm:w-52 bg-charcoal-surface p-4 rounded-xl flex flex-col items-center text-center relative border transition-all hover:scale-105 shrink-0 ${
+          isCurrent
+            ? "border-secondary ring-2 ring-secondary/30 bg-surface-container-lowest shadow-sm"
+            : "border-border-crisp hover:border-primary hover:shadow-xs"
+        }`}
+      >
+        <div className="w-full flex items-center justify-between">
+          <span className="font-index-mono text-[11px] text-on-surface-variant font-bold">
+            0{stageNum}
+          </span>
+          {isCurrent && (
+            <span className="bg-secondary text-white text-[10px] font-caption-label px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+              ACTIVE
+            </span>
+          )}
+        </div>
+
+        <Link href={`/pokemon/${stage.name.toLowerCase()}`} className="group block my-2">
+          <img
+            src={getOfficialArtwork(stage.id)}
+            alt={stage.name}
+            className="w-24 h-24 sm:w-28 sm:h-28 object-contain group-hover:scale-110 transition-transform drop-shadow-sm"
+            loading="lazy"
+          />
+        </Link>
+
+        <Link
+          href={`/pokemon/${stage.name.toLowerCase()}`}
+          className="font-headline-sm text-sm font-bold text-on-surface capitalize hover:text-secondary transition-colors truncate block max-w-full"
+        >
+          {stage.name.replace(/-/g, " ")}
+        </Link>
+        <span className="font-subhead-kana text-[11px] text-on-surface-variant">
+          {getJapaneseName(stage.id, stage.name)}
+        </span>
+
+        {/* Stage Types */}
+        {stage.types && stage.types.length > 0 && (
+          <div className="flex items-center gap-1 mt-2 flex-wrap justify-center">
+            {stage.types.map((tName: string) => {
+              const cfg = TYPE_CONFIGS[tName.toLowerCase()] || TYPE_CONFIGS.normal;
+              return (
+                <span
+                  key={tName}
+                  style={{ backgroundColor: cfg.colorHex }}
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-caption-label font-bold uppercase ${cfg.textClass}`}
+                >
+                  {cfg.label}
+                </span>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Stage Forms Indicator */}
+        {stageForms && stageForms.length > 0 && (
+          <div className="mt-2.5 pt-2 border-t border-border-crisp/60 w-full flex flex-col items-center">
+            <a
+              href="#morphology-formations"
+              className="text-[10px] font-caption-label font-bold text-secondary hover:underline flex items-center gap-1"
+            >
+              <Sparkles className="w-3 h-3 text-secondary" />
+              <span>
+                {stageForms.length} {stageForms.length === 1 ? "Variant" : "Variants"}
+              </span>
+            </a>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Helper to render the complete taxonomic progression tree
+  const renderLineageTree = (rootNode: EvolutionStage) => {
+    // Single Stage
+    if (!rootNode.evolves_to || rootNode.evolves_to.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-4">
+          {renderEvolutionStageCard(rootNode, 1)}
+          <span className="font-caption-label text-[10px] text-secondary font-bold uppercase mt-3 bg-secondary/10 px-2.5 py-0.5 rounded border border-secondary/20">
+            Single Stage // Does Not Evolve
+          </span>
+        </div>
+      );
+    }
+
+    // Root branches immediately (e.g. Eevee, Tyrogue, Applin)
+    if (rootNode.evolves_to.length > 1) {
+      return (
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-6 py-4 w-full">
+          <div className="shrink-0 flex flex-col items-center">
+            {renderEvolutionStageCard(rootNode, 1)}
+          </div>
+
+          <div className="flex items-center text-secondary shrink-0">
+            <span className="material-symbols-outlined text-[32px] hidden lg:block rotate-0">alt_route</span>
+            <span className="material-symbols-outlined text-[32px] block lg:hidden rotate-90">alt_route</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 w-full max-w-4xl">
+            {rootNode.evolves_to.map((child) => {
+              const trigger = formatEvolutionTrigger(child.evolution_details?.[0]);
+              return (
+                <div
+                  key={child.name}
+                  className="flex flex-col items-center bg-surface-container-low/50 p-3.5 rounded-2xl border border-border-crisp shadow-2xs"
+                >
+                  <div className="flex items-center gap-1 text-on-surface-variant mb-2">
+                    <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+                      {trigger}
+                    </span>
+                  </div>
+                  {renderEvolutionStageCard(child, 2)}
+                  {child.evolves_to && child.evolves_to.length > 0 && (
+                    <div className="flex flex-col items-center mt-3 pt-3 border-t border-border-crisp/60 w-full">
+                      <div className="flex items-center gap-1 text-on-surface-variant mb-2">
+                        <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+                          {formatEvolutionTrigger(child.evolves_to[0].evolution_details?.[0])}
+                        </span>
+                      </div>
+                      {renderEvolutionStageCard(child.evolves_to[0], 3)}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // Root has 1 child
+    const child = rootNode.evolves_to[0];
+    const trigger1 = formatEvolutionTrigger(child.evolution_details?.[0]);
+
+    // Child branches into multiple (e.g. Kirlia -> Gardevoir & Gallade, Slowpoke -> Slowbro & Slowking)
+    if (child.evolves_to && child.evolves_to.length > 1) {
+      return (
+        <div className="flex flex-col xl:flex-row items-center justify-center gap-6 py-4 w-full">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 shrink-0">
+            {renderEvolutionStageCard(rootNode, 1)}
+            <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant px-1 sm:px-2 shrink-0">
+              <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+                {trigger1}
+              </span>
+              <span className="material-symbols-outlined text-[24px] text-secondary">
+                trending_flat
+              </span>
+            </div>
+            {renderEvolutionStageCard(child, 2)}
+          </div>
+
+          <div className="flex items-center text-secondary shrink-0">
+            <span className="material-symbols-outlined text-[32px] hidden xl:block rotate-0">alt_route</span>
+            <span className="material-symbols-outlined text-[32px] block xl:hidden rotate-90">alt_route</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {child.evolves_to.map((grandchild) => {
+              const trigger2 = formatEvolutionTrigger(grandchild.evolution_details?.[0]);
+              return (
+                <div
+                  key={grandchild.name}
+                  className="flex flex-col items-center bg-surface-container-low/50 p-3.5 rounded-2xl border border-border-crisp shadow-2xs"
+                >
+                  <div className="flex items-center gap-1 text-on-surface-variant mb-2">
+                    <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+                      {trigger2}
+                    </span>
+                  </div>
+                  {renderEvolutionStageCard(grandchild, 3)}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // Linear 3-stage (e.g. Charmander -> Charmeleon -> Charizard)
+    if (child.evolves_to && child.evolves_to.length === 1) {
+      const grandchild = child.evolves_to[0];
+      const trigger2 = formatEvolutionTrigger(grandchild.evolution_details?.[0]);
+      return (
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 py-4">
+          {renderEvolutionStageCard(rootNode, 1)}
+          <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant px-1 sm:px-2 shrink-0">
+            <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+              {trigger1}
+            </span>
+            <span className="material-symbols-outlined text-[24px] text-secondary">
+              trending_flat
+            </span>
+          </div>
+          {renderEvolutionStageCard(child, 2)}
+          <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant px-1 sm:px-2 shrink-0">
+            <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+              {trigger2}
+            </span>
+            <span className="material-symbols-outlined text-[24px] text-secondary">
+              trending_flat
+            </span>
+          </div>
+          {renderEvolutionStageCard(grandchild, 3)}
+        </div>
+      );
+    }
+
+    // Linear 2-stage (e.g. Rattata -> Raticate)
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 py-4">
+        {renderEvolutionStageCard(rootNode, 1)}
+        <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant px-1 sm:px-2 shrink-0">
+          <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+            {trigger1}
+          </span>
+          <span className="material-symbols-outlined text-[24px] text-secondary">
+            trending_flat
+          </span>
+        </div>
+        {renderEvolutionStageCard(child, 2)}
+      </div>
+    );
+  };
+
   return (
     <main className="w-full pt-20 bg-background text-on-surface anime-grid-bg min-h-screen">
       <div className="flex flex-col w-full">
-        {/* Archival Navigation Breadcrumb Bar */}
+        {/* Navigation Breadcrumb Bar */}
         <section className="w-full bg-surface-container-lowest/80 backdrop-blur-xs border-b border-border-crisp py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
             <div className="flex items-center gap-inset-sm font-caption-label text-caption-label text-on-surface-variant flex-wrap">
               <Link href="/pokedex" className="hover:text-primary transition-colors flex items-center gap-1 snappy-btn">
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>ARCHIVE DEPT.</span>
+                <span>POKÉDEX</span>
               </Link>
               <span>/</span>
-              <span className="text-primary font-bold">№ {formattedId} POKÉMON</span>
+              <span className="text-primary font-bold">№ {formattedId} {pokemon.name.toUpperCase()}</span>
             </div>
             <div className="flex items-center gap-inset-xs font-index-mono text-index-mono text-secondary font-bold">
-              <span>ACTIVE ARCHIVE</span>
+              <span>POKÉDEX ENTRY</span>
             </div>
           </div>
         </section>
 
-        {/* Editorial Masthead & Pokemon Stage */}
+        {/* Masthead & Pokemon Stage */}
         <section className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
-            {/* Left Editorial Pokemon Stage (5 Cols) */}
+            {/* Left Pokemon Stage (5 Cols) */}
             <div className="lg:col-span-5 flex flex-col gap-inset-md">
-              {/* Archival Pokemon Plate */}
+              {/* Pokemon Art Plate */}
               <div className="bg-surface-container-lowest border border-surface-container rounded-xl p-inset-lg shadow-archival-sm relative overflow-hidden flex flex-col justify-between">
-                {/* Japanese Stamp Annotation */}
+                {/* Number & Type Badge */}
                 <div className="flex items-center justify-between pb-inset-sm border-b border-surface-container">
                   <span className="font-caption-label text-caption-label text-on-surface-variant font-bold">
-                    {archivalIndex} {"//"} NO. {formattedId}
+                    № {formattedId}
                   </span>
                   <div className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-secondary"></span>
                     <span className="font-caption-label text-caption-label text-primary font-bold">
-                      POKÉDEX DOSSIER
+                      POKÉDEX ENTRY
                     </span>
                   </div>
                 </div>
@@ -485,6 +803,23 @@ export default function PokemonDetailClient({
                   {japaneseName}
                 </div>
 
+                {/* Selected Form Preview Indicator */}
+                {selectedForm && (
+                  <div className="relative z-20 mb-2 flex items-center justify-between p-2.5 rounded-xl bg-secondary/15 border border-secondary/30 text-xs text-secondary font-bold">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-secondary animate-pulse" />
+                      <span>FORM PREVIEW: {selectedForm.form_type}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedForm(null)}
+                      className="px-2 py-0.5 rounded text-[10px] uppercase font-caption-label font-bold bg-secondary/20 hover:bg-secondary/30 text-secondary border border-secondary/30 transition-colors cursor-pointer"
+                    >
+                      Reset to Base Form
+                    </button>
+                  </div>
+                )}
+
                 {/* Primary Pokemon Art Plate */}
                 <div className="relative my-6 flex items-center justify-center min-h-[280px]">
                   <div
@@ -492,8 +827,8 @@ export default function PokemonDetailClient({
                     style={{ backgroundColor: primaryConfig.colorHex }}
                   ></div>
                   <img
-                    src={isShiny ? getShinyArtwork(pokemonId) : getOfficialArtwork(pokemonId)}
-                    alt={pokemon.name}
+                    src={activeArtwork}
+                    alt={selectedForm?.name || pokemon.name}
                     className="relative z-10 w-60 h-60 object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-105"
                   />
                 </div>
@@ -711,8 +1046,8 @@ export default function PokemonDetailClient({
                     &ldquo;{activeLore?.text}&rdquo;
                   </p>
                   <div className="flex items-center justify-between mt-inset-xs pt-inset-xs border-t border-surface-container text-caption-label font-caption-label text-on-surface-variant flex-wrap gap-1">
-                    <span>ARCHIVAL REGISTRATION: POKÉMON {activeLore?.label?.toUpperCase()} ({activeLore?.year})</span>
-                    <span className="text-secondary font-bold font-index-mono uppercase">PROF. OAK ARCHIVE // {activeLore?.gen}</span>
+                    <span>POKÉDEX ENTRY: POKÉMON {activeLore?.label?.toUpperCase()} ({activeLore?.year})</span>
+                    <span className="text-secondary font-bold font-index-mono uppercase">POKÉDEX // {activeLore?.gen}</span>
                   </div>
                 </div>
 
@@ -720,7 +1055,7 @@ export default function PokemonDetailClient({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-inset-sm pt-inset-xs">
                   <div className="bg-surface-container-low p-inset-sm rounded-lg border border-surface-container flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase font-bold">
-                      NATURAL ABILITY // 固有能力
+                      ABILITY // とくせい
                     </span>
                     <span className="font-headline-sm text-body-md font-bold text-on-surface mt-0.5 capitalize">
                       {primaryAbility.name.replace(/-/g, " ")}
@@ -732,7 +1067,7 @@ export default function PokemonDetailClient({
 
                   <div className="bg-surface-container-low p-inset-sm rounded-lg border border-surface-container flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase font-bold">
-                      HIDDEN POTENTIAL // 潜在能力
+                      HIDDEN ABILITY // 夢特性
                     </span>
                     <span className="font-headline-sm text-body-md font-bold text-secondary mt-0.5 capitalize">
                       {hiddenAbility.name.replace(/-/g, " ")}
@@ -749,14 +1084,14 @@ export default function PokemonDetailClient({
                 <div className="flex items-center justify-between pb-inset-xs border-b border-surface-container">
                   <div className="flex items-center gap-inset-xs">
                     <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                      BASE STAT MATRIX
+                      BASE STATS
                     </span>
                     <span className="font-caption-label text-caption-label bg-surface-container-high px-2 py-0.5 rounded text-secondary font-bold">
                       BST: {bst}
                     </span>
                   </div>
                   <span className="font-caption-label text-caption-label text-on-surface-variant">
-                    CALIBRATED STANDARD (MAX 255)
+                    MAX STAT: 255
                   </span>
                 </div>
 
@@ -837,7 +1172,7 @@ export default function PokemonDetailClient({
                       <text x="20" y="60" textAnchor="end" className="text-[9px] font-bold fill-current font-mono">SP.ATK</text>
                     </svg>
                     <span className="font-caption-label text-caption-label text-on-surface-variant mt-1">
-                      RADIAL COGNITIVE BALANCE
+                      RADIAL STAT DISTRIBUTION
                     </span>
                   </div>
                 </div>
@@ -850,7 +1185,7 @@ export default function PokemonDetailClient({
                     DEFENSIVE TYPE COMPATIBILITY
                   </span>
                   <span className="font-caption-label text-caption-label text-on-surface-variant font-bold">
-                    {pokemonTypes.length > 1 ? "DUAL AFFINITY" : "SINGLE AFFINITY"}
+                    {pokemonTypes.length > 1 ? "DUAL TYPE" : "SINGLE TYPE"}
                   </span>
                 </div>
 
@@ -923,130 +1258,245 @@ export default function PokemonDetailClient({
           </div>
         </section>
 
-        {/* Visual Branching Evolution Lineage Spread */}
-        <section className="w-full px-margin-mobile md:px-margin-tablet lg:px-margin-desktop py-inset-md">
-          <div className="max-w-7xl mx-auto bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-surface-container flex flex-col gap-inset-md">
-            <div className="flex items-center justify-between pb-inset-xs border-b border-surface-container">
-              <div className="flex items-center gap-inset-xs">
-                <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                  EVOLUTIONARY MORPHOLOGY
-                </span>
-                <span className="font-caption-label text-caption-label text-secondary bg-secondary/10 px-2 py-0.5 rounded font-bold uppercase">
-                  TAXONOMIC PROGRESSION
-                </span>
+        {/* Alternative Forms & Variants Section (Megas / G-Max / Regional / Battle) */}
+        {alternateForms.length > 0 && (
+          <section className="w-full px-margin-mobile md:px-margin-tablet lg:px-margin-desktop py-inset-md" id="morphology-formations">
+            <div className="max-w-7xl mx-auto bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-border-crisp flex flex-col gap-inset-md">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-inset-xs border-b border-border-crisp">
+                <div className="flex items-center gap-inset-xs flex-wrap">
+                  <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                    ALTERNATIVE FORMS & VARIANTS
+                  </span>
+                  <span className="font-caption-label text-caption-label text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded font-bold uppercase">
+                    FORMS & VARIANTS // 形態変化
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-caption-label text-caption-label text-on-surface-variant font-mono">
+                    {alternateForms.length} {alternateForms.length === 1 ? "FORM" : "FORMS"} AVAILABLE
+                  </span>
+                </div>
               </div>
-              <span className="font-caption-label text-caption-label text-on-surface-variant font-mono">
-                GENETIC LINEAGE
-              </span>
-            </div>
 
-            {/* Robust Horizontal Evolution Flow */}
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 py-4">
-              {evoChain && evoChain.length > 0 ? (
-                evoChain.map((stage, idx) => {
-                  const isCurrent = stage.name.toLowerCase() === pokemon.name.toLowerCase();
-                  const stageNum = String(idx + 1).padStart(2, "0");
+              {/* Category Filter Ribbon & Search Bar */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                  {categoriesWithCounts.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-caption-label font-bold uppercase transition-all shrink-0 flex items-center gap-1.5 snappy-btn cursor-pointer ${
+                        selectedCategory === cat.id
+                          ? "bg-primary text-white shadow-xs"
+                          : "bg-surface-container-low hover:bg-slate-panel text-on-surface-variant hover:text-on-surface border border-border-crisp"
+                      }`}
+                    >
+                      <span>{cat.label}</span>
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-black/20 text-white font-mono">
+                        {cat.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
 
-                  // Trigger condition for transitioning to next stage
-                  const nextStage = evoChain[idx + 1];
-                  const details = nextStage?.evolution_details?.[0];
-                  let triggerLabel = "Level Up";
-                  if (details) {
-                    if (details.min_level) {
-                      triggerLabel = `LV. ${details.min_level}`;
-                    } else if (details.item?.name) {
-                      triggerLabel = details.item.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-                    } else if (details.trigger?.name === "trade") {
-                      triggerLabel = details.held_item?.name
-                        ? `Trade (${details.held_item.name.replace(/-/g, " ")})`
-                        : "Trade";
-                    } else if (details.min_happiness) {
-                      triggerLabel = "Friendship";
-                    } else if (details.known_move?.name) {
-                      triggerLabel = `Knows ${details.known_move.name.replace(/-/g, " ")}`;
-                    } else if (details.time_of_day) {
-                      triggerLabel = `Evolve (${details.time_of_day})`;
-                    } else if (details.location?.name) {
-                      triggerLabel = "Special Area";
-                    }
-                  }
+                {alternateForms.length > 4 && (
+                  <div className="relative min-w-[200px] max-w-xs">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-on-surface-variant" />
+                    <input
+                      type="text"
+                      value={formSearch}
+                      onChange={(e) => setFormSearch(e.target.value)}
+                      placeholder="Filter forms..."
+                      className="w-full pl-8 pr-3 py-1 rounded-lg text-xs bg-surface-container-low border border-border-crisp text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary"
+                    />
+                  </div>
+                )}
+              </div>
 
-                  return (
-                    <React.Fragment key={stage.name}>
-                      <Link
-                        href={`/pokemon/${stage.name.toLowerCase()}`}
-                        className={`w-44 sm:w-52 bg-surface-container-low/70 p-4 rounded-xl flex flex-col items-center text-center relative border transition-all hover:scale-105 ${
-                          isCurrent
-                            ? "border-secondary ring-2 ring-secondary/30 bg-surface-container-lowest shadow-sm"
-                            : "border-surface-container hover:border-outline hover:shadow-xs"
+              {/* Bounded Responsive Grid Container (Never breaks page) */}
+              <div className="max-h-[520px] overflow-y-auto pr-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-2">
+                  {displayedForms.map((form) => {
+                    const isFormActive = selectedForm?.name === form.name;
+                    const deltaBst = (form.bst || 0) - bst;
+                    const primaryFormType = form.types[0]?.toLowerCase() || "normal";
+                    const fConfig = TYPE_CONFIGS[primaryFormType] || TYPE_CONFIGS.normal;
+
+                    return (
+                      <div
+                        key={form.name}
+                        className={`group relative bg-charcoal-surface rounded-xl p-4 border transition-all flex flex-col justify-between ${
+                          isFormActive
+                            ? "border-secondary ring-2 ring-secondary/30 bg-surface-container-lowest shadow-md"
+                            : "border-border-crisp hover:border-primary hover:shadow-xs"
                         }`}
                       >
-                        <div className="w-full flex items-center justify-between">
-                          <span className="font-index-mono text-[11px] text-on-surface-variant font-bold">
-                            0{stageNum}
-                          </span>
-                          {isCurrent && (
-                            <span className="bg-secondary text-white text-[10px] font-caption-label px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
-                              ACTIVE
+                        {/* Top: Category Tag & Japanese Name */}
+                        <div>
+                          <div className="flex items-center justify-between gap-1 mb-2">
+                            <span
+                              className={`text-[9px] font-caption-label font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                                form.category === "mega"
+                                  ? "bg-red-500/15 text-red-500 border-red-500/30"
+                                  : form.category === "gmax"
+                                  ? "bg-purple-500/15 text-purple-400 border-purple-500/30"
+                                  : form.category === "regional"
+                                  ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                  : "bg-blue-500/15 text-blue-400 border-blue-500/30"
+                              }`}
+                            >
+                              {form.form_type}
                             </span>
-                          )}
-                        </div>
+                            <span className="font-subhead-kana text-[10px] text-on-surface-variant truncate">
+                              {getJapaneseName(form.id, form.name)}
+                            </span>
+                          </div>
 
-                        <img
-                          src={getOfficialArtwork(stage.id)}
-                          alt={stage.name}
-                          className="w-24 h-24 sm:w-28 sm:h-28 object-contain my-2 drop-shadow-sm"
-                        />
+                          {/* Artwork Well */}
+                          <div
+                            className="w-full h-32 rounded-lg flex items-center justify-center relative overflow-hidden my-2 border"
+                            style={{
+                              backgroundColor: fConfig.softBg,
+                              borderColor: fConfig.borderHex,
+                            }}
+                          >
+                            <img
+                              src={form.officialArtwork || form.sprite}
+                              alt={form.name}
+                              className="w-24 h-24 object-contain group-hover:scale-110 transition-transform drop-shadow-sm"
+                              loading="lazy"
+                            />
+                          </div>
 
-                        <span className="font-headline-sm text-sm font-bold text-on-surface capitalize">
-                          {stage.name}
-                        </span>
-                        <span className="font-subhead-kana text-[11px] text-on-surface-variant">
-                          {getJapaneseName(stage.id, stage.name)}
-                        </span>
+                          {/* Form Name */}
+                          <h3 className="font-headline-sm text-sm font-bold text-on-surface capitalize truncate">
+                            {form.form_name ? form.form_name.replace(/-/g, " ") : form.name.replace(/-/g, " ")}
+                          </h3>
 
-                        {/* Stage Types */}
-                        {stage.types && stage.types.length > 0 && (
-                          <div className="flex items-center gap-1 mt-2">
-                            {stage.types.map((tName: string) => {
-                              const cfg = TYPE_CONFIGS[tName.toLowerCase()] || TYPE_CONFIGS.normal;
+                          {/* Types */}
+                          <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+                            {form.types.map((t) => {
+                              const tc = TYPE_CONFIGS[t.toLowerCase()] || TYPE_CONFIGS.normal;
                               return (
                                 <span
-                                  key={tName}
-                                  style={{ backgroundColor: cfg.colorHex }}
-                                  className={`px-1.5 py-0.5 rounded text-[9px] font-caption-label font-bold uppercase ${cfg.textClass}`}
+                                  key={t}
+                                  style={{ backgroundColor: tc.colorHex }}
+                                  className={`px-1.5 py-0.2 rounded text-[9px] font-caption-label font-bold uppercase ${tc.textClass}`}
                                 >
-                                  {cfg.label}
+                                  {tc.label}
                                 </span>
                               );
                             })}
                           </div>
-                        )}
-                      </Link>
-
-                      {/* Transition Connector to Next Stage */}
-                      {idx < evoChain.length - 1 && (
-                        <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant px-1 sm:px-2 shrink-0">
-                          <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-surface-container-high shadow-2xs">
-                            {triggerLabel}
-                          </span>
-                          <span className="material-symbols-outlined text-[24px] text-secondary">
-                            trending_flat
-                          </span>
                         </div>
-                      )}
-                    </React.Fragment>
-                  );
-                })
+
+                        {/* Bottom: BST & Inspect Button */}
+                        <div className="mt-3 pt-2.5 border-t border-border-crisp/60 flex flex-col gap-2">
+                          <div className="flex items-center justify-between text-xs font-mono">
+                            <span className="text-on-surface-variant text-[11px]">BST:</span>
+                            <span className="font-bold text-on-surface text-[11px]">
+                              {form.bst || "—"}{" "}
+                              {deltaBst !== 0 && (
+                                <span className={deltaBst > 0 ? "text-emerald-500 font-bold" : "text-amber-500"}>
+                                  ({deltaBst > 0 ? `+${deltaBst}` : deltaBst})
+                                </span>
+                              )}
+                            </span>
+                          </div>
+
+                          {form.abilities.length > 0 && (
+                            <div className="text-[10px] text-on-surface-variant truncate">
+                              <span className="font-bold">Ability: </span>
+                              <span className="capitalize">{form.abilities[0].name.replace(/-/g, " ")}</span>
+                            </div>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (isFormActive) {
+                                setSelectedForm(null);
+                              } else {
+                                setSelectedForm(form);
+                                window.scrollTo({ top: 320, behavior: "smooth" });
+                              }
+                            }}
+                            className={`w-full py-1.5 px-3 rounded-lg text-xs font-caption-label font-bold uppercase transition-all flex items-center justify-center gap-1.5 snappy-btn cursor-pointer ${
+                              isFormActive
+                                ? "bg-secondary text-white shadow-xs"
+                                : "bg-surface-container-low hover:bg-slate-panel text-on-surface border border-border-crisp hover:border-secondary"
+                            }`}
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>{isFormActive ? "Active Form" : "View Form"}</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Visual Branching Evolution Lineage Spread */}
+        <section className="w-full px-margin-mobile md:px-margin-tablet lg:px-margin-desktop py-inset-md">
+          <div className="max-w-7xl mx-auto bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-border-crisp flex flex-col gap-inset-md">
+            <div className="flex items-center justify-between pb-inset-xs border-b border-border-crisp">
+              <div className="flex items-center gap-inset-xs">
+                <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                  EVOLUTION CHAIN
+                </span>
+                <span className="font-caption-label text-caption-label text-secondary bg-secondary/10 px-2 py-0.5 rounded font-bold uppercase">
+                  EVOLUTION LINE
+                </span>
+              </div>
+              <span className="font-caption-label text-caption-label text-on-surface-variant font-mono">
+                FAMILY TREE
+              </span>
+            </div>
+
+            {/* Robust Dynamic Evolution Flow (Preserves Branches & Apex Forms) */}
+            <div className="w-full overflow-x-auto py-2 scrollbar-none">
+              {evoTree ? (
+                renderLineageTree(evoTree)
+              ) : evoChain && evoChain.length > 0 ? (
+                /* Linear Fallback if tree is unavailable */
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 py-4">
+                  {evoChain.map((stage, idx) => {
+                    const nextStage = evoChain[idx + 1];
+                    const trigger = formatEvolutionTrigger(nextStage?.evolution_details?.[0]);
+                    return (
+                      <React.Fragment key={stage.name}>
+                        {renderEvolutionStageCard(stage, idx + 1)}
+                        {idx < evoChain.length - 1 && (
+                          <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant px-1 sm:px-2 shrink-0">
+                            <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
+                              {trigger}
+                            </span>
+                            <span className="material-symbols-outlined text-[24px] text-secondary">
+                              trending_flat
+                            </span>
+                          </div>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
               ) : (
-                /* Single Stage Pokémon */
-                <div className="bg-surface-container-low p-4 rounded-xl flex flex-col items-center text-center border border-surface-container w-52">
-                  <span className="font-index-mono text-[11px] text-on-surface-variant font-bold">01</span>
-                  <img src={getOfficialArtwork(pokemonId)} alt={pokemon.name} className="w-24 h-24 object-contain my-2" />
-                  <span className="font-headline-sm text-sm font-bold text-on-surface capitalize">{pokemon.name}</span>
-                  <span className="font-caption-label text-[10px] text-secondary font-bold uppercase mt-2 bg-secondary/10 px-2 py-0.5 rounded">
-                    Single Stage // Does Not Evolve
-                  </span>
+                /* Single Stage Pokémon Fallback */
+                <div className="flex flex-col items-center justify-center py-4">
+                  <div className="bg-charcoal-surface p-4 rounded-xl flex flex-col items-center text-center border border-border-crisp w-52 shadow-xs">
+                    <span className="font-index-mono text-[11px] text-on-surface-variant font-bold">01</span>
+                    <img src={getOfficialArtwork(pokemonId)} alt={pokemon.name} className="w-24 h-24 object-contain my-2" />
+                    <span className="font-headline-sm text-sm font-bold text-on-surface capitalize">{pokemon.name}</span>
+                    <span className="font-caption-label text-[10px] text-secondary font-bold uppercase mt-2 bg-secondary/10 px-2 py-0.5 rounded">
+                      Single Stage // Does Not Evolve
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
@@ -1061,10 +1511,10 @@ export default function PokemonDetailClient({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-inset-xs">
                   <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                    TACTICAL MOVEPOOL REGISTRY
+                    MOVE LEARNSET
                   </span>
                   <span className="font-caption-label text-caption-label text-secondary bg-secondary/10 px-2 py-0.5 rounded font-bold uppercase">
-                    {processedMoves.length} TECHNIQUES
+                    {processedMoves.length} MOVES
                   </span>
                 </div>
 
@@ -1127,7 +1577,7 @@ export default function PokemonDetailClient({
                   <tr className="bg-surface-container-low border-b border-surface-container font-caption-label text-caption-label text-on-surface-variant uppercase">
                     <th className="py-2.5 px-4">Move Name</th>
                     <th className="py-2.5 px-4">Category</th>
-                    <th className="py-2.5 px-4">Affinity</th>
+                    <th className="py-2.5 px-4">Type</th>
                     <th className="py-2.5 px-4 text-center">Power</th>
                     <th className="py-2.5 px-4 text-center">Accuracy</th>
                     <th className="py-2.5 px-4 text-center">PP</th>
@@ -1211,10 +1661,10 @@ export default function PokemonDetailClient({
               </table>
             </div>
 
-            {/* Archival Ledger Metadata Footer */}
+            {/* Movepool Metadata Footer */}
             <div className="pt-inset-xs border-t border-surface-container flex flex-col sm:flex-row items-center justify-between text-caption-label font-caption-label text-on-surface-variant gap-2">
-              <span>SHOWING {processedMoves.length} DEDUPLICATED COMBAT TECHNIQUES</span>
-              <span className="text-secondary font-bold font-index-mono uppercase">AUTHENTIC METRICS VIA LOCAL LIB-SQL DATABASE</span>
+              <span>SHOWING {processedMoves.length} LEARNABLE MOVES</span>
+              <span className="text-secondary font-bold font-index-mono uppercase">VERIFIED POKÉDEX MOVE DATA</span>
             </div>
           </div>
         </section>

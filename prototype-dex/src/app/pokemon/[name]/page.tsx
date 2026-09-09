@@ -27,6 +27,9 @@ import {
 import PokemonDetailClient from "./page.client";
 import localMovesData from "@/app/data/pokemon_moves.json";
 
+import localPokedexData from "@/app/data/pokedex-data.json";
+import { FormCategory } from "@/app/utils/types";
+
 // --- Type Definitions for this Page ---
 
 // FIX: Define the props to match what Next.js expects during build.
@@ -61,16 +64,39 @@ function computeTypeEffectiveness(typeDataArr: any[]): TypeEffectiveness {
   return typeEffectiveness;
 }
 
-function getFormTypeLabel(name: string): string {
-  if (name.includes("mega-x")) return "Mega X";
-  if (name.includes("mega-y")) return "Mega Y";
-  if (name.includes("mega")) return "Mega";
-  if (name.includes("gmax")) return "Gmax";
-  if (name.includes("alola")) return "Alolan";
-  if (name.includes("galar")) return "Galarian";
-  if (name.includes("hisui")) return "Hisuian";
-  if (name.includes("paldea")) return "Paldean";
-  return "Standard";
+function classifyForm(name: string): { label: string; category: FormCategory } {
+  const lower = name.toLowerCase();
+  if (lower.includes("mega-x")) return { label: "Mega Evolution X", category: "mega" };
+  if (lower.includes("mega-y")) return { label: "Mega Evolution Y", category: "mega" };
+  if (lower.includes("mega") || lower.includes("primal")) {
+    return { label: lower.includes("primal") ? "Primal Reversion" : "Mega Evolution", category: "mega" };
+  }
+  if (lower.includes("gmax")) return { label: "Gigantamax", category: "gmax" };
+  if (lower.includes("alola")) return { label: "Alolan Form", category: "regional" };
+  if (lower.includes("galar")) return { label: "Galarian Form", category: "regional" };
+  if (lower.includes("hisui")) return { label: "Hisuian Form", category: "regional" };
+  if (lower.includes("paldea")) return { label: "Paldean Form", category: "regional" };
+  if (
+    lower.includes("origin") || lower.includes("therian") || lower.includes("blade") ||
+    lower.includes("shield") || lower.includes("zen") || lower.includes("school") ||
+    lower.includes("pirouette") || lower.includes("complete") || lower.includes("10-percent") ||
+    lower.includes("attack") || lower.includes("defense") || lower.includes("speed") ||
+    lower.includes("crowned") || lower.includes("rapid-strike") || lower.includes("single-strike") ||
+    lower.includes("hero") || lower.includes("dusk") || lower.includes("dawn") || lower.includes("ultra") ||
+    lower.includes("ice") || lower.includes("shadow") || lower.includes("stellar") || lower.includes("terastal") ||
+    lower.includes("heat") || lower.includes("wash") || lower.includes("frost") || lower.includes("fan") || lower.includes("mow") ||
+    lower.includes("sky") || lower.includes("hangry")
+  ) {
+    return { label: "Battle Stance", category: "battle" };
+  }
+  if (
+    lower.includes("cap") || lower.includes("totem") || lower.includes("starter") ||
+    lower.includes("cosplay") || lower.includes("rock-star") || lower.includes("belle") ||
+    lower.includes("pop-star") || lower.includes("phd") || lower.includes("libre")
+  ) {
+    return { label: "Special Variant", category: "cosmetic" };
+  }
+  return { label: "Standard", category: "standard" };
 }
 
 function humanize(str: string) {
@@ -95,62 +121,126 @@ export default async function PokemonPage({ params }: PageProps) {
   const pokemon = pokemonRes.data;
   const species = speciesRes.data as PokemonSpecies;
 
-  // Enrich the evolution chain with type information
-  const evoChainWithTypes: EvolutionStage[] = evoChainRes.data ? await Promise.all(evoChainRes.data.map(async (stage) => {
-      const stagePokemon = await getPokemon(String(stage.id));
-      return {
-          ...stage,
-          types: stagePokemon.data?.types.map((t: RawPokemonType) => t.type.name) || [],
-      };
-  })) : [];
-  
   const evoError: string | null = evoChainRes.error ?? null;
+  const rawTree = evoChainRes.data?.tree || null;
+  const rawStages = evoChainRes.data?.stages || [];
 
+  // 1. Optimized Variety and Alternate Form Ingestion
   let forms: PokemonForm[] = [];
-  if (species?.varieties) {
-    const allVarietyData = (await Promise.all(
-      species.varieties.map(v => getPokemon(v.pokemon.name))
-    )).map(res => res.data).filter((p): p is Pokemon => p !== null);
-    
-    const formsArr = await Promise.all(
-      allVarietyData.map(async (formPokemon) => {
-        const abilities: Ability[] = await Promise.all(
-          formPokemon.abilities.map(async (a: RawAbility) => {
-            const abilityRes = await getPokemonAbility(a.ability.name);
-            const effectEntry = (abilityRes.data as RawAbilityResponse)?.effect_entries?.find((e) => e.language.name === "en");
-            return {
-              name: a.ability.name,
-              is_hidden: a.is_hidden,
-              description: effectEntry?.short_effect || "",
-            };
-          })
-        );
-        return {
-          id: formPokemon.id,
-          name: formPokemon.name,
-          form_name: formPokemon.is_default ? undefined : formPokemon.name,
-          sprite: formPokemon.sprites.front_default,
-          types: formPokemon.types.map((t: RawPokemonType) => t.type.name),
-          abilities,
-          stats: formPokemon.stats.map((s: RawStat) => ({ name: s.stat.name, value: s.base_stat })),
-          form_type: getFormTypeLabel(formPokemon.name),
-        };
-      })
-    );
-    forms = formsArr as PokemonForm[];
+  if (species?.varieties && species.varieties.length > 0) {
+    const varietyEntries = species.varieties;
+    const prioritizedVarieties: typeof varietyEntries = [];
+    const cosmeticVarieties: typeof varietyEntries = [];
 
-    const megaAndGmaxForms = forms.filter(f => f.form_type?.includes("Mega") || f.form_type?.includes("Gmax"));
-    const regionalForms = forms.filter(f => f.form_type?.includes("Alolan") || f.form_type?.includes("Galarian") || f.form_type?.includes("Hisuian") || f.form_type?.includes("Paldean"));
-    
-    if (evoChainWithTypes.length > 0) {
-        if (megaAndGmaxForms.length > 0) {
-            evoChainWithTypes[evoChainWithTypes.length - 1].forms = megaAndGmaxForms;
-        }
-        if (regionalForms.length > 0) {
-            evoChainWithTypes[0].forms = [...(evoChainWithTypes[0].forms || []), ...regionalForms];
-        }
+    for (const v of varietyEntries) {
+      const { category } = classifyForm(v.pokemon.name);
+      if (v.is_default) {
+        prioritizedVarieties.unshift(v);
+      } else if (category === "mega" || category === "gmax" || category === "regional" || category === "battle") {
+        prioritizedVarieties.push(v);
+      } else {
+        cosmeticVarieties.push(v);
+      }
+    }
+
+    // Include prioritized forms and cap cosmetic forms to at most 2, max 9 total varieties
+    const selectedVarieties = [
+      ...prioritizedVarieties,
+      ...cosmeticVarieties.slice(0, 2),
+    ].slice(0, 9);
+
+    const varietyResults = await Promise.allSettled(
+      selectedVarieties.map((v) => getPokemon(v.pokemon.name))
+    );
+
+    const formsArr: PokemonForm[] = [];
+    for (let i = 0; i < selectedVarieties.length; i++) {
+      const res = varietyResults[i];
+      if (res.status !== "fulfilled" || !res.value?.data) continue;
+      const fData = res.value.data as Pokemon;
+      const { label, category } = classifyForm(fData.name);
+
+      const stats = (fData.stats || []).map((s: RawStat) => ({
+        name: s.stat.name,
+        value: s.base_stat,
+      }));
+      const bst = stats.reduce((acc, curr) => acc + curr.value, 0);
+
+      const officialArt =
+        fData.sprites?.other?.["official-artwork"]?.front_default ||
+        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${fData.id}.png`;
+
+      formsArr.push({
+        id: fData.id,
+        name: fData.name,
+        form_name: fData.is_default ? undefined : fData.name,
+        sprite: fData.sprites?.front_default || officialArt,
+        officialArtwork: officialArt,
+        types: (fData.types || []).map((t: RawPokemonType) => t.type.name),
+        abilities: (fData.abilities || []).map((a: RawAbility) => ({
+          name: a.ability.name,
+          is_hidden: a.is_hidden,
+          description: "",
+        })),
+        stats,
+        bst,
+        height: fData.height,
+        weight: fData.weight,
+        form_type: label,
+        category,
+      });
+    }
+    forms = formsArr;
+  }
+
+  // 2. Type Mapping for Evolution Lineage
+  const stageTypeMap = new Map<number, string[]>();
+  for (const stage of rawStages) {
+    const localEntry = (localPokedexData as any[]).find((p) => p.id === stage.id);
+    if (localEntry?.types) {
+      stageTypeMap.set(stage.id, localEntry.types);
     }
   }
+
+  await Promise.all(
+    rawStages.map(async (stage) => {
+      if (!stageTypeMap.has(stage.id)) {
+        try {
+          const res = await getPokemon(String(stage.id));
+          if (res.data?.types) {
+            stageTypeMap.set(
+              stage.id,
+              res.data.types.map((t: RawPokemonType) => t.type.name)
+            );
+          }
+        } catch {
+          stageTypeMap.set(stage.id, ["normal"]);
+        }
+      }
+    })
+  );
+
+  // 3. Enriched Recursive Evolution Tree
+  function enrichEvolutionTree(node: EvolutionStage): EvolutionStage {
+    const nodeTypes = stageTypeMap.get(node.id) || [];
+    const stageForms = node.id === pokemon.id
+      ? forms.filter((f) => f.category !== "standard")
+      : undefined;
+
+    return {
+      ...node,
+      types: nodeTypes,
+      forms: stageForms,
+      evolves_to: (node.evolves_to || []).map(enrichEvolutionTree),
+    };
+  }
+
+  const enrichedTree = rawTree ? enrichEvolutionTree(rawTree) : null;
+  const evoChainWithTypes: EvolutionStage[] = rawStages.map((stage) => ({
+    ...stage,
+    types: stageTypeMap.get(stage.id) || [],
+    forms: stage.id === pokemon.id ? forms.filter((f) => f.category !== "standard") : undefined,
+  }));
   
   const typeNames = pokemon.types.map((t: RawPokemonType) => t.type.name);
   const typeDataArr = (await Promise.all(typeNames.map((n) => getPokemonType(n)))).map(d => d.data);
@@ -268,13 +358,34 @@ export default async function PokemonPage({ params }: PageProps) {
     type_effectiveness: typeEffectiveness,
   };
   
+  const resolvedAbilities: Ability[] = await Promise.all(
+    (pokemon.abilities || []).map(async (a: RawAbility) => {
+      try {
+        const abilityRes = await getPokemonAbility(a.ability.name);
+        const effectEntry = (abilityRes.data as RawAbilityResponse)?.effect_entries?.find((e) => e.language.name === "en");
+        return {
+          name: a.ability.name,
+          is_hidden: a.is_hidden,
+          description: effectEntry?.short_effect || "",
+        };
+      } catch {
+        return {
+          name: a.ability.name,
+          is_hidden: a.is_hidden,
+          description: "",
+        };
+      }
+    })
+  );
+
   return (
     <PokemonDetailClient
       pokemon={enrichedPokemon}
       evoChain={evoChainWithTypes}
+      evoTree={enrichedTree}
       evoError={evoError}
       flavorTexts={flavorTexts}
-      abilities={forms.find((f) => f.id === pokemon.id)?.abilities || []}
+      abilities={resolvedAbilities}
       moves={moves}
       encounters={encounters}
       availableVersions={availableMoveVersions}

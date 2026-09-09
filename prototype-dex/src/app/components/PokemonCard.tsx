@@ -108,7 +108,7 @@ export default function PokemonCard({
       <Link
         href={`/pokemon/${name.toLowerCase()}`}
         className="block focus:outline-none h-full flex flex-col justify-between"
-        aria-label={`View Pokédex dossier for ${name}`}
+        aria-label={`View Pokédex entry for ${name}`}
       >
         {/* Top Meta Row */}
         <div className="flex items-center justify-between gap-1 pb-2 border-b border-border-crisp">

@@ -22,8 +22,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "protoDex // Anime-Tech Research Field OS",
-  description: "Biological Intelligence System & High-Precision Pokémon Research Telemetry Platform",
+  title: "ProtoDex // Competitive Pokédex & Team Builder",
+  description: "Modern Pokédex with comprehensive Pokémon database, tournament-grade team builder, and damage calculator.",
 };
 
 export default function RootLayout({

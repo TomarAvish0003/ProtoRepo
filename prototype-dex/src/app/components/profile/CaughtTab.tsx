@@ -39,10 +39,10 @@ export default function CaughtTab() {
           </div>
           <div>
             <h2 className="font-headline-sm text-base sm:text-lg font-bold text-on-surface">
-              Field Registry (Caught)
+              Caught Pokémon
             </h2>
             <p className="font-caption-label text-[11px] text-on-surface-variant">
-              {caught.length} / 1025 CAUGHT ({progressPercent}% OF NATIONAL DEX)
+              {caught.length} / 1025 CAUGHT ({progressPercent}% OF POKÉDEX)
             </p>
           </div>
         </div>

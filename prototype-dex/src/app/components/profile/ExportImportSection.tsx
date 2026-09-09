@@ -92,7 +92,7 @@ export default function ExportImportSection() {
           </div>
           <div>
             <h2 className="font-headline-sm text-base font-bold text-on-surface">
-              Archival Backup
+              Data Backup & Restore
             </h2>
             <p className="font-caption-label text-[11px] text-on-surface-variant">
               EXPORT / IMPORT PORTABLE POKÉDEX DATA
@@ -101,7 +101,7 @@ export default function ExportImportSection() {
         </div>
 
         <p className="text-xs text-on-surface-variant leading-relaxed mb-4">
-          Export your complete registry (favorites and caught Pokémon) as an open JSON archive, or import an existing backup to restore your data.
+          Export your complete Pokédex data (favorites and caught Pokémon) as a JSON backup file, or import an existing backup to restore your data.
         </p>
       </div>
 
@@ -112,7 +112,7 @@ export default function ExportImportSection() {
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-low hover:bg-slate-panel border border-border-crisp text-xs font-caption-label font-bold uppercase tracking-wider text-on-surface transition-colors snappy-btn"
         >
           <Download className="w-4 h-4 text-primary" />
-          <span>Export JSON Archive</span>
+          <span>Export JSON Backup</span>
         </button>
 
         <button
@@ -126,7 +126,7 @@ export default function ExportImportSection() {
           ) : (
             <Upload className="w-4 h-4 text-secondary" />
           )}
-          <span>Import JSON Archive</span>
+          <span>Import JSON Backup</span>
         </button>
         <input
           ref={fileInputRef}

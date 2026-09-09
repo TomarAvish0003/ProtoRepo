@@ -103,13 +103,13 @@ export default function HomePage() {
   const japaneseMoniker = getJapaneseMoniker(currentSpotlight.id, currentSpotlight.name, currentSpotlight.types);
   const artwork = getOfficialArtwork(currentSpotlight.id, currentSpotlight.sprite);
   const lore = DEFAULT_POKEMON_LORE[currentSpotlight.id] || {
-    redBlue: `Documented biological intelligence profile for ${currentSpotlight.name.toUpperCase()}. Exhibits advanced sensory acuity and calibrated combat capabilities across global habitats.`,
-    crystal: `Field telemetry indicates high responsiveness to ecological shifts and tactical elemental synergy.`,
-    scarlet: `Laboratory scans verify stable biological parameters and exceptional evolutionary potential.`,
-    habitat: "Global Terrestrial Wilds",
-    rarity: "Apex Research Specimen",
+    redBlue: `A remarkable Pokémon known throughout the Pokémon world. Its unique abilities and combat potential make it a formidable ally for trainers.`,
+    crystal: `Capable of learning diverse moves to adapt in battle. Highly valued by trainers across competitive circuits.`,
+    scarlet: `Respected for its impressive power and reliable battling capabilities in modern competitive tournaments.`,
+    habitat: "Various Regions",
+    rarity: "Standard Pokémon",
     surveyYear: 2024,
-    leadSurveyor: "Field Telemetry Division",
+    leadSurveyor: "Pokédex Research",
   };
 
   const isSpotlightFavorite = isFavorite(currentSpotlight.name);
@@ -158,45 +158,45 @@ export default function HomePage() {
   return (
     <main className="w-full pt-16 bg-background min-h-screen text-on-surface transition-colors duration-200">
       <div className="flex flex-col w-full">
-        {/* Top Command Masthead (Stitch Obsidian Research OS / Lab) */}
+        {/* Top Command Masthead */}
         <section className="w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12 relative overflow-hidden bg-surface-container-lowest/80 border-b border-border-crisp anime-grid-bg">
           <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-6">
             {/* Masthead Header & Badging */}
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
               <div className="flex flex-col gap-2 max-w-3xl">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-caption-label text-[10px] text-secondary uppercase font-bold tracking-widest bg-surface-container-low px-2 py-0.5 rounded border border-secondary/30">
-                    OBSIDIAN RESEARCH OS // FIELD TELEMETRY
+                  <span className="font-caption-label text-[10px] text-primary uppercase font-bold tracking-widest bg-primary/10 px-2 py-0.5 rounded border border-primary/25">
+                    COMPETITIVE POKÉDEX &amp; TEAM BUILDER
                   </span>
                 </div>
                 <h1 className="font-display-hero text-3xl sm:text-5xl lg:text-[52px] text-on-surface tracking-tight uppercase font-black leading-[1.08]">
                   The Definitive Pokémon <br className="hidden sm:inline" />
                   <span className="text-primary underline decoration-secondary decoration-4 underline-offset-8">
-                    Research Compendium
+                    Database
                   </span>
                 </h1>
 
                 <p className="font-body-lg text-base sm:text-lg text-on-surface-variant max-w-2xl mt-1 leading-relaxed">
-                  Synthesized laboratory field records, combat metrics, and taxonomic classifications spanning all 9 surveyed ecological domains.
+                  Complete Pokémon database, stats, move learnsets, damage calculator, and tournament team builder.
                 </p>
               </div>
 
               {/* Global Metric Stat Cards */}
               <div className="flex items-center gap-3 shrink-0 flex-wrap sm:flex-nowrap">
                 <div className="bg-charcoal-surface p-3.5 rounded-xl shadow-xs border border-border-crisp flex flex-col items-start min-w-[115px] snappy-btn">
-                  <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Cataloged</span>
+                  <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Pokémon</span>
                   <span className="font-headline-md text-2xl text-primary font-bold">1,025</span>
-                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">種族確認</span>
+                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">全種目録</span>
                 </div>
                 <div className="bg-charcoal-surface p-3.5 rounded-xl shadow-xs border border-border-crisp flex flex-col items-start min-w-[115px] snappy-btn">
-                  <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Affinities</span>
+                  <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Types</span>
                   <span className="font-headline-md text-2xl text-secondary font-bold">18</span>
-                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">属性分類</span>
+                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">タイプ</span>
                 </div>
                 <div className="bg-charcoal-surface p-3.5 rounded-xl shadow-xs border border-border-crisp flex flex-col items-start min-w-[115px] snappy-btn">
-                  <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Sectors</span>
+                  <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Regions</span>
                   <span className="font-headline-md text-2xl text-on-surface font-bold">9</span>
-                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">調査管区</span>
+                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">地方</span>
                 </div>
               </div>
             </div>
@@ -210,14 +210,14 @@ export default function HomePage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Scan by Pokemon Name, #ID (e.g. 0448), Elemental Type, or Habitat..."
+                  placeholder="Search by Pokémon name, #ID (e.g. 0448), type, or region..."
                   className="w-full bg-transparent font-body-md text-sm sm:text-base text-on-surface placeholder:text-on-surface-variant/50 outline-none"
                 />
                 <button
                   type="submit"
                   className="bg-primary hover:opacity-90 text-white font-telemetry-data text-xs uppercase px-4 py-2 rounded-lg shadow-xs font-bold shrink-0 flex items-center gap-1.5 snappy-btn"
                 >
-                  <span>Query</span>
+                  <span>Search</span>
                   <span className="font-label-kanji-sub text-[10px] opacity-80">検索</span>
                 </button>
               </form>
@@ -280,15 +280,15 @@ export default function HomePage() {
               <div className="flex items-center gap-3">
                 <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
                 <span className="font-caption-label text-xs tracking-widest uppercase text-primary font-bold">
-                  FEATURED POKÉMON OF THE DAY
+                  POKÉMON OF THE DAY
                 </span>
                 <span className="font-subhead-kana text-xs text-on-surface-variant">
-                  本日の特選アーカイブ
+                  本日の注目ポケモン
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 font-index-mono text-xs text-on-surface-variant">
-                  <span>{formatPokedexNumber(currentSpotlight.id)}</span>
+                  <span>№ {formatPokedexNumber(currentSpotlight.id)}</span>
                   <span className="text-border-crisp">|</span>
                   <span className="text-secondary font-bold">
                     {currentSpotlight.types.map((t) => t.toUpperCase()).join(" / ")}
@@ -325,7 +325,7 @@ export default function HomePage() {
                 <div className="flex items-start justify-between z-10">
                   <div>
                     <span className="font-index-mono text-xs text-on-surface-variant block font-bold">
-                      {formatPokedexNumber(currentSpotlight.id)} / NATIONAL DEX
+                      № {formatPokedexNumber(currentSpotlight.id)} / POKÉDEX
                     </span>
                     <h2 className="font-headline-lg text-3xl sm:text-4xl font-black text-on-surface tracking-tight mt-1 capitalize">
                       {currentSpotlight.name.replace(/-/g, " ")}
@@ -394,12 +394,12 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Right: Telemetry, Abilities, Stat Breakdown & Actions */}
+              {/* Right: Details, Abilities, Stat Breakdown & Actions */}
               <div className="lg:col-span-6 flex flex-col justify-between gap-6 bg-charcoal-surface rounded-2xl p-6 sm:p-8 border border-border-crisp shadow-sm dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
                 <div>
                   <div className="flex items-center justify-between pb-3 border-b border-border-crisp">
                     <span className="font-caption-label text-xs uppercase tracking-wider text-secondary font-bold">
-                      FIELD OBSERVATION NOTES
+                      POKÉDEX OBSERVATION NOTES
                     </span>
                     <button
                       onClick={playSpotlightCry}
@@ -418,31 +418,31 @@ export default function HomePage() {
                   </div>
 
                   <p className="font-body-md text-sm sm:text-base text-on-surface mt-4 leading-relaxed">
-                    {lore.redBlue || lore.scarlet || `High-resolution biological index profile for ${currentSpotlight.name}. Monitored across field research domains with calibrated telemetry feeds.`}
+                    {lore.redBlue || lore.scarlet || `A remarkable Pokémon known throughout the Pokémon world. Its unique abilities and combat potential make it a formidable ally for trainers.`}
                   </p>
 
                   {/* Diagnostic Information */}
                   <div className="grid grid-cols-2 gap-3 mt-6">
                     <div className="p-3 rounded-lg bg-surface-container-low border border-border-crisp">
                       <span className="font-caption-label text-[10px] text-on-surface-variant uppercase block font-bold">
-                        SURVEY CLASSIFICATION
+                        POKÉDEX CLASSIFICATION
                       </span>
                       <span className="font-headline-sm text-sm font-bold text-primary block mt-0.5">
-                        {lore.rarity || "Field Specimen"}
+                        {lore.rarity || "Standard Pokémon"}
                       </span>
                       <span className="font-body-sm text-[11px] text-on-surface-variant block mt-1">
-                        Survey Lead: {lore.leadSurveyor || "Prof. Samuel Oak"}
+                        Habitat: {lore.habitat || "Various Regions"}
                       </span>
                     </div>
                     <div className="p-3 rounded-lg bg-surface-container-low border border-border-crisp">
                       <span className="font-caption-label text-[10px] text-on-surface-variant uppercase block font-bold">
-                        PRIMARY AFFINITY
+                        PRIMARY TYPE
                       </span>
                       <span className="font-headline-sm text-sm font-bold text-secondary block mt-0.5 capitalize">
-                        {primaryType} Type Mastery
+                        {primaryType} Type
                       </span>
                       <span className="font-body-sm text-[11px] text-on-surface-variant block mt-1">
-                        Calibrated for tactical combat &amp; elemental synergy.
+                        Base stat total of {currentSpotlight.stats?.bst || 500} BST.
                       </span>
                     </div>
                   </div>
@@ -450,7 +450,7 @@ export default function HomePage() {
                   {/* Base Stat Combat Matrix */}
                   <div className="mt-6 flex flex-col gap-2.5">
                     <div className="flex items-center justify-between font-caption-label text-xs text-on-surface-variant uppercase">
-                      <span>BASE STAT COMBAT MATRIX</span>
+                      <span>BASE STATS</span>
                       <span className="text-secondary font-bold font-index-mono">
                         TOTAL: {currentSpotlight.stats?.bst || 500} BST
                       </span>
@@ -521,7 +521,7 @@ export default function HomePage() {
                     href={`/pokemon/${currentSpotlight.name.toLowerCase()}`}
                     className="snappy-btn px-5 py-2.5 rounded-lg bg-primary hover:opacity-90 text-white font-caption-label text-xs uppercase font-bold shadow-xs transition-all inline-flex items-center gap-2"
                   >
-                    <span>Open Master Dossier</span>
+                    <span>View Pokédex Entry</span>
                     <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                   </Link>
                 </div>
@@ -536,17 +536,17 @@ export default function HomePage() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-caption-label text-xs uppercase text-secondary font-bold">
-                  SERENDIPITOUS ARCHIVE
+                  RANDOM DISCOVERY
                 </span>
                 <span className="font-subhead-kana text-xs text-on-surface-variant">
-                  偶発的な出会い
+                  注目のポケモン
                 </span>
               </div>
               <h2 className="font-headline-md text-2xl font-bold text-on-surface mt-1">
-                Curated Field Discoveries
+                Featured Pokémon
               </h2>
               <p className="font-body-sm text-sm text-on-surface-variant">
-                Continuous five-Pokémon randomized exploration roll across global habitats.
+                Random selection of Pokémon across all 9 regions.
               </p>
             </div>
             <button
@@ -558,7 +558,7 @@ export default function HomePage() {
               <span className={`material-symbols-outlined text-[18px] ${isShufflingReel ? "animate-spin" : ""}`}>
                 autorenew
               </span>
-              <span>Shuffle / ↻ Draw New Random</span>
+              <span>Shuffle / ↻ Randomize</span>
             </button>
           </div>
 
@@ -634,17 +634,17 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between pb-6 border-b border-border-crisp gap-4">
               <div>
                 <span className="font-caption-label text-xs uppercase tracking-widest text-primary font-bold">
-                  GEOGRAPHIC &amp; ELEMENTAL TAXONOMY
+                  REGIONS &amp; GENERATIONS
                 </span>
                 <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold text-on-surface mt-0.5">
-                  Regions of the Known World
+                  Explore by Region
                 </h2>
                 <p className="font-body-sm text-sm text-on-surface-variant">
-                  Navigate Pokémon categorized by geographical origin and elemental typology.
+                  Browse Pokémon by their debut region and generation.
                 </p>
               </div>
               <span className="font-subhead-kana text-xs text-on-surface-variant">
-                地方別分類 &amp; 属性マトリクス
+                地方別分類 &amp; 属性一覧
               </span>
             </div>
 
@@ -678,13 +678,13 @@ export default function HomePage() {
             <div className="mt-12 pt-8 border-t border-border-crisp">
               <div className="flex items-center justify-between pb-4">
                 <span className="font-caption-label text-xs uppercase text-on-surface-variant font-bold tracking-wider">
-                  OFFICIAL 18-AFFINITY TAXONOMY
+                  ALL 18 POKÉMON TYPES
                 </span>
                 <Link
                   href="/pokedex"
                   className="font-caption-label text-xs text-secondary hover:text-primary uppercase font-bold transition-colors"
                 >
-                  View Full Cross-Matrix →
+                  View All in Pokédex →
                 </Link>
               </div>
 
@@ -714,7 +714,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Editorial Field Ranger Banner / Interactive CTA */}
+        {/* Editorial Trainer Banner / Interactive CTA */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="bg-charcoal-surface text-on-surface rounded-2xl p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-border-crisp shadow-xs dark:shadow-2xl">
             {/* Decorative subtle stamp */}
@@ -726,14 +726,14 @@ export default function HomePage() {
               <div className="flex items-center gap-2 text-secondary mb-1">
                 <span className="material-symbols-outlined text-[18px]">verified_user</span>
                 <span className="font-caption-label text-xs uppercase tracking-wider font-bold">
-                  OFFICIAL FIELD DISPATCH
+                  TRAINER LOG
                 </span>
               </div>
               <h3 className="font-headline-lg text-2xl sm:text-3xl font-bold text-on-surface mt-1">
-                Sync Your Personal Trainer Journal
+                Track Your Pokédex Progress
               </h3>
               <p className="font-body-md text-sm text-on-surface-variant mt-2 leading-relaxed">
-                Connect your field capture telemetry, log caught species, and synchronize your collection to cloud Pokédex storage.
+                Log caught Pokémon, bookmark favorites, and synchronize your collection with your trainer account.
               </p>
             </div>
 

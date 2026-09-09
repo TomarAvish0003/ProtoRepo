@@ -51,7 +51,7 @@ export default function FavoritesPage() {
                 className="inline-flex items-center gap-1 text-[12px] font-caption-label font-bold text-primary hover:underline uppercase"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Return to National Dex</span>
+                <span>Return to Pokédex</span>
               </Link>
             </div>
             <div className="flex items-center gap-3">
@@ -60,7 +60,7 @@ export default function FavoritesPage() {
               </div>
               <div>
                 <h1 className="font-headline-sm text-2xl sm:text-3xl font-bold tracking-tight text-on-surface">
-                  Archival Favorites
+                  Favorite Pokémon
                 </h1>
                 <p className="font-body-sm text-xs sm:text-sm text-on-surface-variant">
                   {user ? (
@@ -129,14 +129,14 @@ export default function FavoritesPage() {
             </div>
             <h2 className="font-headline-sm text-xl font-bold mb-1.5 text-on-surface">No Bookmarked Pokémon</h2>
             <p className="max-w-md text-sm text-on-surface-variant mb-6">
-              You haven&apos;t added any Pokémon to your favorites yet. Browse the National Pokédex and click the bookmark icon on any Pokémon card or dossier.
+              You haven&apos;t added any Pokémon to your favorites yet. Browse the Pokédex and click the bookmark icon on any Pokémon card or detail entry.
             </p>
             <Link
               href="/pokedex"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:opacity-90 text-white font-caption-label text-xs uppercase font-bold tracking-wider shadow-xs transition-all snappy-btn"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Explore National Dex</span>
+              <span>Explore Pokédex</span>
             </Link>
           </div>
         ) : filteredList.length === 0 ? (

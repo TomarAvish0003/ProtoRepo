@@ -268,19 +268,35 @@ function getIdFromUrl(url: string): number {
   const parts = url.split("/").filter(Boolean);
   return Number(parts.pop());
 }
+function parseEvolutionNode(node: EvolutionChainNode): EvolutionStage {
+  const id = getIdFromUrl(node.species.url);
+  return {
+    name: node.species.name,
+    id,
+    sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`,
+    evolution_details: node.evolution_details || [],
+    evolves_to: (node.evolves_to || []).map(parseEvolutionNode),
+  };
+}
+
 function flattenChain(node: EvolutionChainNode): EvolutionStage[] {
   const id = getIdFromUrl(node.species.url);
   const stage: EvolutionStage = {
     name: node.species.name,
     id,
     sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`,
-    evolution_details: node.evolution_details,
+    evolution_details: node.evolution_details || [],
   };
-  const nextStages = node.evolves_to.flatMap(nextNode => flattenChain(nextNode));
+  const nextStages = (node.evolves_to || []).flatMap(nextNode => flattenChain(nextNode));
   return [stage, ...nextStages];
 }
 
-export async function getEvolutionChainForPokemon(nameOrId: string) {
+export interface EvolutionChainData {
+  tree: EvolutionStage;
+  stages: EvolutionStage[];
+}
+
+export async function getEvolutionChainForPokemon(nameOrId: string): Promise<ApiResponse<EvolutionChainData>> {
   try {
     const speciesResponse = await getPokemonSpecies(nameOrId);
     if (speciesResponse.error || !speciesResponse.data) {
@@ -303,7 +319,13 @@ export async function getEvolutionChainForPokemon(nameOrId: string) {
         return { data: null, error: "Invalid evolution chain structure in API response" };
     }
     
-    return { data: flattenChain(rawChain), error: null };
+    return {
+      data: {
+        tree: parseEvolutionNode(rawChain),
+        stages: flattenChain(rawChain),
+      },
+      error: null,
+    };
   } catch (e) {
     return {
       data: null,

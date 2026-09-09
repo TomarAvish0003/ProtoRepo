@@ -54,7 +54,7 @@ export default function CaughtPage() {
                 className="inline-flex items-center gap-1 text-[12px] font-caption-label font-bold text-primary hover:underline uppercase"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Return to National Dex</span>
+                <span>Return to Pokédex</span>
               </Link>
             </div>
             <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export default function CaughtPage() {
               </div>
               <div>
                 <h1 className="font-headline-sm text-2xl sm:text-3xl font-bold tracking-tight text-on-surface">
-                  Caught Pokémon Registry
+                  Caught Pokémon
                 </h1>
                 <p className="font-body-sm text-xs sm:text-sm text-on-surface-variant">
                   {user ? (
@@ -144,14 +144,14 @@ export default function CaughtPage() {
             </div>
             <h2 className="font-headline-sm text-xl font-bold mb-1.5 text-on-surface">No Caught Pokémon Logged</h2>
             <p className="max-w-md text-sm text-on-surface-variant mb-6">
-              You haven&apos;t marked any Pokémon as caught yet. Browse the National Dex and click &ldquo;LOG CATCH&rdquo; on any Pokémon you have caught.
+              You haven&apos;t marked any Pokémon as caught yet. Browse the Pokédex and click &ldquo;CAUGHT&rdquo; on any Pokémon you have caught.
             </p>
             <Link
               href="/pokedex"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:opacity-90 text-white font-caption-label text-xs uppercase font-bold tracking-wider shadow-xs transition-all snappy-btn"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Explore National Dex</span>
+              <span>Explore Pokédex</span>
             </Link>
           </div>
         ) : filteredList.length === 0 ? (

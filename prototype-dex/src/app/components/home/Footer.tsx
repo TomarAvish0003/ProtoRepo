@@ -9,47 +9,47 @@ export default function Footer() {
           <div className="md:col-span-2 flex flex-col gap-inset-xs">
             <div className="flex items-center gap-2">
               <span className="font-headline-sm text-headline-sm text-primary font-extrabold uppercase">
-                protoDex ARCHIVE
+                ProtoDex
               </span>
-              <span className="font-caption-label text-[10px] text-[#ba0032] bg-[#ffdada] px-1.5 py-0.5 rounded font-bold">
-                v4.2.0
+              <span className="font-caption-label text-[10px] text-primary bg-primary/10 border border-primary/25 px-1.5 py-0.5 rounded font-bold">
+                v1.0
               </span>
             </div>
             <p className="font-body-sm text-body-sm text-on-surface-variant max-w-md mt-1">
-              Contemporary Naturalis Pokémonic Field Compendium. Formatted and catalogued under modern Japanese typographic disciplines for researchers, collectors, and field rangers.
+              A modern Pokédex, tournament team builder, and damage calculator for competitive Pokémon trainers and players.
             </p>
           </div>
 
           <div className="flex flex-col gap-inset-xs">
             <span className="font-caption-label text-caption-label text-on-surface-variant uppercase font-bold">
-              Editorial Registry
+              Navigation
             </span>
             <nav className="flex flex-col gap-1.5 font-body-sm text-body-sm">
               <Link href="/pokedex" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Archival Index (全図鑑)
+                Pokédex (全図鑑)
               </Link>
               <Link href="/" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Curated Exhibits (特設展示)
+                Home (ホーム)
               </Link>
-              <Link href="/pokemon/bulbasaur" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Anatomy &amp; Evolution (形態分析)
+              <Link href="/builder" className="text-on-surface hover:text-primary transition-colors snappy-btn">
+                Team Builder (編成)
               </Link>
             </nav>
           </div>
 
           <div className="flex flex-col gap-inset-xs">
             <span className="font-caption-label text-caption-label text-on-surface-variant uppercase font-bold">
-              Field Telemetry
+              Trainer Tools
             </span>
             <nav className="flex flex-col gap-1.5 font-body-sm text-body-sm">
-              <Link href="/user/captured" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Expedition Logs (踏査記録)
+              <Link href="/caught" className="text-on-surface hover:text-primary transition-colors snappy-btn">
+                Caught Pokémon (捕獲)
               </Link>
-              <Link href="/team" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Tactical Synergy Lab (戦術試算)
+              <Link href="/favorites" className="text-on-surface hover:text-primary transition-colors snappy-btn">
+                Favorite Pokémon (保存)
               </Link>
-              <Link href="/user/favorites" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Field Priorities (優先調査)
+              <Link href="/profile" className="text-on-surface hover:text-primary transition-colors snappy-btn">
+                Trainer Profile (設定)
               </Link>
             </nav>
           </div>
@@ -57,11 +57,9 @@ export default function Footer() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-inset-sm pt-inset-md font-caption-label text-caption-label text-on-surface-variant border-t border-surface-container">
           <div className="flex items-center gap-inset-sm">
-            <span>ARCHIVAL EDITION 2025</span>
-            <span>•</span>
-            <span>PUBLISHED IN KYOTO / TOKYO</span>
+            <span>PROTODEX • GENERATION I–IX</span>
           </div>
-          <span>© POKÉMON ARCHIVE LAB. ALL POKEMON RECORDS CATALOGUED.</span>
+          <span>Pokémon and Pokémon character names are trademarks of Nintendo, Game Freak, and Creatures Inc.</span>
         </div>
       </div>
     </footer>

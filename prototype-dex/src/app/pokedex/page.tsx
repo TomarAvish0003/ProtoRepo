@@ -49,7 +49,7 @@ const PRESET_RIBBON = [
   },
   {
     id: "legend",
-    label: "Apex & Mythical",
+    label: "Legendary & Mythical",
     filterFn: (p: FlatVarietyWithTypes) =>
       [
         144, 145, 146, 150, 151,
@@ -71,7 +71,7 @@ const PRESET_RIBBON = [
 ];
 
 interface GenerationOption {
-  gen: number | null; // null = National Dex (All 1,025)
+  gen: number | null; // null = All Pokémon (All 1,025)
   roman: string;
   name: string;
   kanji: string;
@@ -80,7 +80,7 @@ interface GenerationOption {
 }
 
 const GENERATION_OPTIONS: GenerationOption[] = [
-  { gen: null, roman: "NAT'L", name: "National Dex", kanji: "全国図鑑", range: "0001–1025", count: 1025 },
+  { gen: null, roman: "ALL", name: "All Pokémon", kanji: "全国図鑑", range: "0001–1025", count: 1025 },
   { gen: 1, roman: "GEN I", name: "Kanto", kanji: "カントー", range: "0001–0151", count: 151 },
   { gen: 2, roman: "GEN II", name: "Johto", kanji: "ジョウト", range: "0152–0251", count: 100 },
   { gen: 3, roman: "GEN III", name: "Hoenn", kanji: "ホウエン", range: "0252–0386", count: 135 },
@@ -264,16 +264,16 @@ function NationalDexContent() {
                   INDEX // {currentGenMeta.roman}
                 </span>
                 <span className="font-subhead-kana text-[12px] text-on-surface-variant">
-                  {generation === null ? "全国図鑑規格 // 1,025 全種目録" : `${currentGenMeta.kanji}地方生態調査 // № ${currentGenMeta.range}`}
+                  {generation === null ? "全国図鑑 // 1,025 全種目録" : `${currentGenMeta.kanji}地方 // № ${currentGenMeta.range}`}
                 </span>
               </div>
               <h1 className="font-headline-lg text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight">
-                {generation === null ? "National Pokédex Archive" : `Gen ${generation}: ${currentGenMeta.name} Region`}
+                {generation === null ? "Pokédex" : `Gen ${generation}: ${currentGenMeta.name} Region`}
               </h1>
               <p className="font-body-sm text-[13px] text-on-surface-variant leading-relaxed">
                 {generation === null
-                  ? "Field registry cataloging all 1,025 Pokémon species across 9 surveyed ecological regions with verified elemental affinities."
-                  : `Surveyed Pokémon catalog native to the ${currentGenMeta.name} region. Documenting № ${currentGenMeta.range} (${currentGenMeta.count} species).`}
+                  ? "Comprehensive database of all 1,025 Pokémon species across 9 generations with complete stats, types, and abilities."
+                  : `Pokémon native to the ${currentGenMeta.name} region. № ${currentGenMeta.range} (${currentGenMeta.count} species).`}
               </p>
             </div>
 
@@ -290,11 +290,11 @@ function NationalDexContent() {
             </div>
           </div>
 
-          {/* GEN 1 - 9 + NATIONAL DEX SEGMENTED SELECTOR */}
+          {/* GEN 1 - 9 + ALL POKÉMON SEGMENTED SELECTOR */}
           <div className="mt-4 pt-3 border-t border-border-crisp">
             <div className="flex items-center justify-between gap-2 pb-2">
               <span className="font-caption-label text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">
-                REGIONAL INDEX // GENERATION SELECTOR
+                REGIONS &amp; GENERATIONS
               </span>
               <span className="font-caption-label text-[10px] text-on-surface-variant hidden sm:inline">
                 CURRENT: <span className="font-bold text-primary">{currentGenMeta.name} ({currentGenMeta.roman})</span>
@@ -317,7 +317,7 @@ function NationalDexContent() {
                   >
                     <span>{opt.roman}</span>
                     <span className="font-sans text-[11px] opacity-75">
-                      {opt.name === "National Dex" ? "All (1,025)" : opt.name}
+                      {opt.gen === null ? "All (1,025)" : opt.name}
                     </span>
                   </button>
                 );
@@ -360,7 +360,7 @@ function NationalDexContent() {
               <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_12px_rgba(23,27,38,0.04)] border border-border-crisp flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <span className="font-caption-label text-[11px] text-primary font-extrabold uppercase tracking-wider">
-                    POKÉDEX QUERY MATRIX
+                    SEARCH POKÉDEX
                   </span>
                   {search && (
                     <button
@@ -386,13 +386,13 @@ function NationalDexContent() {
                 </div>
               </div>
 
-              {/* Official 18-Type Taxonomy Matrix with Universal Standard Colors */}
+              {/* Official 18-Type Matrix with Universal Standard Colors */}
               <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_12px_rgba(23,27,38,0.04)] border border-border-crisp flex flex-col gap-2.5">
                 <div className="flex items-center justify-between pb-2 border-b border-surface-container">
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[16px] text-primary">category</span>
                     <span className="font-caption-label text-[11px] text-on-surface font-bold uppercase tracking-wider">
-                      Elemental Class (18)
+                      Types (18)
                     </span>
                   </div>
                   {selectedTypes.length > 0 && (
@@ -457,7 +457,7 @@ function NationalDexContent() {
               {/* Regional Compendium Jump Directory */}
               <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_12px_rgba(23,27,38,0.04)] border border-border-crisp flex flex-col gap-2">
                 <span className="font-caption-label text-[11px] text-primary font-extrabold uppercase tracking-wider pb-1.5 border-b border-surface-container">
-                  REGIONAL JUMP DIRECTORY
+                  REGIONS
                 </span>
                 <div className="flex flex-col gap-1 font-body-sm text-[12px]">
                   {GENERATION_OPTIONS.map((reg) => (
@@ -498,7 +498,7 @@ function NationalDexContent() {
                     SHOWING {filteredPokemons.length} POKÉMON
                   </span>
                   <span className="px-2 py-0.5 rounded bg-primary text-on-primary font-caption-label text-[10px] font-bold shadow-2xs">
-                    {generation === null ? "NATIONAL DEX" : `GEN ${generation}`}
+                    {generation === null ? "ALL REGIONS" : `GEN ${generation}`}
                   </span>
                   {selectedTypes.map((t) => {
                     const cfg = TYPE_CONFIGS[t] || TYPE_CONFIGS.normal;
@@ -602,8 +602,8 @@ function NationalDexContent() {
                     <thead>
                       <tr className="bg-surface-container border-b border-border-crisp font-caption-label text-[11px] text-on-surface-variant uppercase">
                         <th className="py-2.5 px-4">№ Index</th>
-                        <th className="py-2.5 px-4">Pokemon</th>
-                        <th className="py-2.5 px-4">Affinities</th>
+                        <th className="py-2.5 px-4">Pokémon</th>
+                        <th className="py-2.5 px-4">Types</th>
                         <th className="py-2.5 px-4">BST</th>
                         <th className="py-2.5 px-4 text-right">Action</th>
                       </tr>
@@ -642,7 +642,7 @@ function NationalDexContent() {
                           </td>
                           <td className="py-2.5 px-4 text-right">
                             <span className="font-caption-label text-[11px] text-primary font-bold group-hover:underline">
-                              View Dossier →
+                              View Entry →
                             </span>
                           </td>
                         </tr>
