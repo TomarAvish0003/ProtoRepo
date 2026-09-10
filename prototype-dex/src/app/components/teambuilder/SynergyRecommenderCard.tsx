@@ -1,9 +1,9 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { TeamMember, PokemonFormat } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { recommendTeammates, SynergyRecommendation } from "@/app/utils/teamBuilder/synergyRecommender";
 import { TYPE_CONFIGS } from "@/app/utils/pokemonDataHelpers";
 import { Sparkles, Plus } from "lucide-react";
@@ -11,8 +11,8 @@ import { Sparkles, Plus } from "lucide-react";
 interface SynergyRecommenderCardProps {
   members: TeamMember[];
   format: PokemonFormat;
-  pokedexData: any[];
-  onAddPokemon: (entry: any) => void;
+  pokedexData: FlatVarietyWithTypes[];
+  onAddPokemon: (entry: FlatVarietyWithTypes) => void;
 }
 
 export default function SynergyRecommenderCard({

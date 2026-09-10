@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { users, userFavorites, userCaught } from '../db/schema.js';
+import { tokenBlocklist } from '../controllers/authController.js';
 
 export default async function auth(req, res, next) {
   let token = req.cookies?.protodex_token || req.cookies?.token;
@@ -17,6 +18,10 @@ export default async function auth(req, res, next) {
 
   if (!token) {
     return res.status(401).json({ error: 'Authentication required. No session or token found.' });
+  }
+
+  if (tokenBlocklist.has(token)) {
+    return res.status(401).json({ error: 'Session has been invalidated. Please log in again.' });
   }
 
   try {

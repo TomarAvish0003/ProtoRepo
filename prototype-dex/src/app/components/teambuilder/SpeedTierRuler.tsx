@@ -1,15 +1,15 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import { TeamMember, SpeedBenchmark } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { calcActualStat, getNatureMultiplier } from "@/app/utils/teamBuilder/damageCalcEngine";
 import { Wind, RefreshCw, AlertCircle, Plus, Minus } from "lucide-react";
 
 interface SpeedTierRulerProps {
   members: TeamMember[];
-  pokedexData: any[];
+  pokedexData: FlatVarietyWithTypes[];
   onSelectMember: (id: string) => void;
   onUpdateMember?: (id: string, updater: (m: TeamMember) => TeamMember) => void;
 }
@@ -39,7 +39,7 @@ export default function SpeedTierRuler({
 
   // Lookup map for pokedex data base stats
   const dexMap = useMemo(() => {
-    const map = new Map<number, any>();
+    const map = new Map<number, FlatVarietyWithTypes>();
     for (const p of pokedexData) {
       map.set(p.id, p);
     }

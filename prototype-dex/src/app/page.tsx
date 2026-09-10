@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   TYPE_CONFIGS,
@@ -15,6 +16,19 @@ import {
 import { useAuth } from "@/app/context/AuthContext";
 import POKEDEX_DATA from "@/app/data/pokedex-data.json";
 import { FlatVarietyWithTypes } from "@/app/utils/types";
+import {
+  Search,
+  Dices,
+  Volume2,
+  Activity,
+  Bookmark,
+  BookmarkCheck,
+  CheckCircle2,
+  Circle,
+  ArrowRight,
+  RefreshCw,
+  ShieldCheck,
+} from "lucide-react";
 
 const MASTER_POKEMON_CATALOG = POKEDEX_DATA as FlatVarietyWithTypes[];
 
@@ -186,7 +200,7 @@ export default function HomePage() {
                 <div className="bg-charcoal-surface p-3.5 rounded-xl shadow-xs border border-border-crisp flex flex-col items-start min-w-[115px] snappy-btn">
                   <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Pokémon</span>
                   <span className="font-headline-md text-2xl text-primary font-bold">1,025</span>
-                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">全種目録</span>
+                  <span className="font-label-kanji-sub text-[10px] text-on-surface-variant/70">全ポケモン収録</span>
                 </div>
                 <div className="bg-charcoal-surface p-3.5 rounded-xl shadow-xs border border-border-crisp flex flex-col items-start min-w-[115px] snappy-btn">
                   <span className="font-label-chamfer text-[10px] text-on-surface-variant uppercase font-bold">Types</span>
@@ -204,7 +218,7 @@ export default function HomePage() {
             {/* Quick Interactive Scanner Bar */}
             <div className="bg-charcoal-surface p-2.5 rounded-xl shadow-sm border border-border-crisp flex flex-col gap-2.5">
               <form onSubmit={handleSearch} className="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded-lg border border-border-crisp focus-within:ring-2 focus-within:ring-secondary focus-within:border-transparent transition-all">
-                <span className="material-symbols-outlined text-secondary text-[22px]">manage_search</span>
+                <Search className="w-5 h-5 text-secondary flex-shrink-0" />
                 <input
                   id="pokedex-search"
                   type="text"
@@ -301,9 +315,7 @@ export default function HomePage() {
                   title="Randomize spotlight Pokémon"
                   type="button"
                 >
-                  <span className={`material-symbols-outlined text-[16px] ${isShufflingSpotlight ? "animate-spin" : ""}`}>
-                    casino
-                  </span>
+                  <Dices className={`w-4 h-4 ${isShufflingSpotlight ? "animate-spin" : ""}`} />
                   <span>Shuffle Spotlight</span>
                 </button>
               </div>
@@ -364,9 +376,13 @@ export default function HomePage() {
                     className="w-64 h-64 rounded-full border border-dashed border-border-crisp absolute animate-spin"
                     style={{ animationDuration: "35s" }}
                   />
-                  <img
+                  <Image
                     src={artwork}
                     alt={currentSpotlight.name}
+                    width={288}
+                    height={288}
+                    priority
+                    unoptimized={artwork.startsWith("/")}
                     className="relative z-10 w-64 h-64 sm:w-72 sm:h-72 object-contain transition-transform duration-500 hover:scale-105 drop-shadow-[0_12px_28px_rgba(0,0,0,0.15)] dark:drop-shadow-[0_12px_28px_rgba(0,0,0,0.6)]"
                   />
                 </div>
@@ -410,9 +426,11 @@ export default function HomePage() {
                           : "bg-surface-container-low text-secondary hover:bg-surface-container-high"
                       }`}
                     >
-                      <span className="material-symbols-outlined text-[16px]">
-                        {isPlayingCry ? "graphic_eq" : "volume_up"}
-                      </span>
+                      {isPlayingCry ? (
+                        <Activity className="w-4 h-4 animate-pulse" />
+                      ) : (
+                        <Volume2 className="w-4 h-4" />
+                      )}
                       <span>{isPlayingCry ? "PLAYING..." : "PLAY CRY (0.8s)"}</span>
                     </button>
                   </div>
@@ -494,9 +512,11 @@ export default function HomePage() {
                       }`}
                       type="button"
                     >
-                      <span className="material-symbols-outlined text-[16px]">
-                        {isSpotlightFavorite ? "bookmark_added" : "bookmark"}
-                      </span>
+                      {isSpotlightFavorite ? (
+                        <BookmarkCheck className="w-4 h-4 text-amber-500" />
+                      ) : (
+                        <Bookmark className="w-4 h-4" />
+                      )}
                       <span>{isSpotlightFavorite ? "Bookmarked" : "Favorite"}</span>
                     </button>
 
@@ -510,9 +530,11 @@ export default function HomePage() {
                       }`}
                       type="button"
                     >
-                      <span className="material-symbols-outlined text-[16px]">
-                        {isSpotlightCaught ? "check_circle" : "radio_button_unchecked"}
-                      </span>
+                      {isSpotlightCaught ? (
+                        <CheckCircle2 className="w-4 h-4 text-secondary" />
+                      ) : (
+                        <Circle className="w-4 h-4" />
+                      )}
                       <span>{isSpotlightCaught ? "Caught" : "Log Catch"}</span>
                     </button>
                   </div>
@@ -522,7 +544,7 @@ export default function HomePage() {
                     className="snappy-btn px-5 py-2.5 rounded-lg bg-primary hover:opacity-90 text-white font-caption-label text-xs uppercase font-bold shadow-xs transition-all inline-flex items-center gap-2"
                   >
                     <span>View Pokédex Entry</span>
-                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
@@ -555,9 +577,7 @@ export default function HomePage() {
               type="button"
               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-secondary border border-secondary/30 transition-all font-caption-label text-xs uppercase active:scale-95 shadow-xs snappy-btn"
             >
-              <span className={`material-symbols-outlined text-[18px] ${isShufflingReel ? "animate-spin" : ""}`}>
-                autorenew
-              </span>
+              <RefreshCw className={`w-4 h-4 ${isShufflingReel ? "animate-spin" : ""}`} />
               <span>Shuffle / ↻ Randomize</span>
             </button>
           </div>
@@ -597,11 +617,13 @@ export default function HomePage() {
                     <span className="absolute top-2 left-2 text-[10px] font-caption-label text-on-surface-variant font-bold">
                       {pokemon.region}
                     </span>
-                    <img
+                    <Image
                       src={getOfficialArtwork(pokemon.id)}
                       alt={pokemon.name}
-                      className="h-28 w-28 object-contain group-hover:scale-108 transition-transform drop-shadow-[0_6px_14px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)] relative z-10"
+                      width={112}
+                      height={112}
                       loading="lazy"
+                      className="h-28 w-28 object-contain group-hover:scale-108 transition-transform drop-shadow-[0_6px_14px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)] relative z-10"
                     />
                   </div>
 
@@ -619,7 +641,7 @@ export default function HomePage() {
                   <span className="text-secondary font-bold">BST {pokemon.bst}</span>
                   <span className="inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform text-primary font-bold">
                     <span>Inspect</span>
-                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
               </Link>
@@ -724,7 +746,7 @@ export default function HomePage() {
 
             <div className="relative z-10 max-w-xl">
               <div className="flex items-center gap-2 text-secondary mb-1">
-                <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                <ShieldCheck className="w-4 h-4 text-secondary flex-shrink-0" />
                 <span className="font-caption-label text-xs uppercase tracking-wider font-bold">
                   TRAINER LOG
                 </span>

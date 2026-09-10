@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { getProfile, updateProfile } from "@/app/utils/api";
-import { Loader2, Camera } from "lucide-react"; // If using lucide icons
+import { Loader2, Camera } from "lucide-react";
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!;
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!;
@@ -65,9 +66,12 @@ export default function AvatarUpload() {
         onClick={() => fileInputRef.current?.click()}
         aria-label="Change avatar"
       >
-        <img
+        <Image
           src={avatarUrl}
           alt="User avatar"
+          width={160}
+          height={160}
+          unoptimized={avatarUrl.startsWith("/") || avatarUrl.startsWith("blob:")}
           className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-200 object-cover border-4 border-primary shadow-lg transition group-hover:opacity-80"
         />
         {/* Overlay */}

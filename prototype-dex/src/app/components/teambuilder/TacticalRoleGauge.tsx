@@ -1,9 +1,8 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useMemo } from "react";
 import Image from "next/image";
-import { TeamMember } from "@/app/utils/teamBuilder/types";
+import { TeamMember, LocalMoveEntry } from "@/app/utils/teamBuilder/types";
 import {
   ShieldAlert,
   Zap,
@@ -18,7 +17,7 @@ import MoveTaxonomyDonut from "./MoveTaxonomyDonut";
 
 interface TacticalRoleGaugeProps {
   members: TeamMember[];
-  movesData?: Record<string, any>;
+  movesData?: Record<string, LocalMoveEntry>;
 }
 
 interface RoleDefinition {

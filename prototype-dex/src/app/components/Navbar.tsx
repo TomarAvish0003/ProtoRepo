@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/app/context/AuthContext";
-import { Menu, X, LogOut, Heart, CheckCircle2, User as UserIcon, Sun, Moon } from "lucide-react";
+import { Menu, X, LogOut, Heart, CheckCircle2, User as UserIcon, Sun, Moon, Search, ChevronRight } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -61,7 +61,7 @@ export default function Navbar() {
     {
       href: "/builder",
       label: "Team Builder",
-      kanji: "編成",
+      kanji: "チーム編成",
       isActive: pathname.startsWith("/builder"),
     },
     {
@@ -73,7 +73,7 @@ export default function Navbar() {
     {
       href: "/favorites",
       label: "Favorites",
-      kanji: "保存",
+      kanji: "お気に入り",
       isActive: pathname.startsWith("/favorites"),
     },
   ];
@@ -182,9 +182,7 @@ export default function Navbar() {
             onSubmit={handleSearchSubmit}
             className="hidden md:flex items-center bg-surface-container-low px-2.5 py-1.5 rounded-lg border border-border-crisp shadow-xs focus-within:ring-2 focus-within:ring-secondary focus-within:border-transparent transition-all"
           >
-            <span className="material-symbols-outlined text-secondary text-[18px] mr-1.5">
-              search
-            </span>
+            <Search className="w-4 h-4 text-secondary mr-1.5 flex-shrink-0" />
             <input
               id="navbarSearchInput"
               type="text"
@@ -221,9 +219,7 @@ export default function Navbar() {
               className="w-8 h-8 rounded-full bg-surface-container-low border border-border-crisp text-secondary flex items-center justify-center flex-shrink-0 hover:bg-surface-container-high transition-colors snappy-btn shadow-xs"
               title={user ? user.username : "Account & Options"}
             >
-              <span className="material-symbols-outlined text-[18px]">
-                {user ? "account_circle" : "person"}
-              </span>
+              <UserIcon className="w-4 h-4" />
             </button>
 
             {isUserDropdownOpen && (
@@ -316,7 +312,7 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-background border-t border-border-crisp p-4 flex flex-col gap-3 shadow-2xl">
           <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg border border-border-crisp focus-within:ring-2 focus-within:ring-secondary">
-            <span className="material-symbols-outlined text-secondary text-[18px]">search</span>
+            <Search className="w-4 h-4 text-secondary flex-shrink-0" />
             <input
               type="text"
               value={searchQuery}
@@ -338,7 +334,7 @@ export default function Navbar() {
                 }`}
               >
                 <span>{link.label} ({link.kanji})</span>
-                <span className="material-symbols-outlined text-[16px] opacity-60">chevron_right</span>
+                <ChevronRight className="w-4 h-4 opacity-60 flex-shrink-0" />
               </Link>
             ))}
 
@@ -351,7 +347,7 @@ export default function Navbar() {
                   <UserIcon className="w-4 h-4 text-primary" />
                   <span>Trainer Profile (@{user.username})</span>
                 </span>
-                <span className="material-symbols-outlined text-[16px] opacity-60">chevron_right</span>
+                <ChevronRight className="w-4 h-4 opacity-60 flex-shrink-0" />
               </Link>
             ) : (
               <Link
@@ -359,7 +355,7 @@ export default function Navbar() {
                 className="mt-2 px-3 py-2 rounded-lg font-body-sm flex items-center justify-between snappy-btn bg-primary text-white font-bold shadow-sm"
               >
                 <span>Sign In / Register</span>
-                <span className="material-symbols-outlined text-[16px] opacity-60">chevron_right</span>
+                <ChevronRight className="w-4 h-4 opacity-60 flex-shrink-0" />
               </Link>
             )}
           </nav>

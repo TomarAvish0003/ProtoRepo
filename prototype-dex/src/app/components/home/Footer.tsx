@@ -3,8 +3,8 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-surface-container-low shadow-[0_-1px_6px_rgba(0,0,0,0.02)] border-t border-surface-container mt-16">
-      <div className="max-w-7xl mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop py-inset-xl">
+    <footer className="w-full bg-surface-container-low shadow-[0_-1px_6px_rgba(0,0,0,0.02)] border-t border-border-crisp mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-inset-xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop items-start pb-inset-lg">
           <div className="md:col-span-2 flex flex-col gap-inset-xs">
             <div className="flex items-center gap-2">
@@ -26,13 +26,13 @@ export default function Footer() {
             </span>
             <nav className="flex flex-col gap-1.5 font-body-sm text-body-sm">
               <Link href="/pokedex" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Pokédex (全図鑑)
+                Pokédex (全国図鑑)
               </Link>
               <Link href="/" className="text-on-surface hover:text-primary transition-colors snappy-btn">
                 Home (ホーム)
               </Link>
               <Link href="/builder" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Team Builder (編成)
+                Team Builder (チーム編成)
               </Link>
             </nav>
           </div>
@@ -46,16 +46,16 @@ export default function Footer() {
                 Caught Pokémon (捕獲)
               </Link>
               <Link href="/favorites" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Favorite Pokémon (保存)
+                Favorite Pokémon (お気に入り)
               </Link>
               <Link href="/profile" className="text-on-surface hover:text-primary transition-colors snappy-btn">
-                Trainer Profile (設定)
+                Trainer Profile (トレーナー情報)
               </Link>
             </nav>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-inset-sm pt-inset-md font-caption-label text-caption-label text-on-surface-variant border-t border-surface-container">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-inset-sm pt-inset-md font-caption-label text-caption-label text-on-surface-variant border-t border-border-crisp">
           <div className="flex items-center gap-inset-sm">
             <span>PROTODEX • GENERATION I–IX</span>
           </div>

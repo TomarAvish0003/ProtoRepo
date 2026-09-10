@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -8,6 +7,7 @@ import {
   PokemonFormat,
   StatSpread,
 } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { parseShowdownText, exportToShowdownText } from "@/app/utils/teamBuilder/showdownParser";
 
 const STORAGE_KEY = "prototype_dex_saved_teams_v1";
@@ -265,7 +265,7 @@ export function useTeamStore() {
 
   // Add member to active team
   const addMember = useCallback(
-    (teamId: string, dexEntry: any) => {
+    (teamId: string, dexEntry: FlatVarietyWithTypes) => {
       let createdMember: TeamMember | null = null;
       setTeams((prev) =>
         prev.map((t) => {
@@ -362,7 +362,7 @@ export function useTeamStore() {
 
   // Import Showdown text
   const importShowdown = useCallback(
-    (teamId: string, text: string, pokedexData: any[]) => {
+    (teamId: string, text: string, pokedexData: FlatVarietyWithTypes[]) => {
       const { members: parsedMembers, errors } = parseShowdownText(text, pokedexData);
       if (parsedMembers.length > 0) {
         setTeams((prev) =>

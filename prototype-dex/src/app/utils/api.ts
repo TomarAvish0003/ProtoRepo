@@ -5,7 +5,8 @@ import {
   EncounterLocationArea,
   FlatVarietyWithTypes,
   UserProfile,
-  Move // Import the Move type
+  Move,
+  RawTypeApiResponse
 } from "@/app/utils/types";
 
 // --- Generic API Response Type ---
@@ -70,15 +71,32 @@ export function authHeaders(token?: string): HeadersInit {
   return headers;
 }
 
+// In-memory cache for static Pokémon encyclopedia resources to avoid repetitive network roundtrips
+const memoryCache = new Map<string, { data: unknown; expiresAt: number }>();
+const MEMORY_CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
+
 // --- Core Fetcher ---
 async function fetcher<T>(
   endpoint: string,
   options?: RequestInit,
   retries = MAX_RETRIES
 ): Promise<ApiResponse<T>> {
+  const isGet = !options?.method || options.method.toUpperCase() === "GET";
+  const isStaticResource = endpoint.startsWith("/api/pokemon");
+
+  // 1. Instant 0ms in-memory cache check
+  if (isGet && isStaticResource) {
+    const cached = memoryCache.get(endpoint);
+    if (cached && cached.expiresAt > Date.now()) {
+      return { data: cached.data as T, error: null };
+    }
+  }
+
   let attempt = 0;
+  const isServer = typeof window === "undefined";
   const mergedOptions: RequestInit = {
     credentials: "include",
+    ...(isServer && isGet && isStaticResource ? { next: { revalidate: 86400 } } : {}),
     ...options,
   };
   while (attempt <= retries) {
@@ -87,7 +105,6 @@ async function fetcher<T>(
 
       if (res.status === 429) {
         const retryAfter = res.headers.get("Retry-After");
-        // FIX: Use the MAX_RETRY_DELAY constant
         const delay = retryAfter
           ? parseInt(retryAfter, 10) * 1000
           : Math.min(1000 * 2 ** attempt, MAX_RETRY_DELAY);
@@ -106,6 +123,9 @@ async function fetcher<T>(
       }
 
       const data = await res.json();
+      if (isGet && isStaticResource && data) {
+        memoryCache.set(endpoint, { data, expiresAt: Date.now() + MEMORY_CACHE_TTL });
+      }
       return { data, error: null };
     } catch (e) {
       if (++attempt > retries) {
@@ -354,14 +374,20 @@ export interface EvolutionChainData {
   stages: EvolutionStage[];
 }
 
-export async function getEvolutionChainForPokemon(nameOrId: string): Promise<ApiResponse<EvolutionChainData>> {
+export async function getEvolutionChainForPokemon(
+  nameOrId: string,
+  knownChainUrl?: string
+): Promise<ApiResponse<EvolutionChainData>> {
   try {
-    const speciesResponse = await getPokemonSpecies(nameOrId);
-    if (speciesResponse.error || !speciesResponse.data) {
-      return { data: null, error: speciesResponse.error || "Species not found" };
+    let evolutionChainUrl = knownChainUrl;
+    if (!evolutionChainUrl) {
+      const speciesResponse = await getPokemonSpecies(nameOrId);
+      if (speciesResponse.error || !speciesResponse.data) {
+        return { data: null, error: speciesResponse.error || "Species not found" };
+      }
+      evolutionChainUrl = (speciesResponse.data as RawSpeciesData).evolution_chain?.url;
     }
     
-    const evolutionChainUrl = (speciesResponse.data as RawSpeciesData).evolution_chain?.url;
     if (!evolutionChainUrl) {
       return { data: null, error: "Evolution chain URL not found" };
     }
@@ -399,8 +425,8 @@ export async function getPokemonSpecies(nameOrId: string) {
 export async function getPokemonEvolutionChainById(id: string | number) {
   return fetcher(`/api/pokemon/evolution-chain/${id}`);
 }
-export async function getPokemonType(nameOrId: string) {
-  return fetcher(`/api/pokemon/type/${nameOrId}`);
+export async function getPokemonType(nameOrId: string): Promise<ApiResponse<RawTypeApiResponse>> {
+  return fetcher<RawTypeApiResponse>(`/api/pokemon/type/${nameOrId}`);
 }
 export async function getPokemonAbility(nameOrId: string) {
   return fetcher(`/api/pokemon/ability/${nameOrId}`);
@@ -409,7 +435,7 @@ export async function getPokemonMove(nameOrId: string) {
   return fetcher(`/api/pokemon/move/${nameOrId}`);
 }
 
-// FIX: Use the specific Move type instead of 'any' for better type safety
+/** Batch query move learnset data from the database */
 export async function getMovesBatch(names: string[]) {
   return fetcher<{ moves: Move[] }>("/api/pokemon/moves/batch", {
     method: "POST",

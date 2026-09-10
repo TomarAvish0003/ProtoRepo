@@ -246,3 +246,13 @@ export interface DamageRollResult {
   convolution?: Convolution2HKOResult;
 }
 
+export interface LocalMoveEntry {
+  type?: string;
+  category?: string;
+  power?: string;
+  accuracy?: string;
+  pp?: string;
+  effect?: string;
+  probability?: string;
+}
+

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Pokemon,
   EvolutionStage,
@@ -32,6 +33,8 @@ import {
   ShieldAlert,
   ShieldCheck,
   Search,
+  GitFork,
+  ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -545,9 +548,11 @@ export default function PokemonDetailClient({
         </div>
 
         <Link href={`/pokemon/${stage.name.toLowerCase()}`} className="group block my-2">
-          <img
+          <Image
             src={getOfficialArtwork(stage.id)}
             alt={stage.name}
+            width={112}
+            height={112}
             className="w-24 h-24 sm:w-28 sm:h-28 object-contain group-hover:scale-110 transition-transform drop-shadow-sm"
             loading="lazy"
           />
@@ -622,8 +627,8 @@ export default function PokemonDetailClient({
           </div>
 
           <div className="flex items-center text-secondary shrink-0">
-            <span className="material-symbols-outlined text-[32px] hidden lg:block rotate-0">alt_route</span>
-            <span className="material-symbols-outlined text-[32px] block lg:hidden rotate-90">alt_route</span>
+            <GitFork className="w-7 h-7 hidden lg:block rotate-90" />
+            <GitFork className="w-7 h-7 block lg:hidden rotate-180" />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 w-full max-w-4xl">
@@ -672,16 +677,14 @@ export default function PokemonDetailClient({
               <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
                 {trigger1}
               </span>
-              <span className="material-symbols-outlined text-[24px] text-secondary">
-                trending_flat
-              </span>
+              <ArrowRight className="w-5 h-5 text-secondary" />
             </div>
             {renderEvolutionStageCard(child, 2)}
           </div>
 
           <div className="flex items-center text-secondary shrink-0">
-            <span className="material-symbols-outlined text-[32px] hidden xl:block rotate-0">alt_route</span>
-            <span className="material-symbols-outlined text-[32px] block xl:hidden rotate-90">alt_route</span>
+            <GitFork className="w-7 h-7 hidden xl:block rotate-90" />
+            <GitFork className="w-7 h-7 block xl:hidden rotate-180" />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -717,18 +720,14 @@ export default function PokemonDetailClient({
             <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
               {trigger1}
             </span>
-            <span className="material-symbols-outlined text-[24px] text-secondary">
-              trending_flat
-            </span>
+            <ArrowRight className="w-5 h-5 text-secondary" />
           </div>
           {renderEvolutionStageCard(child, 2)}
           <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant px-1 sm:px-2 shrink-0">
             <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
               {trigger2}
             </span>
-            <span className="material-symbols-outlined text-[24px] text-secondary">
-              trending_flat
-            </span>
+            <ArrowRight className="w-5 h-5 text-secondary" />
           </div>
           {renderEvolutionStageCard(grandchild, 3)}
         </div>
@@ -743,9 +742,7 @@ export default function PokemonDetailClient({
           <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
             {trigger1}
           </span>
-          <span className="material-symbols-outlined text-[24px] text-secondary">
-            trending_flat
-          </span>
+          <ArrowRight className="w-5 h-5 text-secondary" />
         </div>
         {renderEvolutionStageCard(child, 2)}
       </div>
@@ -773,14 +770,14 @@ export default function PokemonDetailClient({
         </section>
 
         {/* Masthead & Pokemon Stage */}
-        <section className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
             {/* Left Pokemon Stage (5 Cols) */}
             <div className="lg:col-span-5 flex flex-col gap-inset-md">
               {/* Pokemon Art Plate */}
-              <div className="bg-surface-container-lowest border border-surface-container rounded-xl p-inset-lg shadow-archival-sm relative overflow-hidden flex flex-col justify-between">
+              <div className="bg-surface-container-lowest border border-border-crisp rounded-xl p-inset-lg shadow-archival-sm relative overflow-hidden flex flex-col justify-between">
                 {/* Number & Type Badge */}
-                <div className="flex items-center justify-between pb-inset-sm border-b border-surface-container">
+                <div className="flex items-center justify-between pb-inset-sm border-b border-border-crisp">
                   <span className="font-caption-label text-caption-label text-on-surface-variant font-bold">
                     № {formattedId}
                   </span>
@@ -793,7 +790,7 @@ export default function PokemonDetailClient({
                 </div>
 
                 {/* Minimal Pokeball Mark */}
-                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full border-8 border-surface-container/40 pointer-events-none select-none"></div>
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full border-8 border-border-crisp/40 pointer-events-none select-none"></div>
 
                 {/* Japanese Calligraphy Watermark in Background */}
                 <div
@@ -826,15 +823,19 @@ export default function PokemonDetailClient({
                     className="absolute w-56 h-56 rounded-full blur-2xl opacity-20 pointer-events-none"
                     style={{ backgroundColor: primaryConfig.colorHex }}
                   ></div>
-                  <img
+                  <Image
                     src={activeArtwork}
                     alt={selectedForm?.name || pokemon.name}
+                    width={240}
+                    height={240}
+                    priority
+                    unoptimized={activeArtwork.startsWith("/")}
                     className="relative z-10 w-60 h-60 object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-105"
                   />
                 </div>
 
                 {/* Pokemon Audio Trigger & Palette Toggle */}
-                <div className="flex items-center justify-between gap-2 pt-2 border-t border-surface-container">
+                <div className="flex items-center justify-between gap-2 pt-2 border-t border-border-crisp">
                   <button
                     onClick={playCry}
                     type="button"
@@ -860,7 +861,7 @@ export default function PokemonDetailClient({
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-caption-label text-caption-label border transition-colors ${
                       isShiny
                         ? "bg-amber-50 text-amber-900 border-amber-300 font-bold"
-                        : "bg-surface-container text-on-surface-variant border-surface-container hover:bg-surface-container-high"
+                        : "bg-surface-container text-on-surface-variant border-border-crisp hover:bg-surface-container-high"
                     }`}
                   >
                     <Sparkles className={`w-3.5 h-3.5 ${isShiny ? "text-amber-500 fill-amber-500" : ""}`} />
@@ -869,7 +870,7 @@ export default function PokemonDetailClient({
                 </div>
 
                 {/* Type Badges & Trainer Controls */}
-                <div className="flex items-center justify-between gap-2 pt-4 mt-3 border-t border-surface-container flex-wrap">
+                <div className="flex items-center justify-between gap-2 pt-4 mt-3 border-t border-border-crisp flex-wrap">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     {pokemonTypes.map((t) => {
                       const cfg = TYPE_CONFIGS[t] || TYPE_CONFIGS.normal;
@@ -892,7 +893,7 @@ export default function PokemonDetailClient({
                       className={`p-2 rounded-lg border transition-colors ${
                         isBookmarked
                           ? "bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-xs"
-                          : "bg-surface-container text-on-surface-variant border-surface-container hover:text-primary"
+                          : "bg-surface-container text-on-surface-variant border-border-crisp hover:text-primary"
                       }`}
                       title={isBookmarked ? "Remove Favorite" : "Add to Favorites"}
                     >
@@ -905,7 +906,7 @@ export default function PokemonDetailClient({
                       className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-caption-label text-caption-label font-bold uppercase border transition-colors ${
                         isCaught
                           ? "bg-[#006b58]/20 text-[#006b58] border-[#006b58]/40 shadow-xs dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40"
-                          : "bg-surface-container text-on-surface-variant border-surface-container hover:text-primary"
+                          : "bg-surface-container text-on-surface-variant border-border-crisp hover:text-primary"
                       }`}
                       title={isCaught ? "Marked as Caught" : "Log Catch"}
                     >
@@ -915,7 +916,7 @@ export default function PokemonDetailClient({
 
                     <Link
                       href="/team"
-                      className="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-primary border border-surface-container transition-colors"
+                      className="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-primary border border-border-crisp transition-colors"
                       title="Add to Team Lab"
                     >
                       <Users className="w-4 h-4" />
@@ -925,8 +926,8 @@ export default function PokemonDetailClient({
               </div>
 
               {/* Biometric Field Ledger */}
-              <div className="bg-surface-container-lowest border border-surface-container rounded-xl p-inset-lg shadow-archival-sm flex flex-col gap-inset-sm">
-                <div className="flex items-center justify-between pb-inset-xs border-b border-surface-container">
+              <div className="bg-surface-container-lowest border border-border-crisp rounded-xl p-inset-lg shadow-archival-sm flex flex-col gap-inset-sm">
+                <div className="flex items-center justify-between pb-inset-xs border-b border-border-crisp">
                   <span className="font-caption-label text-caption-label text-primary font-bold uppercase tracking-wider">
                     BIOMETRIC SPECIFICATIONS
                   </span>
@@ -936,7 +937,7 @@ export default function PokemonDetailClient({
                 </div>
 
                 <div className="grid grid-cols-2 gap-inset-sm">
-                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-surface-container flex flex-col">
+                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-border-crisp flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase">
                       HEIGHT (身長)
                     </span>
@@ -948,7 +949,7 @@ export default function PokemonDetailClient({
                     </span>
                   </div>
 
-                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-surface-container flex flex-col">
+                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-border-crisp flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase">
                       WEIGHT (体重)
                     </span>
@@ -960,7 +961,7 @@ export default function PokemonDetailClient({
                     </span>
                   </div>
 
-                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-surface-container flex flex-col">
+                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-border-crisp flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase">
                       CATCH RATE
                     </span>
@@ -972,7 +973,7 @@ export default function PokemonDetailClient({
                     </span>
                   </div>
 
-                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-surface-container flex flex-col">
+                  <div className="p-inset-sm rounded-lg bg-surface-container-low border border-border-crisp flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase">
                       BASE EXPERIENCE
                     </span>
@@ -985,7 +986,7 @@ export default function PokemonDetailClient({
                   </div>
                 </div>
 
-                <div className="pt-inset-xs border-t border-surface-container grid grid-cols-2 gap-inset-sm text-body-sm">
+                <div className="pt-inset-xs border-t border-border-crisp grid grid-cols-2 gap-inset-sm text-body-sm">
                   <div>
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase block">
                       GENDER DISTRIBUTION
@@ -1009,8 +1010,8 @@ export default function PokemonDetailClient({
             {/* Right Editorial Telemetry & Analysis (7 Cols) */}
             <div className="lg:col-span-7 flex flex-col gap-inset-md">
               {/* Pokédex Editorial Lore Book */}
-              <div className="bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-surface-container flex flex-col gap-inset-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-inset-xs border-b border-surface-container">
+              <div className="bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-border-crisp flex flex-col gap-inset-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-inset-xs border-b border-border-crisp">
                   <div className="flex items-center gap-inset-xs">
                     <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
                       FIELD OBSERVATIONS
@@ -1029,7 +1030,7 @@ export default function PokemonDetailClient({
                       id="loreEditionSelect"
                       value={activeLore?.version || ""}
                       onChange={(e) => setSelectedLoreVersion(e.target.value)}
-                      className="bg-surface-container-low border border-surface-container text-on-surface font-caption-label text-[12px] font-bold px-2.5 py-1.5 rounded-lg outline-none focus:ring-2 focus:ring-secondary transition-all cursor-pointer"
+                      className="bg-surface-container-low border border-border-crisp text-on-surface font-caption-label text-[12px] font-bold px-2.5 py-1.5 rounded-lg outline-none focus:ring-2 focus:ring-secondary transition-all cursor-pointer"
                     >
                       {availableLoreEntries.map((entry) => (
                         <option key={entry.version} value={entry.version}>
@@ -1045,7 +1046,7 @@ export default function PokemonDetailClient({
                   <p className="italic">
                     &ldquo;{activeLore?.text}&rdquo;
                   </p>
-                  <div className="flex items-center justify-between mt-inset-xs pt-inset-xs border-t border-surface-container text-caption-label font-caption-label text-on-surface-variant flex-wrap gap-1">
+                  <div className="flex items-center justify-between mt-inset-xs pt-inset-xs border-t border-border-crisp text-caption-label font-caption-label text-on-surface-variant flex-wrap gap-1">
                     <span>POKÉDEX ENTRY: POKÉMON {activeLore?.label?.toUpperCase()} ({activeLore?.year})</span>
                     <span className="text-secondary font-bold font-index-mono uppercase">POKÉDEX // {activeLore?.gen}</span>
                   </div>
@@ -1053,7 +1054,7 @@ export default function PokemonDetailClient({
 
                 {/* Natural Habitat & Abilities Breakdown */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-inset-sm pt-inset-xs">
-                  <div className="bg-surface-container-low p-inset-sm rounded-lg border border-surface-container flex flex-col">
+                  <div className="bg-surface-container-low p-inset-sm rounded-lg border border-border-crisp flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase font-bold">
                       ABILITY // とくせい
                     </span>
@@ -1065,7 +1066,7 @@ export default function PokemonDetailClient({
                     </p>
                   </div>
 
-                  <div className="bg-surface-container-low p-inset-sm rounded-lg border border-surface-container flex flex-col">
+                  <div className="bg-surface-container-low p-inset-sm rounded-lg border border-border-crisp flex flex-col">
                     <span className="font-caption-label text-caption-label text-on-surface-variant uppercase font-bold">
                       HIDDEN ABILITY // 夢特性
                     </span>
@@ -1080,8 +1081,8 @@ export default function PokemonDetailClient({
               </div>
 
               {/* Combat Diagnostics & Calibrated Stat Bars */}
-              <div className="bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-surface-container flex flex-col gap-inset-md">
-                <div className="flex items-center justify-between pb-inset-xs border-b border-surface-container">
+              <div className="bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-border-crisp flex flex-col gap-inset-md">
+                <div className="flex items-center justify-between pb-inset-xs border-b border-border-crisp">
                   <div className="flex items-center gap-inset-xs">
                     <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
                       BASE STATS
@@ -1179,8 +1180,8 @@ export default function PokemonDetailClient({
               </div>
 
               {/* Type Matchup Tactical Table */}
-              <div className="bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-surface-container flex flex-col gap-inset-sm">
-                <div className="flex items-center justify-between pb-inset-xs border-b border-surface-container">
+              <div className="bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-border-crisp flex flex-col gap-inset-sm">
+                <div className="flex items-center justify-between pb-inset-xs border-b border-border-crisp">
                   <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
                     DEFENSIVE TYPE COMPATIBILITY
                   </span>
@@ -1191,7 +1192,7 @@ export default function PokemonDetailClient({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-inset-sm">
                   {/* Vulnerabilities */}
-                  <div className="p-inset-sm bg-surface-container-low rounded-lg border border-surface-container flex flex-col gap-2">
+                  <div className="p-inset-sm bg-surface-container-low rounded-lg border border-border-crisp flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-error font-caption-label text-caption-label font-bold uppercase">
                       <ShieldAlert className="w-4 h-4" />
                       <span>VULNERABILITIES (2x / 4x)</span>
@@ -1222,7 +1223,7 @@ export default function PokemonDetailClient({
                   </div>
 
                   {/* Resistances & Immunities */}
-                  <div className="p-inset-sm bg-surface-container-low rounded-lg border border-surface-container flex flex-col gap-2">
+                  <div className="p-inset-sm bg-surface-container-low rounded-lg border border-border-crisp flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-secondary font-caption-label text-caption-label font-bold uppercase">
                       <ShieldCheck className="w-4 h-4" />
                       <span>RESISTANCES & IMMUNITIES</span>
@@ -1362,9 +1363,12 @@ export default function PokemonDetailClient({
                               borderColor: fConfig.borderHex,
                             }}
                           >
-                            <img
+                            <Image
                               src={form.officialArtwork || form.sprite}
                               alt={form.name}
+                              width={96}
+                              height={96}
+                              unoptimized={!(form.officialArtwork || form.sprite) || (form.officialArtwork || form.sprite).startsWith("/")}
                               className="w-24 h-24 object-contain group-hover:scale-110 transition-transform drop-shadow-sm"
                               loading="lazy"
                             />
@@ -1477,9 +1481,7 @@ export default function PokemonDetailClient({
                             <span className="font-caption-label text-[10px] uppercase font-bold bg-surface-container px-2 py-0.5 rounded-full text-secondary whitespace-nowrap border border-border-crisp shadow-2xs">
                               {trigger}
                             </span>
-                            <span className="material-symbols-outlined text-[24px] text-secondary">
-                              trending_flat
-                            </span>
+                            <ArrowRight className="w-5 h-5 text-secondary" />
                           </div>
                         )}
                       </React.Fragment>
@@ -1491,7 +1493,7 @@ export default function PokemonDetailClient({
                 <div className="flex flex-col items-center justify-center py-4">
                   <div className="bg-charcoal-surface p-4 rounded-xl flex flex-col items-center text-center border border-border-crisp w-52 shadow-xs">
                     <span className="font-index-mono text-[11px] text-on-surface-variant font-bold">01</span>
-                    <img src={getOfficialArtwork(pokemonId)} alt={pokemon.name} className="w-24 h-24 object-contain my-2" />
+                    <Image src={getOfficialArtwork(pokemonId)} alt={pokemon.name} width={96} height={96} className="w-24 h-24 object-contain my-2" />
                     <span className="font-headline-sm text-sm font-bold text-on-surface capitalize">{pokemon.name}</span>
                     <span className="font-caption-label text-[10px] text-secondary font-bold uppercase mt-2 bg-secondary/10 px-2 py-0.5 rounded">
                       Single Stage // Does Not Evolve
@@ -1504,10 +1506,10 @@ export default function PokemonDetailClient({
         </section>
 
         {/* Consolidated Movepool Engine (Tabbed & Filterable Table) */}
-        <section className="w-full px-margin-mobile md:px-margin-tablet lg:px-margin-desktop py-inset-md pb-16">
-          <div className="max-w-7xl mx-auto bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-surface-container flex flex-col gap-inset-md">
+        <section className="w-full px-4 sm:px-6 lg:px-8 py-inset-md pb-16">
+          <div className="max-w-7xl mx-auto bg-surface-container-lowest p-inset-lg rounded-xl shadow-archival-sm border border-border-crisp flex flex-col gap-inset-md">
             {/* Table Header & Dual Filter Bar */}
-            <div className="flex flex-col gap-3 pb-inset-xs border-b border-surface-container">
+            <div className="flex flex-col gap-3 pb-inset-xs border-b border-border-crisp">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-inset-xs">
                   <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
@@ -1527,7 +1529,7 @@ export default function PokemonDetailClient({
                     id="moveGameSelect"
                     value={activeGameVersion}
                     onChange={(e) => setSelectedGameVersion(e.target.value)}
-                    className="bg-surface-container-low border border-surface-container text-on-surface font-caption-label text-[12px] font-bold px-2.5 py-1.5 rounded-lg outline-none focus:ring-2 focus:ring-secondary transition-all"
+                    className="bg-surface-container-low border border-border-crisp text-on-surface font-caption-label text-[12px] font-bold px-2.5 py-1.5 rounded-lg outline-none focus:ring-2 focus:ring-secondary transition-all"
                   >
                     <option value="all">All Games (Deduplicated)</option>
                     {availableGameGroups.map((vg) => {
@@ -1574,7 +1576,7 @@ export default function PokemonDetailClient({
             <div className="w-full overflow-x-auto">
               <table className="w-full text-left font-body-sm text-body-sm">
                 <thead>
-                  <tr className="bg-surface-container-low border-b border-surface-container font-caption-label text-caption-label text-on-surface-variant uppercase">
+                  <tr className="bg-surface-container-low border-b border-border-crisp font-caption-label text-caption-label text-on-surface-variant uppercase">
                     <th className="py-2.5 px-4">Move Name</th>
                     <th className="py-2.5 px-4">Category</th>
                     <th className="py-2.5 px-4">Type</th>
@@ -1662,7 +1664,7 @@ export default function PokemonDetailClient({
             </div>
 
             {/* Movepool Metadata Footer */}
-            <div className="pt-inset-xs border-t border-surface-container flex flex-col sm:flex-row items-center justify-between text-caption-label font-caption-label text-on-surface-variant gap-2">
+            <div className="pt-inset-xs border-t border-border-crisp flex flex-col sm:flex-row items-center justify-between text-caption-label font-caption-label text-on-surface-variant gap-2">
               <span>SHOWING {processedMoves.length} LEARNABLE MOVES</span>
               <span className="text-secondary font-bold font-index-mono uppercase">VERIFIED POKÉDEX MOVE DATA</span>
             </div>

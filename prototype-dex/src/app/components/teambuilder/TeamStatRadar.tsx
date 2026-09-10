@@ -1,15 +1,15 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useMemo } from "react";
 import { TeamMember, StatSpread } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { calculateAllStats } from "@/app/utils/teamBuilder/damageCalcEngine";
 import { evaluateTeamArchetype } from "@/app/utils/teamBuilder/roleClassifier";
 
 interface TeamStatRadarProps {
   members: TeamMember[];
   selectedMember: TeamMember | null;
-  pokedexData: any[];
+  pokedexData: FlatVarietyWithTypes[];
 }
 
 const STAT_KEYS: (keyof StatSpread)[] = ["hp", "atk", "def", "spa", "spd", "spe"];
@@ -28,7 +28,7 @@ export default function TeamStatRadar({
   pokedexData,
 }: TeamStatRadarProps) {
   const dexMap = useMemo(() => {
-    const map = new Map<number, any>();
+    const map = new Map<number, FlatVarietyWithTypes>();
     for (const p of pokedexData) {
       map.set(p.id, p);
     }
@@ -39,8 +39,13 @@ export default function TeamStatRadar({
   const memberStatsList: { member: TeamMember; stats: StatSpread }[] = useMemo(() => {
     return members.map((m) => {
       const dexEntry = dexMap.get(m.pokemonId);
-      const baseStats: StatSpread = dexEntry?.stats || {
-        hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80,
+      const baseStats: StatSpread = {
+        hp: dexEntry?.stats?.hp ?? 80,
+        atk: dexEntry?.stats?.atk ?? 80,
+        def: dexEntry?.stats?.def ?? 80,
+        spa: dexEntry?.stats?.spa ?? 80,
+        spd: dexEntry?.stats?.spd ?? 80,
+        spe: dexEntry?.stats?.spe ?? 80,
       };
       const stats = calculateAllStats(
         baseStats,

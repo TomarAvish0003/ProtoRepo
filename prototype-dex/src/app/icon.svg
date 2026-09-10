@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="protoBallRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF385C" />
+      <stop offset="100%" stop-color="#D90429" />
+    </linearGradient>
+    <linearGradient id="protoBallWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+  </defs>
+  <!-- Squircle container -->
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="#0B0F17" stroke="#1E293B" stroke-width="1.5" />
+  <!-- Pokéball Geometry -->
+  <g transform="translate(4, 4)">
+    <circle cx="20" cy="20" r="17.5" fill="#0B0F17" stroke="#1E293B" stroke-width="1" />
+    <!-- Top Red Dome -->
+    <path d="M 3.5 20 A 16.5 16.5 0 0 1 36.5 20 Z" fill="url(#protoBallRed)" />
+    <!-- Specular Highlight Arc -->
+    <path d="M 8 13 A 14 14 0 0 1 27 7.5" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" fill="none" />
+    <!-- Bottom White Dome -->
+    <path d="M 3.5 20 A 16.5 16.5 0 0 0 36.5 20 Z" fill="url(#protoBallWhite)" />
+    <!-- Central Divider Band -->
+    <rect x="3" y="18" width="34" height="4" fill="#0B0F17" />
+    <!-- Outer Button Ring -->
+    <circle cx="20" cy="20" r="6" fill="#0B0F17" />
+    <circle cx="20" cy="20" r="4.5" fill="#F8FAFC" />
+    <!-- Inner Core Button with Cyan Glow -->
+    <circle cx="20" cy="20" r="2.8" fill="#00E5FF" />
+    <circle cx="19.2" cy="19.2" r="0.9" fill="#FFFFFF" />
+  </g>
+</svg>

@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
 import POKEDEX_DATA from "@/app/data/pokedex-data.json";
 import { FlatVarietyWithTypes } from "@/app/utils/types";
@@ -81,9 +82,12 @@ export default function FavoritesTab() {
                     borderColor: cfg.borderHex,
                   }}
                 >
-                  <img
+                  <Image
                     src={pokemon.sprite || "/detective-pikachu.jpg"}
                     alt={pokemon.name}
+                    width={40}
+                    height={40}
+                    unoptimized={!pokemon.sprite || pokemon.sprite.startsWith("/")}
                     className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
                     loading="lazy"
                   />

@@ -5,9 +5,7 @@ export function useFetch<T>(url: string, options?: RequestInit) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // FIX: Memoize the options object to create a stable dependency.
-  // This prevents the useEffect hook from re-running on every render
-  // due to a changing object reference.
+  // Serialize options to preserve dependency stability across render cycles
   const stableOptions = useMemo(() => JSON.stringify(options), [options]);
 
   useEffect(() => {

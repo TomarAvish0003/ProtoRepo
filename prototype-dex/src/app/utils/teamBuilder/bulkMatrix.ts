@@ -38,12 +38,21 @@ export interface BulkMatrixReport {
 export const BENCHMARK_PHYS_MEDIAN = 72000; // e.g. ~350 HP * ~205 Def
 export const BENCHMARK_SPEC_MEDIAN = 70000; // e.g. ~350 HP * ~200 SpD
 
-/**
- * Computes effective physical and special bulk for all team members.
- */
+export type DexStatsEntry = {
+  stats?: {
+    hp?: number;
+    atk?: number;
+    def?: number;
+    spa?: number;
+    spd?: number;
+    spe?: number;
+    bst?: number;
+  };
+};
+
 export function computeBulkMatrix(
   members: TeamMember[],
-  pokedexMap: Map<number, { stats?: StatSpread } | StatSpread>
+  pokedexMap: Map<number, DexStatsEntry | Partial<StatSpread>>
 ): BulkMatrixReport {
   if (members.length === 0) {
     return {
@@ -61,10 +70,14 @@ export function computeBulkMatrix(
 
   const points: BulkPoint[] = members.map((m) => {
     const dexEntry = pokedexMap.get(m.pokemonId);
-    const base: StatSpread =
-      dexEntry && typeof dexEntry === "object" && "stats" in dexEntry && dexEntry.stats
-        ? dexEntry.stats
-        : (dexEntry as StatSpread) || { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 };
+    const base: StatSpread = {
+      hp: (dexEntry && "stats" in dexEntry && dexEntry.stats?.hp) || (dexEntry && "hp" in dexEntry && typeof dexEntry.hp === "number" ? dexEntry.hp : 80),
+      atk: (dexEntry && "stats" in dexEntry && dexEntry.stats?.atk) || (dexEntry && "atk" in dexEntry && typeof dexEntry.atk === "number" ? dexEntry.atk : 80),
+      def: (dexEntry && "stats" in dexEntry && dexEntry.stats?.def) || (dexEntry && "def" in dexEntry && typeof dexEntry.def === "number" ? dexEntry.def : 80),
+      spa: (dexEntry && "stats" in dexEntry && dexEntry.stats?.spa) || (dexEntry && "spa" in dexEntry && typeof dexEntry.spa === "number" ? dexEntry.spa : 80),
+      spd: (dexEntry && "stats" in dexEntry && dexEntry.stats?.spd) || (dexEntry && "spd" in dexEntry && typeof dexEntry.spd === "number" ? dexEntry.spd : 80),
+      spe: (dexEntry && "stats" in dexEntry && dexEntry.stats?.spe) || (dexEntry && "spe" in dexEntry && typeof dexEntry.spe === "number" ? dexEntry.spe : 80),
+    };
 
     const defNatureMult = getNatureMultiplier(m.nature, "def");
     const spdNatureMult = getNatureMultiplier(m.nature, "spd");

@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
@@ -8,7 +7,9 @@ import {
 } from "@/app/hooks/useTeamStore";
 import {
   PokemonFormat,
+  LocalMoveEntry,
 } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { computeDefenseMatrix, computeOffensiveCoverage } from "@/app/utils/teamBuilder/typeEngine";
 import { FORMAT_CONFIGS, isPokemonLegal } from "@/app/utils/teamBuilder/formatEngine";
 import { TYPE_CONFIGS } from "@/app/utils/pokemonDataHelpers";
@@ -51,8 +52,8 @@ import {
 } from "lucide-react";
 
 interface TeamBuilderClientProps {
-  pokedexData: any[];
-  movesData: Record<string, any>;
+  pokedexData: FlatVarietyWithTypes[];
+  movesData: Record<string, LocalMoveEntry>;
 }
 
 type AnalyticsTab =
@@ -113,6 +114,7 @@ export default function TeamBuilderClient({
 
   // Filtered & Tier-Sorted Pokémon list for Add Pokemon modal
   const allMatchingPokemon = useMemo(() => {
+    if (!addPokemonModalOpen) return [];
     let list = pokedexData;
 
     // Format legalities filter
@@ -197,6 +199,7 @@ export default function TeamBuilderClient({
       return a.id - b.id;
     });
   }, [
+    addPokemonModalOpen,
     pokedexData,
     selectedTypeFilter,
     selectedTierFilter,
@@ -209,7 +212,7 @@ export default function TeamBuilderClient({
     return allMatchingPokemon.slice(0, modalDisplayLimit);
   }, [allMatchingPokemon, modalDisplayLimit]);
 
-  const handleAddPokemonToTeam = (entry: any) => {
+  const handleAddPokemonToTeam = (entry: FlatVarietyWithTypes) => {
     addMember(activeTeam.id, entry);
     setAddPokemonModalOpen(false);
     setAddSearchQuery("");
@@ -225,7 +228,7 @@ export default function TeamBuilderClient({
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+    <main className="min-h-screen bg-background text-on-surface pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       {/* Top Controls Bar: Squad Selector, Formats, and Import/Export */}
       <div className="p-5 rounded-2xl bg-charcoal-surface border border-border-crisp flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xs">
         <div className="flex flex-wrap items-center gap-3">
@@ -924,7 +927,7 @@ export default function TeamBuilderClient({
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
 

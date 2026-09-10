@@ -11,6 +11,9 @@ import {
   List as ListIcon,
   X,
   Filter,
+  Search,
+  Layers,
+  SearchX,
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -264,7 +267,7 @@ function NationalDexContent() {
                   INDEX // {currentGenMeta.roman}
                 </span>
                 <span className="font-subhead-kana text-[12px] text-on-surface-variant">
-                  {generation === null ? "全国図鑑 // 1,025 全種目録" : `${currentGenMeta.kanji}地方 // № ${currentGenMeta.range}`}
+                  {generation === null ? "全国図鑑 // 1,025匹収録" : `${currentGenMeta.kanji}地方 // № ${currentGenMeta.range}`}
                 </span>
               </div>
               <h1 className="font-headline-lg text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight">
@@ -311,7 +314,7 @@ function NationalDexContent() {
                     type="button"
                     className={`px-3 py-1.5 rounded-lg font-caption-label text-[12px] whitespace-nowrap transition-all border shrink-0 flex items-center gap-1.5 snappy-btn ${
                       isActive
-                        ? "bg-primary text-on-primary border-primary font-bold shadow-[2px_2px_0px_#171b26]"
+                        ? "bg-primary text-on-primary border-primary font-bold shadow-xs"
                         : "bg-surface-container-lowest text-on-surface-variant border-border-crisp hover:bg-surface-container-high hover:text-on-surface"
                     }`}
                   >
@@ -372,9 +375,7 @@ function NationalDexContent() {
                   )}
                 </div>
                 <div className="relative flex items-center bg-surface-container-low px-3 py-2 rounded-lg border border-border-crisp focus-within:ring-2 focus-within:ring-primary transition-all">
-                  <span className="material-symbols-outlined text-secondary text-[18px] mr-2">
-                    manage_search
-                  </span>
+                  <Search className="w-4 h-4 text-secondary mr-2 flex-shrink-0" />
                   <input
                     id="archiveSearch"
                     type="text"
@@ -388,9 +389,9 @@ function NationalDexContent() {
 
               {/* Official 18-Type Matrix with Universal Standard Colors */}
               <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_12px_rgba(23,27,38,0.04)] border border-border-crisp flex flex-col gap-2.5">
-                <div className="flex items-center justify-between pb-2 border-b border-surface-container">
+                <div className="flex items-center justify-between pb-2 border-b border-border-crisp">
                   <div className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[16px] text-primary">category</span>
+                    <Layers className="w-4 h-4 text-primary flex-shrink-0" />
                     <span className="font-caption-label text-[11px] text-on-surface font-bold uppercase tracking-wider">
                       Types (18)
                     </span>
@@ -426,7 +427,7 @@ function NationalDexContent() {
                         }}
                         className={`type-filter-chip flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-all text-left border snappy-btn ${
                           isSelected
-                            ? "font-bold shadow-[1px_1px_0px_#171b26]"
+                            ? "font-bold shadow-xs"
                             : "bg-surface-container-low text-on-surface border-border-crisp hover:border-primary/40 hover:bg-surface-container"
                         }`}
                       >
@@ -456,7 +457,7 @@ function NationalDexContent() {
 
               {/* Regional Compendium Jump Directory */}
               <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_12px_rgba(23,27,38,0.04)] border border-border-crisp flex flex-col gap-2">
-                <span className="font-caption-label text-[11px] text-primary font-extrabold uppercase tracking-wider pb-1.5 border-b border-surface-container">
+                <span className="font-caption-label text-[11px] text-primary font-extrabold uppercase tracking-wider pb-1.5 border-b border-border-crisp">
                   REGIONS
                 </span>
                 <div className="flex flex-col gap-1 font-body-sm text-[12px]">
@@ -467,7 +468,7 @@ function NationalDexContent() {
                       type="button"
                       className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors text-left snappy-btn ${
                         generation === reg.gen
-                          ? "bg-primary text-on-primary font-bold shadow-[2px_2px_0px_#171b26]"
+                          ? "bg-primary text-on-primary font-bold shadow-xs"
                           : "hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface"
                       }`}
                     >
@@ -563,9 +564,7 @@ function NationalDexContent() {
               {/* Pokemon Card Grid */}
               {filteredPokemons.length === 0 ? (
                 <div className="bg-surface-container-lowest rounded-xl p-10 border border-border-crisp text-center flex flex-col items-center justify-center gap-3 shadow-[0_2px_12px_rgba(23,27,38,0.04)]">
-                  <span className="material-symbols-outlined text-4xl text-on-surface-variant">
-                    search_off
-                  </span>
+                  <SearchX className="w-12 h-12 text-on-surface-variant/60" />
                   <h3 className="font-headline-sm text-lg text-on-surface font-bold">
                     No Pokémon Found
                   </h3>
@@ -608,7 +607,7 @@ function NationalDexContent() {
                         <th className="py-2.5 px-4 text-right">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-surface-container">
+                    <tbody className="divide-y divide-border-crisp">
                       {visiblePokemons.map((pokemon) => (
                         <tr
                           key={pokemon.id}

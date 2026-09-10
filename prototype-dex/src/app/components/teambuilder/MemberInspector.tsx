@@ -1,9 +1,9 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
-import { TeamMember, StatName, ALL_POKEMON_TYPES } from "@/app/utils/teamBuilder/types";
+import { TeamMember, StatName, ALL_POKEMON_TYPES, LocalMoveEntry } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { clampEV } from "@/app/hooks/useTeamStore";
 import {
   NATURE_MODIFIERS,
@@ -22,12 +22,16 @@ import pokedexDataRaw from "@/app/data/pokedex-data.json";
 import { Swords, Trash2, Search, X, Check, ShieldAlert, Sparkles, Wand2 } from "lucide-react";
 
 const POKEDEX_MAP = new Map<number, { hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>(
-  (pokedexDataRaw as any[]).map((p) => [p.id, p.stats])
+  (pokedexDataRaw as unknown as FlatVarietyWithTypes[])
+    .filter((p): p is FlatVarietyWithTypes & { stats: { hp: number; atk: number; def: number; spa: number; spd: number; spe: number } } =>
+      Boolean(p.stats?.hp !== undefined && p.stats?.atk !== undefined && p.stats?.def !== undefined && p.stats?.spa !== undefined && p.stats?.spd !== undefined && p.stats?.spe !== undefined)
+    )
+    .map((p) => [p.id, p.stats as { hp: number; atk: number; def: number; spa: number; spd: number; spe: number }])
 );
 
 interface MemberInspectorProps {
   member: TeamMember;
-  movesData: Record<string, any>;
+  movesData: Record<string, LocalMoveEntry>;
   format?: string;
   onUpdate: (updater: (m: TeamMember) => TeamMember) => void;
   onRemove: () => void;
@@ -207,7 +211,7 @@ export default function MemberInspector({
   // Filtered & Ranked Legal Moves
   const filteredLegalMoves = useMemo(() => {
     const q = moveSearchQuery.toLowerCase().trim();
-    const list: { id: string; name: string; meta: any }[] = [];
+    const list: { id: string; name: string; meta: LocalMoveEntry }[] = [];
 
     // Map each move from movesData that belongs to this Pokemon's learnset
     for (const [id, meta] of Object.entries(movesData)) {
@@ -253,8 +257,8 @@ export default function MemberInspector({
         if (!aIsStab && bIsStab) return 1;
 
         // Base Power priority
-        const pwrA = typeof a.meta?.power === "number" ? a.meta.power : parseInt(a.meta?.power, 10) || 0;
-        const pwrB = typeof b.meta?.power === "number" ? b.meta.power : parseInt(b.meta?.power, 10) || 0;
+        const pwrA = typeof a.meta?.power === "number" ? a.meta.power : parseInt(a.meta?.power || "0", 10) || 0;
+        const pwrB = typeof b.meta?.power === "number" ? b.meta.power : parseInt(b.meta?.power || "0", 10) || 0;
         if (pwrA !== pwrB) return pwrB - pwrA;
 
         return a.name.localeCompare(b.name);

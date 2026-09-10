@@ -7,7 +7,7 @@ import { users, userFavorites, userCaught } from '../db/schema.js';
 import { registerSchema, loginSchema } from '../validators/authValidator.js';
 
 // In-memory token blocklist for immediate revocation
-const tokenBlocklist = new Set();
+export const tokenBlocklist = new Set();
 
 const COOKIE_NAME = 'protodex_token';
 const getCookieOptions = () => ({

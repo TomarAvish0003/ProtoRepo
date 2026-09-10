@@ -1,10 +1,9 @@
-/* eslint-disable */
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   getPokemon,
   getPokemonSpecies,
   getEvolutionChainForPokemon,
-  getPokemonType,
   getPokemonEncounters,
   getPokemonAbility,
   getMovesBatch,
@@ -23,22 +22,38 @@ import {
   RawAbility,
   RawPokemonType,
   RawStat,
+  FlatVarietyWithTypes,
+  FormCategory,
 } from "@/app/utils/types";
+import { TYPE_CHART } from "@/app/utils/teamBuilder/typeEngine";
+import { PokemonType } from "@/app/utils/teamBuilder/types";
 import PokemonDetailClient from "./page.client";
 import localMovesData from "@/app/data/pokemon_moves.json";
-
 import localPokedexData from "@/app/data/pokedex-data.json";
-import { FormCategory } from "@/app/utils/types";
 
 // --- Type Definitions for this Page ---
 
-// FIX: Define the props to match what Next.js expects during build.
-// The `params` object is a Promise that resolves to the route parameters.
+/**
+ * Next.js App Router dynamic route parameters.
+ */
 interface PageProps {
   params: Promise<{ name: string }>;
 }
 
-// FIX: Define a specific type for the raw ability response to avoid using 'any'.
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { name } = await params;
+  const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+  return {
+    title: `${capitalized} // Pokédex Entry - ProtoDex`,
+    description: `Complete base stats, type matchups, move learnsets, and competitive battle telemetry for ${capitalized}.`,
+    openGraph: {
+      title: `${capitalized} // Pokédex Entry - ProtoDex`,
+      description: `Complete base stats, type matchups, move learnsets, and competitive battle telemetry for ${capitalized}.`,
+    },
+  };
+}
+
+/** Raw API payload structure for Pokémon ability details. */
 interface RawAbilityResponse {
     effect_entries?: {
         effect: string;
@@ -48,18 +63,22 @@ interface RawAbilityResponse {
 }
 
 // --- Helper Functions ---
-function computeTypeEffectiveness(typeDataArr: any[]): TypeEffectiveness {
-  const attackTypes = [ "normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy" ];
+const ALL_TYPES = [
+  "normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground",
+  "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"
+] as const;
+
+function calculateTypeEffectiveness(defendingTypes: string[]): TypeEffectiveness {
+  const cleanTypes = defendingTypes.map((t) => t.toLowerCase() as PokemonType);
   const typeEffectiveness: TypeEffectiveness = {};
-  for (const atkType of attackTypes) {
+  for (const atk of ALL_TYPES) {
     let multiplier = 1;
-    for (const t of typeDataArr) {
-      if (!t?.damage_relations) continue;
-      if (t.damage_relations.double_damage_from.some((x: { name: string }) => x.name === atkType)) multiplier *= 2;
-      if (t.damage_relations.half_damage_from.some((x: { name: string }) => x.name === atkType)) multiplier *= 0.5;
-      if (t.damage_relations.no_damage_from.some((x: { name: string }) => x.name === atkType)) multiplier *= 0;
+    for (const def of cleanTypes) {
+      if (TYPE_CHART[atk] && TYPE_CHART[atk][def] !== undefined) {
+        multiplier *= TYPE_CHART[atk][def];
+      }
     }
-    typeEffectiveness[atkType] = multiplier;
+    typeEffectiveness[atk] = multiplier;
   }
   return typeEffectiveness;
 }
@@ -105,14 +124,12 @@ function humanize(str: string) {
 
 // --- Main Page Component ---
 export default async function PokemonPage({ params }: PageProps) {
-  // FIX: Await the params promise to get the actual route parameters.
   const { name } = await params;
 
-  const [pokemonRes, speciesRes, encountersRes, evoChainRes] = await Promise.all([
+  const [pokemonRes, speciesRes, encountersRes] = await Promise.all([
     getPokemon(name),
     getPokemonSpecies(name),
     getPokemonEncounters(name),
-    getEvolutionChainForPokemon(name),
   ]);
 
   if (!pokemonRes.data || !speciesRes.data) {
@@ -121,9 +138,11 @@ export default async function PokemonPage({ params }: PageProps) {
   const pokemon = pokemonRes.data;
   const species = speciesRes.data as PokemonSpecies;
 
-  const evoError: string | null = evoChainRes.error ?? null;
-  const rawTree = evoChainRes.data?.tree || null;
-  const rawStages = evoChainRes.data?.stages || [];
+  // Ingest evolution chain asynchronously using pre-fetched species evolution chain URL
+  const evoChainPromise = getEvolutionChainForPokemon(
+    name,
+    (species as { evolution_chain?: { url?: string } })?.evolution_chain?.url
+  );
 
   // 1. Optimized Variety and Alternate Form Ingestion
   let forms: PokemonForm[] = [];
@@ -134,7 +153,7 @@ export default async function PokemonPage({ params }: PageProps) {
 
     for (const v of varietyEntries) {
       const { category } = classifyForm(v.pokemon.name);
-      if (v.is_default) {
+      if (v.is_default || v.pokemon.name.toLowerCase() === pokemon.name.toLowerCase()) {
         prioritizedVarieties.unshift(v);
       } else if (category === "mega" || category === "gmax" || category === "regional" || category === "battle") {
         prioritizedVarieties.push(v);
@@ -149,8 +168,14 @@ export default async function PokemonPage({ params }: PageProps) {
       ...cosmeticVarieties.slice(0, 2),
     ].slice(0, 9);
 
+    // Reuse in-memory base pokemon payload instead of duplicate remote network fetch
     const varietyResults = await Promise.allSettled(
-      selectedVarieties.map((v) => getPokemon(v.pokemon.name))
+      selectedVarieties.map((v) => {
+        if (v.is_default || v.pokemon.name.toLowerCase() === pokemon.name.toLowerCase()) {
+          return Promise.resolve({ data: pokemon, error: null });
+        }
+        return getPokemon(v.pokemon.name);
+      })
     );
 
     const formsArr: PokemonForm[] = [];
@@ -193,10 +218,17 @@ export default async function PokemonPage({ params }: PageProps) {
     forms = formsArr;
   }
 
-  // 2. Type Mapping for Evolution Lineage
+  // 2. Resolve Evolution Chain and Type Mapping for Evolution Lineage
+  const evoChainRes = await evoChainPromise;
+  const evoError: string | null = evoChainRes.error ?? null;
+  const rawTree = evoChainRes.data?.tree || null;
+  const rawStages = evoChainRes.data?.stages || [];
+
   const stageTypeMap = new Map<number, string[]>();
   for (const stage of rawStages) {
-    const localEntry = (localPokedexData as any[]).find((p) => p.id === stage.id);
+    const localEntry = (localPokedexData as unknown as FlatVarietyWithTypes[]).find(
+      (p) => p.id === stage.id || p.name.toLowerCase() === stage.name.toLowerCase()
+    );
     if (localEntry?.types) {
       stageTypeMap.set(stage.id, localEntry.types);
     }
@@ -243,8 +275,7 @@ export default async function PokemonPage({ params }: PageProps) {
   }));
   
   const typeNames = pokemon.types.map((t: RawPokemonType) => t.type.name);
-  const typeDataArr = (await Promise.all(typeNames.map((n) => getPokemonType(n)))).map(d => d.data);
-  const typeEffectiveness = computeTypeEffectiveness(typeDataArr);
+  const typeEffectiveness = calculateTypeEffectiveness(typeNames);
 
   const encounters: PokemonEncounter[] = encountersRes.data?.flatMap(loc =>
     loc.version_details.flatMap(ver =>
@@ -272,19 +303,30 @@ export default async function PokemonPage({ params }: PageProps) {
   const eggGroups: string[] = species.egg_groups?.map((g) => g.name) ?? [];
   
   // Helper to parse numeric move stats safely
-  const parseStatNum = (val: any): number | undefined => {
+  const parseStatNum = (val: unknown): number | undefined => {
     if (val === undefined || val === null || val === "—" || val === "" || isNaN(Number(val))) return undefined;
     return Number(val);
   };
 
+  interface DbMoveMeta {
+    name?: string;
+    power?: number | null;
+    accuracy?: number | null;
+    pp?: number | null;
+    type?: string;
+    damageClass?: string;
+    damage_class?: string;
+    shortDescription?: string;
+  }
+
   // Hydrate moves with real damageClass, power, accuracy, pp, and type from Turso database with static fallback
   const uniqueMoveNames = Array.from(new Set((pokemon.moves || []).map((pm) => pm.move.name)));
-  let moveMetaMap = new Map<string, any>();
+  const moveMetaMap = new Map<string, DbMoveMeta>();
   try {
     const movesBatchRes = await getMovesBatch(uniqueMoveNames);
     if (movesBatchRes.data?.moves) {
       for (const m of movesBatchRes.data.moves) {
-        moveMetaMap.set(m.name.toLowerCase(), m);
+        moveMetaMap.set(m.name.toLowerCase(), m as unknown as DbMoveMeta);
       }
     }
   } catch (err) {

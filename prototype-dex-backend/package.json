@@ -1,39 +1,40 @@
 {
   "name": "prototype-dex-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "ProtoDex Core API Engine — High-performance Pokémon reference, competitive math & authenticated trainer sync powered by Express, Drizzle ORM, and Turso libSQL.",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "db:migrate": "node src/db/migrate.js",
     "db:seed": "node src/db/seed.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "pokemon",
+    "pokedex",
+    "drizzle-orm",
+    "turso",
+    "libsql",
+    "express",
+    "competitive-pokemon"
+  ],
+  "author": "ProtoDex Team",
   "license": "ISC",
   "type": "module",
   "dependencies": {
     "@libsql/client": "^0.18.0",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
-    "cheerio": "^1.0.0",
     "cloudinary": "^2.6.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "csv-parser": "^3.2.0",
-    "cv-parser": "^0.0.1",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.45.2",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.16.0",
-    "mongoose": "^8.15.1",
     "p-limit": "^6.2.0",
-    "zod": "^4.5.4",
-    "zustand": "^5.0.5"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.10",

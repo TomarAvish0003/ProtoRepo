@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 // --- Raw API Types ---
 // These types match the nested structure directly from the PokeAPI
 
@@ -36,8 +34,25 @@ export interface RawSprites {
     'official-artwork'?: {
       front_default: string;
     };
+    [key: string]: unknown;
   };
-  [key: string]: any;
+  [key: string]: unknown;
+}
+
+export interface RawDamageRelations {
+  double_damage_from: { name: string; url?: string }[];
+  double_damage_to: { name: string; url?: string }[];
+  half_damage_from: { name: string; url?: string }[];
+  half_damage_to: { name: string; url?: string }[];
+  no_damage_from: { name: string; url?: string }[];
+  no_damage_to: { name: string; url?: string }[];
+}
+
+export interface RawTypeApiResponse {
+  id?: number;
+  name?: string;
+  damage_relations?: RawDamageRelations;
+  [key: string]: unknown;
 }
 
 // --- User Profile Type ---
@@ -213,6 +228,7 @@ export interface FlatVarietyWithTypes {
     spe?: number;
     bst?: number;
   };
+  abilities?: string[];
 }
 
 export interface PokedexListResponse {

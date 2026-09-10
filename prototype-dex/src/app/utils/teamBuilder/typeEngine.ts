@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Type Synergy, Dense Defense Matrix, and Bipartite Offensive Coverage Engine
 import {
   PokemonType,
@@ -9,6 +8,7 @@ import {
   CoverageReport,
   CoverageEdge,
   SetCoverRecommendation,
+  LocalMoveEntry,
 } from "./types";
 
 // Standard 18x18 Type Effectiveness Table (Attacking Row -> Defending Column)
@@ -243,7 +243,7 @@ export function computeDefenseMatrix(members: TeamMember[]): DefenseMatrixResult
  */
 export function computeOffensiveCoverage(
   members: TeamMember[],
-  movesData: Record<string, any>
+  movesData: Record<string, LocalMoveEntry>
 ): CoverageReport {
   const edges: CoverageEdge[] = [];
   const coveredSet = new Set<PokemonType>();

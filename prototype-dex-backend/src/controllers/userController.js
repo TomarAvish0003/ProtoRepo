@@ -256,22 +256,26 @@ export const syncUserData = async (req, res) => {
       .where(eq(userCaught.userId, req.user.id));
     const existingCaughtSet = new Set(existingCaughtRows.map((r) => r.pokemon));
 
-    // 2. Insert missing favorites
+    // 2. Insert missing favorites in a single batch insert
     const newFavorites = incomingFavorites.filter((f) => !existingFavSet.has(f));
-    for (const fav of newFavorites) {
-      await db.insert(userFavorites).values({
-        userId: req.user.id,
-        pokemon: fav,
-      });
+    if (newFavorites.length > 0) {
+      await db.insert(userFavorites).values(
+        newFavorites.map((fav) => ({
+          userId: req.user.id,
+          pokemon: fav,
+        }))
+      );
     }
 
-    // 3. Insert missing caught items
+    // 3. Insert missing caught items in a single batch insert
     const newCaught = incomingCaught.filter((c) => !existingCaughtSet.has(c));
-    for (const c of newCaught) {
-      await db.insert(userCaught).values({
-        userId: req.user.id,
-        pokemon: c,
-      });
+    if (newCaught.length > 0) {
+      await db.insert(userCaught).values(
+        newCaught.map((c) => ({
+          userId: req.user.id,
+          pokemon: c,
+        }))
+      );
     }
 
     // 4. Return complete lists

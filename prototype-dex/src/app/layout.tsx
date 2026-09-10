@@ -21,9 +21,68 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://proto-repo.vercel.app";
+
 export const metadata: Metadata = {
-  title: "ProtoDex // Competitive Pokédex & Team Builder",
-  description: "Modern Pokédex with comprehensive Pokémon database, tournament-grade team builder, and damage calculator.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "ProtoDex // Competitive Pokédex & Team Builder",
+    template: "%s // ProtoDex",
+  },
+  description:
+    "Engineering-grade competitive Pokémon Pokédex, tournament team builder, 18x6 dense defense matrix, and 16-roll discrete damage calculator.",
+  keywords: [
+    "Pokemon",
+    "Pokedex",
+    "Team Builder",
+    "Damage Calculator",
+    "Competitive Pokemon",
+    "VGC",
+    "Smogon",
+    "Gen 9",
+  ],
+  authors: [{ name: "ProtoDex Team" }],
+  creator: "ProtoDex",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    title: "ProtoDex // Competitive Pokédex & Team Builder",
+    description:
+      "Engineering-grade competitive Pokémon Pokédex, tournament team builder, and damage calculator.",
+    siteName: "ProtoDex",
+    images: [
+      {
+        url: "/detective-pikachu.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ProtoDex - Competitive Pokédex & Tournament Team Builder",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ProtoDex // Competitive Pokédex & Team Builder",
+    description:
+      "Engineering-grade competitive Pokémon Pokédex, tournament team builder, and damage calculator.",
+    images: ["/detective-pikachu.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -37,12 +96,6 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${spaceGrotesk.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
-        />
-      </head>
       <body className="bg-background font-body-md text-on-surface anime-grid-bg min-h-screen antialiased selection:bg-primary selection:text-white transition-colors duration-200">
         <ThemeProvider
           attribute="class"

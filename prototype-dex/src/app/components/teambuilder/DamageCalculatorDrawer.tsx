@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
@@ -12,7 +11,9 @@ import {
   BattleFormat,
   StatSpread,
   StatStages,
+  LocalMoveEntry,
 } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { calculateDamage } from "@/app/utils/teamBuilder/damageCalcEngine";
 import { META_THREATS_LIST, MetaThreat } from "@/app/utils/teamBuilder/metaThreats";
 import { X, Sparkles } from "lucide-react";
@@ -20,8 +21,8 @@ import SurvivalAreaCurve from "./SurvivalAreaCurve";
 
 interface DamageCalculatorDrawerProps {
   attackerMember: TeamMember;
-  pokedexData: any[];
-  movesData: Record<string, any>;
+  pokedexData: FlatVarietyWithTypes[];
+  movesData: Record<string, LocalMoveEntry>;
   onClose?: () => void;
 }
 
@@ -66,7 +67,7 @@ export default function DamageCalculatorDrawer({
 
   // Dex data lookup
   const dexMap = useMemo(() => {
-    const map = new Map<number, any>();
+    const map = new Map<number, FlatVarietyWithTypes>();
     for (const p of pokedexData) {
       map.set(p.id, p);
     }
@@ -76,16 +77,14 @@ export default function DamageCalculatorDrawer({
   // Attacker Base Stats
   const attackerBaseStats: StatSpread = useMemo(() => {
     const attackerDex = dexMap.get(attackerMember.pokemonId);
-    return (
-      attackerDex?.stats || {
-        hp: 80,
-        atk: 80,
-        def: 80,
-        spa: 80,
-        spd: 80,
-        spe: 80,
-      }
-    );
+    return {
+      hp: attackerDex?.stats?.hp ?? 80,
+      atk: attackerDex?.stats?.atk ?? 80,
+      def: attackerDex?.stats?.def ?? 80,
+      spa: attackerDex?.stats?.spa ?? 80,
+      spd: attackerDex?.stats?.spd ?? 80,
+      spe: attackerDex?.stats?.spe ?? 80,
+    };
   }, [dexMap, attackerMember.pokemonId]);
 
   // Selected Move Info
@@ -93,7 +92,7 @@ export default function DamageCalculatorDrawer({
   const cleanMoveKey = activeMoveName.toLowerCase().trim().replace(/[\s_]/g, "-");
   const activeMoveRaw = movesData[cleanMoveKey] || movesData[cleanMoveKey.replace(/-/g, " ")];
 
-  const movePower = parseInt(activeMoveRaw?.power, 10) || 80;
+  const movePower = parseInt(activeMoveRaw?.power || "0", 10) || 80;
   const moveType = (activeMoveRaw?.type || "Normal").toLowerCase();
   const moveCategory = (activeMoveRaw?.category || "Physical") as "Physical" | "Special" | "Status";
 

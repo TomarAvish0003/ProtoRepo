@@ -1,13 +1,12 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useMemo } from "react";
-import { TeamMember } from "@/app/utils/teamBuilder/types";
+import { TeamMember, LocalMoveEntry } from "@/app/utils/teamBuilder/types";
 import { AlertCircle, PieChart } from "lucide-react";
 
 interface MoveTaxonomyDonutProps {
   members: TeamMember[];
-  movesData?: Record<string, any>;
+  movesData?: Record<string, LocalMoveEntry>;
 }
 
 interface TaxonomySlice {

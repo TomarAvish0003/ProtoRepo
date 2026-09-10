@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/app/context/AuthContext';
-import { UserPlus, ArrowRight, ShieldCheck } from 'lucide-react';
+import { UserPlus, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -68,7 +68,7 @@ export default function RegisterPage() {
         {/* Error Notification */}
         {errorMsg && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-600 dark:text-red-400 font-caption-label text-[12px] font-semibold flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-red-600 dark:text-red-400">error</span>
+            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
@@ -121,7 +121,7 @@ export default function RegisterPage() {
               htmlFor="password"
               className="font-caption-label text-[11px] font-bold text-on-surface-variant uppercase tracking-wider"
             >
-              Master Password
+              Password
             </label>
             <input
               id="password"
@@ -151,7 +151,7 @@ export default function RegisterPage() {
             ) : (
               <>
                 <UserPlus className="w-4 h-4" />
-                <span>Initialize Trainer Account</span>
+                <span>Create Trainer Account</span>
               </>
             )}
           </button>

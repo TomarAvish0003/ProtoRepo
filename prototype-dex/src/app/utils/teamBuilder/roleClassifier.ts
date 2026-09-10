@@ -129,7 +129,7 @@ export function isItemLegal(
  */
 export function classifySpecimenRole(
   member: TeamMember,
-  baseStats?: StatSpread
+  baseStats?: Partial<StatSpread>
 ): SpecimenRole {
   const moveNames = member.moves
     .filter((m): m is string => typeof m === "string" && m.trim().length > 0)
@@ -323,12 +323,24 @@ export function classifySpecimenRole(
   };
 }
 
+export type DexStatsEntry = {
+  stats?: {
+    hp?: number;
+    atk?: number;
+    def?: number;
+    spa?: number;
+    spd?: number;
+    spe?: number;
+    bst?: number;
+  };
+};
+
 /**
  * Evaluates the overall holistic team composition to determine the true competitive archetype.
  */
 export function evaluateTeamArchetype(
   members: TeamMember[],
-  pokedexMap: Map<number, { stats?: StatSpread; [key: string]: unknown } | StatSpread>
+  pokedexMap: Map<number, DexStatsEntry | Partial<StatSpread>>
 ): TeamArchetype {
   if (members.length === 0) {
     return {
@@ -347,10 +359,10 @@ export function evaluateTeamArchetype(
 
   for (const m of members) {
     const dexEntry = pokedexMap.get(m.pokemonId);
-    const baseStats: StatSpread | undefined =
+    const baseStats: Partial<StatSpread> | undefined =
       dexEntry && typeof dexEntry === "object" && "stats" in dexEntry && dexEntry.stats
         ? dexEntry.stats
-        : (dexEntry as StatSpread | undefined);
+        : (dexEntry as Partial<StatSpread> | undefined);
     const role = classifySpecimenRole(m, baseStats);
 
     if (role.roleId === "phys_sweeper" || role.roleId === "spec_sweeper" || role.roleId === "revenge_killer") {

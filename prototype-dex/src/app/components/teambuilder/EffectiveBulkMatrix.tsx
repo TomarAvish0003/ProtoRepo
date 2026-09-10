@@ -1,8 +1,8 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useMemo } from "react";
 import { TeamMember } from "@/app/utils/teamBuilder/types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import {
   computeBulkMatrix,
   BENCHMARK_PHYS_MEDIAN,
@@ -13,7 +13,7 @@ import { ShieldAlert, Activity } from "lucide-react";
 
 interface EffectiveBulkMatrixProps {
   members: TeamMember[];
-  pokedexData: any[];
+  pokedexData: FlatVarietyWithTypes[];
   onSelectMember?: (id: string) => void;
 }
 
@@ -26,7 +26,7 @@ export default function EffectiveBulkMatrix({
 
   // Dex lookup map
   const dexMap = useMemo(() => {
-    const map = new Map<number, any>();
+    const map = new Map<number, FlatVarietyWithTypes>();
     for (const p of pokedexData) {
       map.set(p.id, p);
     }

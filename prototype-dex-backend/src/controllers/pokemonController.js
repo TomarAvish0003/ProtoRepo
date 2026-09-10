@@ -35,6 +35,22 @@ const GENERATION_RANGES = {
   9: { start: 906, end: 1025 },
 };
 
+// In-memory cache for static Pokémon table to avoid frequent cloud database roundtrips
+let cachedAllPokemon = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 1000 * 60 * 15; // 15 minutes
+
+async function getAllPokemonCached() {
+  const now = Date.now();
+  if (cachedAllPokemon && now - lastCacheTime < CACHE_TTL_MS) {
+    return cachedAllPokemon;
+  }
+  const all = await db.select().from(pokemon);
+  cachedAllPokemon = all;
+  lastCacheTime = now;
+  return all;
+}
+
 export const getPokemonList = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 48;
@@ -44,7 +60,7 @@ export const getPokemonList = async (req, res) => {
       ? req.query.types.split(",").map((t) => t.toLowerCase().trim()).filter(Boolean)
       : [];
 
-    let all = await db.select().from(pokemon);
+    let all = await getAllPokemonCached();
 
     if (search) {
       const cleanSearch = search.replace(/^#/, "");
@@ -89,7 +105,7 @@ export const getPokemonByGeneration = async (req, res) => {
     // Fallback if genId is not 1-9
     const generationData = await fetchGeneration(req.params.genId);
     const genPokemonNames = new Set(generationData.pokemon_species.map((p) => p.name));
-    const all = await db.select().from(pokemon);
+    const all = await getAllPokemonCached();
     const enriched = all.filter((p) => genPokemonNames.has(p.name));
     res.json(enriched);
   } catch (err) {

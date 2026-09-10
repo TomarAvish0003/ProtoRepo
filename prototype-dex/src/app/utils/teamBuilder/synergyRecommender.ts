@@ -1,6 +1,6 @@
 // Team Weakness Auto-Resolver & Smart Teammate Recommender
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TeamMember, PokemonType, PokemonFormat, ALL_POKEMON_TYPES } from "./types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 import { getDefensiveMultiplier, TYPE_CHART } from "./typeEngine";
 import { isPokemonLegal, getPokemonTierInfo } from "./formatEngine";
 
@@ -31,15 +31,15 @@ export interface SynergyRecommendation {
 export function recommendTeammates(
   members: TeamMember[],
   format: PokemonFormat,
-  pokedexData: any[]
+  pokedexData: FlatVarietyWithTypes[]
 ): SynergyRecommendation[] {
   if (members.length === 0 || members.length >= 6) return [];
 
   const teamSpeciesSet = new Set(members.map((m) => m.speciesName.toLowerCase().replace(/[^a-z0-9]/g, "")));
 
   // 1. Determine team defensive weaknesses
-  const teamWeaknessCounts: Record<PokemonType, number> = {} as any;
-  const teamResistCounts: Record<PokemonType, number> = {} as any;
+  const teamWeaknessCounts = {} as Record<PokemonType, number>;
+  const teamResistCounts = {} as Record<PokemonType, number>;
 
   for (const t of ALL_POKEMON_TYPES) {
     teamWeaknessCounts[t] = 0;
@@ -77,12 +77,12 @@ export function recommendTeammates(
 
   // 3. Score candidate Pokémon
   interface ScoredCandidate {
-    entry: any;
+    entry: FlatVarietyWithTypes;
     score: number;
     defensiveHelps: PokemonType[];
     offensiveHelps: PokemonType[];
     pivotPartners: string[];
-    tierInfo: any;
+    tierInfo: ReturnType<typeof getPokemonTierInfo>;
   }
 
   const scored: ScoredCandidate[] = [];

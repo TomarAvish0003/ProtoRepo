@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Universal Pokémon Showdown Format Two-Way Serializer
 import { TeamMember, Team, StatSpread } from "./types";
+import { FlatVarietyWithTypes } from "@/app/utils/types";
 
 /**
  * Parses raw Pokémon Showdown team export text into structured team members.
  */
 export function parseShowdownText(
   text: string,
-  pokedexData: any[]
+  pokedexData: FlatVarietyWithTypes[]
 ): { members: TeamMember[]; errors: string[] } {
   const errors: string[] = [];
   const members: TeamMember[] = [];
@@ -19,7 +19,7 @@ export function parseShowdownText(
     .filter((b) => b.length > 0);
 
   // Quick lookup map for pokedex data
-  const pokeMap = new Map<string, any>();
+  const pokeMap = new Map<string, FlatVarietyWithTypes>();
   for (const p of pokedexData) {
     pokeMap.set(p.name.toLowerCase().replace(/[\s_]/g, "-"), p);
   }

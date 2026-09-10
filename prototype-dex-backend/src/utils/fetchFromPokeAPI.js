@@ -12,8 +12,8 @@ import {
 
 const BASE_URL = "https://pokeapi.co/api/v2";
 
-// Use p-limit to create a queue that ensures only 1 request is active at a time.
-const limit = pLimit(1);
+// Use p-limit to balance parallel resolution with PokeAPI rate protection
+const limit = pLimit(6);
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
