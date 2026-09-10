@@ -162,7 +162,7 @@ export default function FavoritesPage() {
                 </button>
                 <div className="relative w-40 h-40 mb-4">
                   <Image
-                    src={pokemon.sprites?.front_default ?? "/pokeball.svg"}
+                    src={pokemon.sprites?.front_default ?? "/detective-pikachu.jpg"}
                     alt={pokemon.name}
                     fill
                     sizes="160px"
