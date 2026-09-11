@@ -10,8 +10,6 @@ import {
 
 const formatZodError = (err) => (err.issues || err.errors || [{}])[0]?.message || 'Invalid input';
 
-// --- FAVORITES ---
-
 export const getFavorites = async (req, res) => {
   try {
     const rows = await db
@@ -33,8 +31,6 @@ export const toggleFavorite = async (req, res) => {
     }
 
     const key = parseResult.data.pokemon;
-
-    // Strict row-level isolation
     const [existing] = await db
       .select()
       .from(userFavorites)
@@ -121,8 +117,6 @@ export const getFavoriteDetails = async (req, res) => {
   }
 };
 
-// --- CAUGHT ---
-
 export const getCaught = async (req, res) => {
   try {
     const rows = await db
@@ -144,8 +138,6 @@ export const toggleCaught = async (req, res) => {
     }
 
     const key = parseResult.data.pokemon;
-
-    // Strict row-level isolation
     const [existing] = await db
       .select()
       .from(userCaught)
@@ -232,8 +224,6 @@ export const getCaughtDetails = async (req, res) => {
   }
 };
 
-// --- BATCH GUEST MIGRATION / CLOUD SYNC ---
-
 export const syncUserData = async (req, res) => {
   try {
     const parseResult = syncDataSchema.safeParse(req.body);
@@ -243,7 +233,6 @@ export const syncUserData = async (req, res) => {
 
     const { favorites: incomingFavorites, caught: incomingCaught } = parseResult.data;
 
-    // 1. Fetch currently stored items
     const existingFavRows = await db
       .select({ pokemon: userFavorites.pokemon })
       .from(userFavorites)
@@ -256,7 +245,6 @@ export const syncUserData = async (req, res) => {
       .where(eq(userCaught.userId, req.user.id));
     const existingCaughtSet = new Set(existingCaughtRows.map((r) => r.pokemon));
 
-    // 2. Insert missing favorites in a single batch insert
     const newFavorites = incomingFavorites.filter((f) => !existingFavSet.has(f));
     if (newFavorites.length > 0) {
       await db.insert(userFavorites).values(
@@ -267,7 +255,6 @@ export const syncUserData = async (req, res) => {
       );
     }
 
-    // 3. Insert missing caught items in a single batch insert
     const newCaught = incomingCaught.filter((c) => !existingCaughtSet.has(c));
     if (newCaught.length > 0) {
       await db.insert(userCaught).values(
@@ -278,7 +265,6 @@ export const syncUserData = async (req, res) => {
       );
     }
 
-    // 4. Return complete lists
     const finalFavRows = await db
       .select({ pokemon: userFavorites.pokemon })
       .from(userFavorites)
@@ -300,8 +286,6 @@ export const syncUserData = async (req, res) => {
     res.status(500).json({ error: 'Failed to sync user data.' });
   }
 };
-
-// --- PROFILE ---
 
 export const getProfile = async (req, res) => {
   try {

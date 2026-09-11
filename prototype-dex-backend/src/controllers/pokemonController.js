@@ -35,10 +35,9 @@ const GENERATION_RANGES = {
   9: { start: 906, end: 1025 },
 };
 
-// In-memory cache for static Pokémon table to avoid frequent cloud database roundtrips
 let cachedAllPokemon = null;
 let lastCacheTime = 0;
-const CACHE_TTL_MS = 1000 * 60 * 15; // 15 minutes
+const CACHE_TTL_MS = 1000 * 60 * 15;
 
 async function getAllPokemonCached() {
   const now = Date.now();
@@ -102,7 +101,6 @@ export const getPokemonByGeneration = async (req, res) => {
       return res.json(genPokemon);
     }
 
-    // Fallback if genId is not 1-9
     const generationData = await fetchGeneration(req.params.genId);
     const genPokemonNames = new Set(generationData.pokemon_species.map((p) => p.name));
     const all = await getAllPokemonCached();
@@ -146,7 +144,6 @@ export const getPokemonDetails = async (req, res) => {
     const clean = String(nameOrId).toLowerCase().trim().replace(/^#/, "");
     const numId = parseInt(clean, 10);
 
-    // 1. Check if we have cached details in the database
     const [row] = await db
       .select()
       .from(pokemon)
@@ -157,10 +154,8 @@ export const getPokemonDetails = async (req, res) => {
       return res.json(row.details);
     }
 
-    // 2. Fetch from PokeAPI
     const data = await fetchPokemon(clean);
     if (data && row) {
-      // Async cache details in DB so subsequent requests are instant
       db.update(pokemon)
         .set({ details: data })
         .where(eq(pokemon.id, row.id))
@@ -180,7 +175,6 @@ const simpleFetchHandler = (fetchFunction, resourceName, cachePrefix) => async (
     const target = String(nameOrId || id).toLowerCase().trim();
     const key = `${cachePrefix}:${target}`;
 
-    // 1. Check persistent SQLite/Turso cache first
     const [cached] = await db
       .select()
       .from(apiCache)
@@ -191,7 +185,6 @@ const simpleFetchHandler = (fetchFunction, resourceName, cachePrefix) => async (
       return res.json(cached.data);
     }
 
-    // 2. Fetch from PokeAPI if not yet in database
     const data = await fetchFunction(nameOrId || id);
     if (data) {
       db.insert(apiCache)

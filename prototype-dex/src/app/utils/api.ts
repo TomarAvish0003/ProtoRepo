@@ -9,13 +9,11 @@ import {
   RawTypeApiResponse
 } from "@/app/utils/types";
 
-// --- Generic API Response Type ---
 export interface ApiResponse<T> {
   data: T | null;
   error: string | null;
 }
 
-// --- Specific Raw API Response Types ---
 interface RawSpeciesData {
   evolution_chain?: {
     url: string;
@@ -32,12 +30,10 @@ interface RawEvolutionChainData {
   chain: EvolutionChainNode;
 }
 
-// --- API Constants ---
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const MAX_RETRIES = 3;
 const MAX_RETRY_DELAY = 30000;
 
-// --- Token Storage & Authentication Management ---
 export const AUTH_TOKEN_KEY = 'protodex_auth_token';
 
 export function getStoredToken(): string | null {
@@ -60,7 +56,6 @@ export function setStoredToken(token: string | null): void {
   } catch {}
 }
 
-// --- Headers ---
 export function authHeaders(token?: string): HeadersInit {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   const activeToken = token || getStoredToken();
@@ -71,11 +66,9 @@ export function authHeaders(token?: string): HeadersInit {
   return headers;
 }
 
-// In-memory cache for static Pokémon encyclopedia resources to avoid repetitive network roundtrips
 const memoryCache = new Map<string, { data: unknown; expiresAt: number }>();
-const MEMORY_CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
+const MEMORY_CACHE_TTL = 1000 * 60 * 60 * 24;
 
-// --- Core Fetcher ---
 async function fetcher<T>(
   endpoint: string,
   options?: RequestInit,
@@ -84,7 +77,6 @@ async function fetcher<T>(
   const isGet = !options?.method || options.method.toUpperCase() === "GET";
   const isStaticResource = endpoint.startsWith("/api/pokemon");
 
-  // 1. Instant 0ms in-memory cache check
   if (isGet && isStaticResource) {
     const cached = memoryCache.get(endpoint);
     if (cached && cached.expiresAt > Date.now()) {
@@ -143,7 +135,6 @@ async function fetcher<T>(
   };
 }
 
-// --- AUTH / USER ---
 export async function loginUser(email: string, password: string) {
   const res = await fetcher<{ token: string; user: UserProfile }>("/api/auth/login", {
     method: "POST",
@@ -225,7 +216,6 @@ export async function deleteAccountApi(token?: string) {
   });
 }
 
-// --- FAVORITES & CAUGHT ---
 export async function getFavorites(token?: string) {
   return fetcher<string[]>("/api/user/favorite", { headers: authHeaders(token) });
 }
@@ -304,7 +294,6 @@ export async function syncGuestData(favorites: string[], caught: string[]) {
   });
 }
 
-// --- POKÉMON ---
 export async function getPokemon(nameOrId: string) {
   return fetcher<Pokemon>(`/api/pokemon/${nameOrId}`);
 }
@@ -336,12 +325,10 @@ export async function getPokemonByGeneration(genId: number): Promise<ApiResponse
   return fetcher<FlatVarietyWithTypes[]>(`/api/pokemon/generation/${genId}`);
 }
 
-// --- ENCOUNTERS ---
 export async function getPokemonEncounters(nameOrId: string) {
   return fetcher<EncounterLocationArea[]>(`/api/pokemon/${nameOrId}/encounters`);
 }
 
-// --- EVOLUTION ---
 function getIdFromUrl(url: string): number {
   const parts = url.split("/").filter(Boolean);
   return Number(parts.pop());
@@ -418,7 +405,6 @@ export async function getEvolutionChainForPokemon(
   }
 }
 
-// --- ADVANCED ENDPOINTS ---
 export async function getPokemonSpecies(nameOrId: string) {
   return fetcher(`/api/pokemon/species/${nameOrId}`);
 }

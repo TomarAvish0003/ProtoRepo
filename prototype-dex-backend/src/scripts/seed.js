@@ -1,5 +1,3 @@
-// In src/scripts/seed.js
-
 import fs from 'fs';
 import path from 'path';
 import { fetchPokemon, fetchPokemonList } from '../utils/fetchFromPokeAPI.js';

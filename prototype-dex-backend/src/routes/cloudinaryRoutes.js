@@ -13,14 +13,11 @@ cloudinary.v2.config({
 
 const router = express.Router();
 
-// Auth middleware ensures only logged-in users can upload
 router.get("/signature", auth, (req, res) => {
-  // Optionally, you can restrict what can be uploaded here
   const timestamp = Math.round(new Date().getTime() / 1000);
   const paramsToSign = {
     timestamp,
-    folder: "avatars", // Optional: upload to avatars folder
-    // Any other upload options you want to restrict
+    folder: "avatars",
   };
   const signature = cloudinary.v2.utils.api_sign_request(
     paramsToSign,

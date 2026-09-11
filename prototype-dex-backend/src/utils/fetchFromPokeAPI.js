@@ -53,8 +53,6 @@ export const fetchFromPokeAPI = async (endpoint, params = {}, retries = 3) => {
   }
 };
 
-// --- Specific Data Fetchers ---
-
 export const fetchPokemon = async (nameOrId) => {
   const key = String(nameOrId).toLowerCase();
   if (pokemonDetailCache.has(key)) return pokemonDetailCache.get(key);
@@ -120,7 +118,6 @@ export const fetchEvolutionChain = async (id) => {
 export const fetchEncounters = (nameOrId) =>
   fetchFromPokeAPI(`pokemon/${String(nameOrId).toLowerCase()}/encounters`);
 
-// --- Generic Fetchers ---
 export const fetchAbility = (nameOrId) =>
   fetchFromPokeAPI(`ability/${String(nameOrId).toLowerCase()}`);
 export const fetchMove = (nameOrId) =>

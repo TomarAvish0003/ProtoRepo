@@ -4,7 +4,7 @@ import { moves as movesTable } from "../db/schema.js";
 
 export const getMovesBatch = async (req, res) => {
   try {
-    const { names } = req.body; // expects { names: ["tackle", "water-gun", ...] }
+    const { names } = req.body;
     if (!Array.isArray(names)) {
       return res.status(400).json({ error: "names must be an array" });
     }

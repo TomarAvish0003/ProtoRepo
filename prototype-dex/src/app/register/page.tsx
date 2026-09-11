@@ -15,7 +15,6 @@ export default function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // If already authenticated, redirect to profile
   useEffect(() => {
     if (user) {
       router.push('/profile');
@@ -46,7 +45,6 @@ export default function RegisterPage() {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 text-on-surface transition-colors">
       <div className="w-full max-w-md bg-charcoal-surface border border-border-crisp rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 flex flex-col gap-6">
-        {/* Header */}
         <div className="flex flex-col gap-1.5 pb-4 border-b border-border-crisp">
           <div className="flex items-center justify-between">
             <span className="font-caption-label text-[10px] text-secondary font-bold uppercase tracking-wider bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
@@ -65,7 +63,6 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Error Notification */}
         {errorMsg && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-600 dark:text-red-400 font-caption-label text-[12px] font-semibold flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0" />
@@ -73,7 +70,6 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label
@@ -157,7 +153,6 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        {/* Footer */}
         <div className="pt-4 border-t border-border-crisp flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left font-body-sm text-[12px] text-on-surface-variant">
           <span>Already registered?</span>
           <Link

@@ -1,6 +1,3 @@
-// Utility helpers for Contemporary Japanese Archival Museum Editorial Pokemon data formatting
-// Calibrated with universal standard Pokémon type colors (Showdown, Bulbapedia, Pokémon HOME)
-
 export interface TypeConfig {
   label: string;
   kanji: string;

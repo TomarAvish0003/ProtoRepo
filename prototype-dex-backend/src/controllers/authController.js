@@ -6,7 +6,6 @@ import { db } from '../db/index.js';
 import { users, userFavorites, userCaught } from '../db/schema.js';
 import { registerSchema, loginSchema } from '../validators/authValidator.js';
 
-// In-memory token blocklist for immediate revocation
 export const tokenBlocklist = new Set();
 
 const COOKIE_NAME = 'protodex_token';
@@ -14,7 +13,7 @@ const getCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 7 * 24 * 60 * 60 * 1000,
   path: '/',
 });
 
@@ -37,7 +36,6 @@ export const registerUser = async (req, res) => {
 
     const { username, email, password } = parseResult.data;
 
-    // Check uniqueness
     const [existing] = await db
       .select({ id: users.id, email: users.email, username: users.username })
       .from(users)
@@ -76,7 +74,7 @@ export const registerUser = async (req, res) => {
     res.status(201).json({
       message: 'Registration successful',
       user: safeUser,
-      token, // Also returned for non-cookie / CLI clients
+      token,
     });
   } catch (err) {
     console.error('Register error:', err);
@@ -122,7 +120,6 @@ export const loginUser = async (req, res) => {
     const cookieOpts = getCookieOptions();
     res.cookie(COOKIE_NAME, token, cookieOpts);
 
-    // Fetch user favorites and caught
     const favRows = await db
       .select({ pokemon: userFavorites.pokemon })
       .from(userFavorites)
@@ -178,7 +175,6 @@ export const logoutUser = (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    // req.user is already populated and sanitized by the auth middleware
     res.status(200).json({
       user: req.user,
     });
